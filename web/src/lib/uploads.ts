@@ -14,22 +14,22 @@ export async function detectUpload(bytes: Uint8Array, kind: Kind, name: string) 
   if (kind === "audio" && type && ["mp3", "wav", "m4a"].includes(type.ext)) return type.ext;
   throw new UploadError("ชนิดหรือขนาดไฟล์ไม่ถูกต้อง");
 }
-function root() { if (!process.env.UPLOAD_DIR) throw new UploadError("ไม่ได้ตั้งค่าที่เก็บไฟล์"); return path.resolve(process.env.UPLOAD_DIR); }
+function root() { if (!process.env.UPLOAD_DIR) throw new UploadError("ไม่ได้ตั้งค่าที่เก็บไฟล์"); return path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR); }
 export async function saveUpload(file: File, kind: Kind): Promise<string> {
   if (file.size > limits[kind] * 1024 * 1024 || !file.size) throw new UploadError("ชนิดหรือขนาดไฟล์ไม่ถูกต้อง");
   const bytes = new Uint8Array(await file.arrayBuffer());
   const ext = await detectUpload(bytes, kind, file.name);
-  const date = new Date(); const dir = path.join(`${kind}s`, String(date.getFullYear()), String(date.getMonth() + 1).padStart(2, "0"));
-  const base = root(); const targetDir = path.join(base, dir); await mkdir(targetDir, { recursive: true });
+  const date = new Date(); const dir = path.join(/*turbopackIgnore: true*/ `${kind}s`, String(date.getFullYear()), String(date.getMonth() + 1).padStart(2, "0"));
+  const base = root(); const targetDir = path.join(/*turbopackIgnore: true*/ base, dir); await mkdir(targetDir, { recursive: true });
   const realBase = await realpath(base); const realDir = await realpath(targetDir);
   if (!realDir.startsWith(realBase + path.sep)) throw new UploadError("ตำแหน่งไฟล์ไม่ถูกต้อง");
-  const name = `${randomBytes(16).toString("hex")}.${ext}`; const tmp = path.join(realDir, `.${name}.tmp`);
-  try { await writeFile(tmp, bytes, { flag: "wx" }); await rename(tmp, path.join(realDir, name)); } catch (error) { await unlink(tmp).catch(() => {}); throw error; }
+  const name = `${randomBytes(16).toString("hex")}.${ext}`; const tmp = path.join(/*turbopackIgnore: true*/ realDir, `.${name}.tmp`);
+  try { await writeFile(tmp, bytes, { flag: "wx" }); await rename(tmp, path.join(/*turbopackIgnore: true*/ realDir, name)); } catch (error) { await unlink(tmp).catch(() => {}); throw error; }
   return `/uploads/${dir.split(path.sep).join("/")}/${name}`;
 }
 export async function deleteUpload(value: string) {
   if (!value.startsWith("/uploads/") || value.includes("\\") || value.includes("\0")) throw new UploadError("ตำแหน่งไฟล์ไม่ถูกต้อง");
-  const base = root(); const target = path.resolve(base, value.slice(9));
+  const base = root(); const target = path.resolve(/*turbopackIgnore: true*/ base, value.slice(9));
   if (!target.startsWith(base + path.sep)) throw new UploadError("ตำแหน่งไฟล์ไม่ถูกต้อง");
   try { const realBase = await realpath(base); const realTarget = await realpath(target); if (!realTarget.startsWith(realBase + path.sep)) throw new UploadError("ตำแหน่งไฟล์ไม่ถูกต้อง"); await unlink(realTarget); }
   catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }

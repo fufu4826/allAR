@@ -4,6 +4,7 @@ import { hash, verify } from "@node-rs/argon2";
 import { and, count, eq, gte, or } from "drizzle-orm";
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
+import { connection } from "next/server";
 import { db } from "@/db";
 import { admins, loginAttempts, sessions } from "@/db/schema";
 import { audit } from "./audit";
@@ -40,6 +41,8 @@ export async function createSession(adminId: string) {
   (await cookies()).set("allar_session", token, await cookieOptions());
 }
 export const getCurrentAdmin = cache(async () => {
+  // Admin data is per-request: stop prerendering here so no DB call runs at build/PPR time.
+  await connection();
   const token = (await cookies()).get("allar_session")?.value;
   if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) return null;
   const id = tokenHash(token);

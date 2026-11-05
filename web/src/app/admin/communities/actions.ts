@@ -17,6 +17,10 @@ export type CommunityActionState = {
 function validateCommunityData(formData: FormData) {
   const name = String(formData.get("name") || "").trim();
   const shortName = String(formData.get("shortName") || "").trim();
+  const englishName = String(formData.get("englishName") || "").trim();
+  const tagline = String(formData.get("tagline") || "").trim();
+  const tags = String(formData.get("tags") || "").trim();
+  const theme = String(formData.get("theme") || "default");
   const slug = String(formData.get("slug") || "").trim().toLowerCase();
   const location = String(formData.get("location") || "").trim();
   const description = String(formData.get("description") || "").trim();
@@ -27,6 +31,11 @@ function validateCommunityData(formData: FormData) {
   const isPublished = formData.get("isPublished") === "on" || formData.get("isPublished") === "true";
 
   const fieldErrors: Record<string, string> = {};
+
+  if (englishName.length > 120) fieldErrors.englishName = "English name is too long";
+  if (tagline.length > 255) fieldErrors.tagline = "Tagline is too long";
+  if (tags.length > 255) fieldErrors.tags = "Tags are too long";
+  if (!["default", "phuphan", "nonhom", "tharae", "watklang", "watnuea"].includes(theme)) fieldErrors.theme = "Invalid theme";
 
   if (!name || name.length > 255) {
     fieldErrors.name = "กรุณาระบุชื่อชุมชน (ไม่เกิน 255 ตัวอักษร)";
@@ -69,6 +78,10 @@ function validateCommunityData(formData: FormData) {
     data: {
       name,
       shortName,
+      englishName: englishName || null,
+      tagline: tagline || null,
+      tags: tags || null,
+      theme,
       slug,
       location,
       description,
@@ -122,6 +135,10 @@ export async function createCommunityAction(
       id,
       name: data.name,
       shortName: data.shortName,
+      englishName: data.englishName,
+      tagline: data.tagline,
+      tags: data.tags,
+      theme: data.theme,
       slug: data.slug,
       location: data.location,
       description: data.description,
@@ -205,6 +222,10 @@ export async function updateCommunityAction(
       .set({
         name: data.name,
         shortName: data.shortName,
+        englishName: data.englishName,
+        tagline: data.tagline,
+        tags: data.tags,
+        theme: data.theme,
         slug: data.slug,
         location: data.location,
         description: data.description,

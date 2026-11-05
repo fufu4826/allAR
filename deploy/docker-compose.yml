@@ -1,57 +1,76 @@
-# ระบบคลังภูมิปัญญาชุมชน 3D/AR — เครื่องเซิร์ฟเวอร์ 10.1.11.243 (C:\apps\allar)
-# ทุกพอร์ตผูกกับ 127.0.0.1 เท่านั้น เครื่องอื่นต้องเข้าผ่าน SSH tunnel
-# รหัสผ่านอยู่ใน .env (ไม่เก็บใน Git) — ดู .env.example
+# Fixed project name: volumes are allar_db_data / allar_uploads no matter which folder this file is in.
+name: allar
 
 services:
   mariadb:
     image: mariadb:12.3
-    container_name: allar_mariadb
-    restart: unless-stopped
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--default-time-zone=+00:00"]
     environment:
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?ต้องตั้ง DB_ROOT_PASSWORD ใน .env}
-      MARIADB_DATABASE: ${DB_NAME:-allar_db}
-      MARIADB_USER: ${DB_USER:-allar_user}
-      MARIADB_PASSWORD: ${DB_PASSWORD:?ต้องตั้ง DB_PASSWORD ใน .env}
-      TZ: Asia/Bangkok
-    ports:
-      - "127.0.0.1:3306:3306"
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME:?Set DB_NAME}
+      MARIADB_USER: ${DB_USER:?Set DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
     volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./init:/docker-entrypoint-initdb.d:ro
+      - db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
       start_period: 30s
-    networks:
-      - allar_network
-
+    restart: unless-stopped
+    networks: [internal]
+  web:
+    build: ../web
+    image: allar-web:${APP_VERSION:-latest}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://${DB_USER:?Set DB_USER}:${DB_PASSWORD:?Set DB_PASSWORD}@mariadb:3306/${DB_NAME:?Set DB_NAME}
+      UPLOAD_DIR: /app/uploads
+      TRUST_PROXY: ${TRUST_PROXY:-true}
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-3000}:3000"
+    restart: unless-stopped
+    mem_limit: 1536m
+    networks: [internal]
+  backup:
+    build: ./backup
+    image: allar-backup:${APP_VERSION:-latest}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      DB_NAME: ${DB_NAME:?Set DB_NAME}
+      DB_USER: ${DB_USER:?Set DB_USER}
+      MYSQL_PWD: ${DB_PASSWORD:?Set DB_PASSWORD}
+      BACKUP_TIME: ${BACKUP_TIME:-02:00}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-30}
+      TZ: Asia/Bangkok
+    volumes:
+      - uploads:/uploads:ro
+      - uploads:/restore-uploads
+      - ./backups:/backups
+    restart: unless-stopped
+    networks: [internal]
   phpmyadmin:
     image: phpmyadmin:5.2.3
-    container_name: allar_phpmyadmin
-    restart: unless-stopped
+    profiles: ["tools"]
     depends_on:
       mariadb:
         condition: service_healthy
     environment:
       PMA_HOST: mariadb
-      PMA_PORT: 3306
       UPLOAD_LIMIT: 128M
     ports:
-      - "127.0.0.1:8080:80"
-    networks:
-      - allar_network
-
-  # service "web" (Next.js) จะเพิ่มเมื่อ repo GitHub พร้อม
-
+      - "127.0.0.1:${PMA_PORT:-8080}:80"
+    restart: unless-stopped
+    networks: [internal]
 volumes:
-  mariadb_data:
-    name: allar_mariadb_data
-
+  db_data:
+  uploads:
 networks:
-  allar_network:
-    name: allar_network
+  internal:

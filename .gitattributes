@@ -3,3 +3,6 @@
 *.ps1 text eol=crlf
 *.bat text eol=crlf
 *.docx binary
+deploy/** text eol=lf
+web/Dockerfile text eol=lf
+web/.dockerignore text eol=lf

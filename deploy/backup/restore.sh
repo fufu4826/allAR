@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 if [ "${1:-}" != --yes ] || [ "$#" -lt 2 ]; then
-  echo 'Usage: restore --yes /backups/db_....sql.gz [/backups/uploads_....tar.gz]' >&2
+  echo 'Usage: restore --yes /backups/db_....sql.gz [/backups/uploads_....tar.gz]   (then: docker compose restart web)' >&2
   exit 2
 fi
 shift
@@ -24,3 +24,4 @@ for archive do
     *) echo "Unsupported archive: $archive" >&2; exit 2 ;;
   esac
 done
+echo "$(date -Iseconds) restore completed; run: docker compose restart web"

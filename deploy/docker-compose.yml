@@ -1,0 +1,57 @@
+# ระบบคลังภูมิปัญญาชุมชน 3D/AR — เครื่องเซิร์ฟเวอร์ 10.1.11.243 (C:\apps\allar)
+# ทุกพอร์ตผูกกับ 127.0.0.1 เท่านั้น เครื่องอื่นต้องเข้าผ่าน SSH tunnel
+# รหัสผ่านอยู่ใน .env (ไม่เก็บใน Git) — ดู .env.example
+
+services:
+  mariadb:
+    image: mariadb:12.3
+    container_name: allar_mariadb
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?ต้องตั้ง DB_ROOT_PASSWORD ใน .env}
+      MARIADB_DATABASE: ${DB_NAME:-allar_db}
+      MARIADB_USER: ${DB_USER:-allar_user}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?ต้องตั้ง DB_PASSWORD ใน .env}
+      TZ: Asia/Bangkok
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - allar_network
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.3
+    container_name: allar_phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 128M
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - allar_network
+
+  # service "web" (Next.js) จะเพิ่มเมื่อ repo GitHub พร้อม
+
+volumes:
+  mariadb_data:
+    name: allar_mariadb_data
+
+networks:
+  allar_network:
+    name: allar_network

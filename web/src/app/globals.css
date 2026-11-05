@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* ธีมสถาบันภาษา ศิลปะและวัฒนธรรม มรสน. (ilac.snru.ac.th): ส้ม #e9773e + ขาว + เทาเข้ม, ฟอนต์ Prompt */
+@theme inline {
+  --color-brand: #e9773e;
+  --color-brand-dark: #c95f2a;
+  --color-brand-soft: #fdf1ea;
+  --color-ink: #2d2d2d;
+  --color-muted: #6b6b6b;
+  --color-line: #ececec;
+  --color-paper: #faf8f5;
+  --font-sans: var(--font-prompt);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+model-viewer {
+  --poster-color: transparent;
+}
+
+.leaflet-container {
+  font-family: var(--font-prompt);
+}

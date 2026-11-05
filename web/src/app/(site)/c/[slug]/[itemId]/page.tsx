@@ -77,6 +77,18 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
               <div style={{ width: "100%", height: "450px" }}>
                 <ModelViewer src={item.model} poster={item.thumbnail} alt={item.name} />
               </div>
+            ) : item.thumbnail ? (
+              <figure style={{ margin: 0 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element -- served from /uploads, sizes already optimized */}
+                <img
+                  src={item.thumbnail}
+                  alt={item.name}
+                  style={{ width: "100%", maxHeight: "450px", objectFit: "contain", borderRadius: "14px", background: "var(--paper)" }}
+                />
+                <figcaption style={{ marginTop: "10px", fontSize: "0.85rem", color: "var(--slate-500)", textAlign: "center" }}>
+                  ภาพถ่ายวัตถุจริง · โมเดล 3D อยู่ระหว่างจัดทำ
+                </figcaption>
+              </figure>
             ) : (
               <div
                 style={{
@@ -88,7 +100,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
                   color: "var(--slate-500)",
                 }}
               >
-                ยังไม่มีโมเดล 3D
+                โมเดล 3D อยู่ระหว่างจัดทำ
               </div>
             )}
           </div>
@@ -151,7 +163,8 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
               {item.description}
             </p>
 
-            {/* AR Instructions */}
+            {/* AR Instructions (only when a 3D model exists) */}
+            {item.model && (
             <div
               style={{
                 marginTop: "24px",
@@ -170,6 +183,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
                 (รองรับทั้ง Android ผ่าน Google Scene Viewer และ iPhone ผ่าน AR Quick Look)
               </p>
             </div>
+            )}
           </div>
         </div>
 
@@ -186,7 +200,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
                   <img src={r.thumbnail || "/brand/snru-logo.png"} alt={r.name} loading="lazy" />
                   <span>
                     <strong>{r.name}</strong>
-                    <small>ดูโมเดล 3D / AR ↗</small>
+                    <small>{r.model ? "ดูโมเดล 3D / AR ↗" : "ดูรายละเอียด ↗"}</small>
                   </span>
                 </Link>
               ))}

@@ -8,6 +8,7 @@ interface CollectionItem {
   collectionId: string;
   name: string;
   thumbnail: string | null;
+  model?: string | null;
 }
 
 interface Collection {
@@ -87,7 +88,7 @@ export default function CommunityCollectionTabs({
             />
             <span>
               <strong>{item.name}</strong>
-              <small>ดูโมเดล 3D / AR ↗</small>
+              <small>{item.model ? "ดูโมเดล 3D / AR ↗" : "ดูรายละเอียด ↗"}</small>
             </span>
           </Link>
         ))}

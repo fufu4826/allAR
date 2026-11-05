@@ -4,10 +4,12 @@ import { notFound } from "next/navigation";
 import ItemCard from "@/components/ItemCard";
 import PageSkeleton from "@/components/PageSkeleton";
 import ModelViewer from "@/components/ModelViewer";
-import { communities, getCommunity } from "@/data/communities";
+import { connection } from "next/server";
+import { getCommunityWithContent, getItem } from "@/lib/queries";
 
+// DB is not reachable during `next build` (Docker image build), so params are resolved at request time.
 export function generateStaticParams() {
-  return communities.flatMap((c) => c.items.map((item) => ({ slug: c.slug, itemId: item.id })));
+  return [{ slug: "__placeholder__", itemId: "__placeholder__" }];
 }
 
 export default function ItemPage({ params }: PageProps<"/c/[slug]/[itemId]">) {
@@ -20,8 +22,8 @@ export default function ItemPage({ params }: PageProps<"/c/[slug]/[itemId]">) {
 
 async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemId]">["params"] }) {
   const { slug, itemId } = await params;
-  const community = getCommunity(slug);
-  const item = community?.items.find((i) => i.id === itemId);
+  await connection();
+  const [community, item] = await Promise.all([getCommunityWithContent(slug), getItem(slug, itemId)]);
   if (!community || !item) notFound();
 
   const collection = community.collections.find((c) => c.id === item.collectionId);

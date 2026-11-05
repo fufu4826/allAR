@@ -6,7 +6,9 @@ RUN npm ci
 FROM deps AS build
 COPY . .
 ENV DATABASE_URL=mysql://build:build@127.0.0.1:3306/build
-RUN npm run build
+# next/image is not used, so the traced sharp binaries (~20 MB) are dead weight.
+RUN npm run build \
+    && rm -rf .next/standalone/node_modules/sharp .next/standalone/node_modules/@img
 
 # Install only the direct dependencies of the two administrative scripts.
 FROM node:24-bookworm-slim AS script-deps

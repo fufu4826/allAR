@@ -9,6 +9,10 @@ interface CommunityFormProps {
     id: string;
     name: string;
     shortName: string;
+    englishName: string | null;
+    tagline: string | null;
+    tags: string | null;
+    theme: string;
     slug: string;
     location: string;
     description: string;
@@ -60,6 +64,20 @@ export default function CommunityForm({ initialData }: CommunityFormProps) {
       )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <label className={labelClass}>English name
+          <input name="englishName" maxLength={120} defaultValue={initialData?.englishName ?? ""} className={inputClass} />
+        </label>
+        <label className={labelClass}>คำโปรย
+          <input name="tagline" maxLength={255} defaultValue={initialData?.tagline ?? ""} className={inputClass} />
+        </label>
+        <label className={labelClass}>แท็ก
+          <input name="tags" maxLength={255} defaultValue={initialData?.tags ?? ""} className={inputClass} />
+        </label>
+        <label className={labelClass}>ธีม
+          <select name="theme" defaultValue={initialData?.theme ?? "default"} className={inputClass}>
+            {["default", "phuphan", "nonhom", "tharae", "watklang", "watnuea"].map((theme) => <option key={theme} value={theme}>{theme}</option>)}
+          </select>
+        </label>
         {/* Name */}
         <div>
           <label className={labelClass}>

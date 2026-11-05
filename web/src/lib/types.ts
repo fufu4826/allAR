@@ -17,6 +17,11 @@ export type Collection = {
 
 export type Community = {
   slug: string;
+  id?: string;
+  englishName?: string | null;
+  tagline?: string | null;
+  tags?: string | null;
+  theme?: string;
   name: string;
   shortName: string;
   location: string;

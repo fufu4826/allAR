@@ -1,4 +1,4 @@
-import { bigint, boolean, char, decimal, index, int, json, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { bigint, boolean, char, datetime, decimal, index, int, json, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 const timestamps = () => ({
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -10,6 +10,10 @@ export const communities = mysqlTable("communities", {
   slug: varchar("slug", { length: 64 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
   shortName: varchar("short_name", { length: 120 }).notNull(),
+  englishName: varchar("english_name", { length: 120 }),
+  tagline: varchar("tagline", { length: 255 }),
+  tags: varchar("tags", { length: 255 }),
+  theme: varchar("theme", { length: 32 }).notNull().default("default"),
   location: varchar("location", { length: 255 }).notNull(),
   description: text("description").notNull(),
   lat: decimal("lat", { precision: 9, scale: 6 }).notNull(),
@@ -19,6 +23,31 @@ export const communities = mysqlTable("communities", {
   sortOrder: int("sort_order").notNull().default(0),
   isPublished: boolean("is_published").notNull().default(false),
   ...timestamps(),
+});
+
+export const news = mysqlTable("news", {
+  id: varchar("id", { length: 32 }).primaryKey(),
+  communityId: varchar("community_id", { length: 32 }).references(() => communities.id, { onDelete: "set null" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  summary: text("summary").notNull(),
+  body: text("body").notNull(),
+  category: varchar("category", { length: 64 }).notNull(),
+  coverPath: varchar("cover_path", { length: 500 }),
+  publishedAt: datetime("published_at"),
+  isPublished: boolean("is_published").notNull().default(false),
+  sortOrder: int("sort_order").notNull().default(0),
+  ...timestamps(),
+});
+
+export const galleryImages = mysqlTable("gallery_images", {
+  id: varchar("id", { length: 32 }).primaryKey(),
+  communityId: varchar("community_id", { length: 32 }).references(() => communities.id, { onDelete: "set null" }),
+  imagePath: varchar("image_path", { length: 500 }).notNull(),
+  caption: text("caption").notNull(),
+  category: varchar("category", { length: 32 }).notNull(),
+  sortOrder: int("sort_order").notNull().default(0),
+  isPublished: boolean("is_published").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const collections = mysqlTable("collections", {

@@ -1,9 +1,9 @@
 import "server-only";
 
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq, and } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
-import { communities, collections, items } from "@/db/schema";
+import { communities, collections, items, news, galleryImages } from "@/db/schema";
 import type { Community, Item } from "@/lib/types";
 
 export async function getCommunities(): Promise<Community[]> {
@@ -19,6 +19,7 @@ export async function getCommunities(): Promise<Community[]> {
     const cols = community.isPublished ? collectionRows.filter((col) => col.communityId === community.id) : [];
     const content = itemRows.filter((item) => cols.some((col) => col.id === item.collectionId));
     return {
+      id: community.id, englishName: community.englishName, tagline: community.tagline, tags: community.tags, theme: community.theme,
       slug: community.slug, name: community.name, shortName: community.shortName,
       location: community.location, description: community.description,
       position: [Number(community.lat), Number(community.lng)], color: community.color,
@@ -64,4 +65,25 @@ export async function getFeaturedItems(limit: number) {
   cacheTag("content");
   cacheLife("hours");
   return (await getCommunities()).flatMap((community) => community.items.filter((item) => community.recommended.includes(item.id)).map((item) => ({ ...item, communitySlug: community.slug, communityName: community.shortName }))).slice(0, Math.max(0, limit));
+}
+
+export async function getPublishedNews(communityId?: string) {
+  "use cache";
+  cacheTag("content");
+  cacheLife("hours");
+  return db.select().from(news).where(communityId ? and(eq(news.isPublished, true), eq(news.communityId, communityId)) : eq(news.isPublished, true)).orderBy(desc(news.publishedAt), asc(news.sortOrder));
+}
+
+export async function getPublishedNewsItem(id: string) {
+  "use cache";
+  cacheTag("content");
+  cacheLife("hours");
+  return (await db.select().from(news).where(and(eq(news.id, id), eq(news.isPublished, true))).limit(1))[0];
+}
+
+export async function getPublishedGallery() {
+  "use cache";
+  cacheTag("content");
+  cacheLife("hours");
+  return db.select().from(galleryImages).where(eq(galleryImages.isPublished, true)).orderBy(asc(galleryImages.sortOrder));
 }

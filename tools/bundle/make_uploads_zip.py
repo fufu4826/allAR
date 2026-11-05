@@ -1,7 +1,7 @@
-"""Build data-bundle/out/uploads.zip from data-bundle/uploads and check it against the DB dump.
+"""Build data-bundle/delivery/uploads.zip from data-bundle/uploads and check it against the DB dump.
 
 Usage (from repo root): python tools/bundle/make_uploads_zip.py
-Every /uploads/... path referenced in out/allar_db.sql.gz must exist; the zip stores
+Every /uploads/... path referenced in delivery/allar_db.sql.gz must exist; the zip stores
 files relative to the uploads root (the same layout as the uploads volume).
 """
 import gzip
@@ -12,7 +12,7 @@ import zipfile
 
 ROOT = os.path.join("data-bundle")
 UPLOADS = os.path.join(ROOT, "uploads")
-OUT = os.path.join(ROOT, "out")
+OUT = os.path.join(ROOT, "delivery")
 
 sql = gzip.open(os.path.join(OUT, "allar_db.sql.gz"), "rt", encoding="utf-8").read()
 refs = sorted(set(re.findall(r"/uploads/([^'\",)]+)", sql)))

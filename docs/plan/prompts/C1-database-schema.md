@@ -31,7 +31,7 @@ Add a Drizzle ORM data layer for MariaDB with migrations and an idempotent seed 
 7. Create `web/scripts/seed.ts` (run with tsx) that upserts (INSERT … ON DUPLICATE KEY UPDATE) from `src/data/phuphan.json` and the 5 communities in `src/data/communities.ts`:
    - Community 1 `phuphan`: `is_published = true`, `sort_order = 1`; communities 2–5: `is_published = false`, `sort_order = 2..5`, keep their placeholder name/position/color.
    - Item `is_featured = true` for ids in `phuphan.settings.recommended`.
-   - Paths: convert `/r2/<path>` to `/uploads/<path>` (files are moved there by task A1). Keep `null` as `null`.
+   - Paths: convert `/r2/<path>` to `/uploads/<path>` (files are moved there by task A1, which runs in parallel and may already have rewritten the JSON to `/uploads/...` with `.webp` extensions — keep any path that already starts with `/uploads/` unchanged). Keep `null` as `null`.
    - Running the seed twice must not duplicate rows; print counts per table at the end.
 8. Add npm scripts in `web/package.json`: `db:generate`, `db:migrate` (`node scripts/migrate.mjs`), `db:seed` (`tsx scripts/seed.ts`). Make the scripts load `.env.local` (use Node's `--env-file-if-exists=.env.local`).
 

@@ -21,3 +21,11 @@ backups/
 # Local tooling
 .claude/
 *.log
+
+# Private working notes (kept on disk, not published)
+docs/ops/
+docs/teams/
+docs/server-request/
+tools/server/
+tools/docx/
+tools/laptop/

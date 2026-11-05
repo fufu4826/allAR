@@ -26,8 +26,8 @@ docker compose up -d --build
 | `web/` | Next.js 16 (App Router) + Drizzle ORM + MariaDB, `@google/model-viewer`, Leaflet |
 | `web/drizzle/` | migration ของฐานข้อมูล (รันอัตโนมัติเมื่อ container web เริ่มทำงาน) |
 | `deploy/` | `docker-compose.yml`, สำรอง/กู้คืนอัตโนมัติ, สคริปต์นำเข้าข้อมูล, คู่มือติดตั้ง |
-| `docs/` | แผนงาน, prompt ที่ใช้สั่งงาน, เอกสารคำขอใช้เซิร์ฟเวอร์ |
-| `tools/` | เครื่องมือของผู้พัฒนา (สร้างชุดข้อมูลส่งมอบ, เอกสาร, เครื่องทดสอบเดิม) |
+| `docs/plan/` | แผนงานและ prompt ที่ใช้สั่งงาน |
+| `tools/bundle/` | เครื่องมือสร้างชุดข้อมูลส่งมอบ |
 
 ## พัฒนาบนเครื่อง
 

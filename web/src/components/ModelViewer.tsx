@@ -27,6 +27,15 @@ export default function ModelViewer({ src, poster, alt }: { src: string; poster?
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // Self-hosted decoders (no Google CDN). Each <model-viewer> re-reads this global
+    // config on connect and falls back to gstatic.com when a key is missing, so it must
+    // be set here rather than only through the static setters.
+    const g = globalThis as { ModelViewerElement?: Record<string, string> };
+    g.ModelViewerElement = {
+      ...g.ModelViewerElement,
+      ktx2TranscoderLocation: "/decoders/basis/",
+      meshoptDecoderLocation: "/decoders/meshopt_decoder.js",
+    };
     import("@google/model-viewer").then(() => setReady(true));
   }, []);
 

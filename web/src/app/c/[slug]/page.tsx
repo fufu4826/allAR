@@ -3,10 +3,12 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import ItemCard from "@/components/ItemCard";
 import PageSkeleton from "@/components/PageSkeleton";
-import { communities, getCommunity } from "@/data/communities";
+import { connection } from "next/server";
+import { getCommunityWithContent } from "@/lib/queries";
 
+// DB is not reachable during `next build` (Docker image build), so params are resolved at request time.
 export function generateStaticParams() {
-  return communities.filter((c) => !c.placeholder).map((c) => ({ slug: c.slug }));
+  return [{ slug: "__placeholder__" }];
 }
 
 export default function CommunityPage({ params }: PageProps<"/c/[slug]">) {
@@ -19,7 +21,8 @@ export default function CommunityPage({ params }: PageProps<"/c/[slug]">) {
 
 async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">["params"] }) {
   const { slug } = await params;
-  const community = getCommunity(slug);
+  await connection();
+  const community = await getCommunityWithContent(slug);
   if (!community || community.placeholder) notFound();
 
   const groups = community.collections

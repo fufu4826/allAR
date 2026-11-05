@@ -1,9 +1,22 @@
 import Link from "next/link";
 import CommunityMap from "@/components/CommunityMap";
 import ItemCard from "@/components/ItemCard";
-import { allItems, communities } from "@/data/communities";
+import { Suspense } from "react";
+import { connection } from "next/server";
+import PageSkeleton from "@/components/PageSkeleton";
+import { getCommunities, getFeaturedItems } from "@/lib/queries";
 
 export default function Home() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+async function HomeContent() {
+  await connection();
+  const [communities, featured] = await Promise.all([getCommunities(), getFeaturedItems(8)]);
   const pins = communities.map((c, i) => ({
     slug: c.slug,
     number: i + 1,
@@ -14,11 +27,6 @@ export default function Home() {
     itemCount: c.items.length,
     placeholder: c.placeholder,
   }));
-  const phuphan = communities[0];
-  const featured = phuphan.recommended
-    .map((id) => allItems.find((item) => item.id === id))
-    .filter((item) => item !== undefined)
-    .slice(0, 8);
 
   return (
     <>

@@ -1,11 +1,24 @@
 import { Suspense } from "react";
 import SearchResults from "./SearchResults";
-import { allItems } from "@/data/communities";
+import { connection } from "next/server";
+import { getSearchIndex } from "@/lib/queries";
 
 export const metadata = { title: "ค้นหา | คลังภูมิปัญญาชุมชน 3D/AR" };
 
 export default function SearchPage() {
-  const items = allItems.map(({ id, name, description, thumbnail, audio, communitySlug, communityName }) => ({
+  return (
+    <div className="mx-auto max-w-6xl px-4 pt-8">
+      <h1 className="text-2xl font-bold">ค้นหาชิ้นงาน</h1>
+      <Suspense>
+        <SearchContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function SearchContent() {
+  await connection();
+  const items = (await getSearchIndex()).map(({ id, name, description, thumbnail, audio, communitySlug, communityName }) => ({
     id,
     name,
     description,
@@ -15,12 +28,5 @@ export default function SearchPage() {
     communityName,
   }));
 
-  return (
-    <div className="mx-auto max-w-6xl px-4 pt-8">
-      <h1 className="text-2xl font-bold">ค้นหาชิ้นงาน</h1>
-      <Suspense>
-        <SearchResults items={items} />
-      </Suspense>
-    </div>
-  );
+  return <SearchResults items={items} />;
 }

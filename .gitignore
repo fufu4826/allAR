@@ -11,6 +11,7 @@ node_modules/
 # Data delivered separately to IT staff (not in Git)
 data-bundle/
 uploads/
+!web/src/app/uploads/
 backups/
 *.sql
 *.sql.gz

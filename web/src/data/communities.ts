@@ -1,6 +1,7 @@
 import phuphan from "./phuphan.json";
 import watklang from "./watklang.json";
 import watnuea from "./watnuea.json";
+import nonhom from "./nonhom.json";
 import type { Community } from "@/lib/types";
 
 export const communities: Community[] = [
@@ -73,15 +74,15 @@ export const communities: Community[] = [
     tagline: "ค้นพบภูมิปัญญาผ้าย้อมครามและเรื่องราววิถีชุมชนโนนหอม",
     tags: "ผ้าคราม • ภูมิปัญญา • วิถีชุมชน",
     theme: "nonhom",
-    location: "ตำบลโนนหอม อำเภอเมืองสกลนคร จังหวัดสกลนคร",
-    description: "ชุมชนโนนหอมเป็นพื้นที่เรียนรู้วัฒนธรรมและภูมิปัญญาท้องถิ่น ทั้งการแต่งกาย การทอผ้า และการย้อมครามธรรมชาติ",
-    // approximate — verify with the community
-    position: [17.1100, 104.0400],
+    location: nonhom.community.location,
+    description: nonhom.community.description,
+    // from the Non Hom field team's form (5 Nov 2026)
+    position: [nonhom.community.lat, nonhom.community.lng],
     color: "#8d252d",
-    cover: null,
-    collections: [],
-    items: [],
-    recommended: [],
+    cover: nonhom.settings.cover,
+    collections: nonhom.collections,
+    items: nonhom.items,
+    recommended: nonhom.settings.recommended,
     placeholder: false,
   },
   {

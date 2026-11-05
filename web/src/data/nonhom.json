@@ -1,0 +1,231 @@
+{
+  "settings": {
+    "cover": "/uploads/nonhom/cover.webp",
+    "recommended": []
+  },
+  "community": {
+    "name": "บ้านโนนหอม",
+    "shortName": "บ้านโนนหอม",
+    "location": "บ้านโนนหอม ต.โนนหอม อ.เมืองสกลนคร จ.สกลนคร",
+    "description": "บ้านโนนหอมเป็นชุมชนผู้ไทกะต๊ะในจังหวัดสกลนคร ที่ยังคงสืบทอดภูมิปัญญา เครื่องแต่งกาย งานหัตถกรรม พิธีกรรม และวิถีชีวิตที่ผูกพันกับธรรมชาติและความเชื่อของท้องถิ่น",
+    "lat": 17.050825,
+    "lng": 104.214036
+  },
+  "collections": [
+    {
+      "id": "01aa974471c00c88c3c213971914b7e7",
+      "name": "การแต่งกายและศิลปะการแสดง",
+      "description": "กลุ่มวัตถุที่สะท้อนอัตลักษณ์ผู้ไทกะต๊ะผ่านชุดฟ้อน ผ้า เครื่องประดับ และการแสดงที่ใช้ในวาระสำคัญของชุมชน",
+      "image": "/uploads/nonhom/images/881a2cc890dc822bf3fd8276bf7c2d98.webp"
+    },
+    {
+      "id": "b6f6c21ceed6ec6fd76dffc1349e5526",
+      "name": "ผ้าและเครื่องจักสานในชีวิตประจำวัน",
+      "description": "ภูมิปัญญาการทอผ้าและงานจักสานที่ใช้ทั้งในครัวเรือน การแต่งกาย และการถ่ายทอดลวดลายจากรุ่นสู่รุ่น",
+      "image": "/uploads/nonhom/images/e1015631adf280e5107c01d798d5502d.webp"
+    },
+    {
+      "id": "8fcac182681ef176ac88f4cf78277310",
+      "name": "ความเชื่อ พิธีกรรม และการรักษาพื้นบ้าน",
+      "description": "เรื่องเล่าที่เชื่อมโยงการรักษาโรค การเรียกขวัญ การเซ่นไหว้ และบุญประเพณีเข้ากับวัตถุประกอบพิธีของชุมชน",
+      "image": "/uploads/nonhom/images/4e1a5e38822955e2afca75b6d2001450.webp"
+    },
+    {
+      "id": "9013a5b06cf342e6f5f049897cfa32e2",
+      "name": "ข้าว เงิน และของใช้ในชุมชน",
+      "description": "วัตถุที่เล่าเรื่องเศรษฐกิจพื้นถิ่น ความอุดมสมบูรณ์ และความสัมพันธ์ระหว่างชุมชนกับการเพาะปลูก",
+      "image": "/uploads/nonhom/images/a3fc52a82e0fcd51170114c32d4aeee4.webp"
+    }
+  ],
+  "items": [
+    {
+      "id": "881a2cc890dc822bf3fd8276bf7c2d98",
+      "collectionId": "01aa974471c00c88c3c213971914b7e7",
+      "name": "ชุดผู้ไทชาย",
+      "description": "การแต่งกายผู้ไทบ้านโนนหอมยึดรูปแบบพื้นเมืองดั้งเดิม ผู้ชายนิยมสวมกางเกงขาก๊วยหรือกางเกงสแล็ค คู่กับเสื้อโทนเข้มและเครื่องแต่งกายที่เหมาะกับงานฟ้อนหรือพิธีของชุมชน",
+      "model": "/uploads/nonhom/models/881a2cc890dc822bf3fd8276bf7c2d98.glb",
+      "thumbnail": "/uploads/nonhom/images/881a2cc890dc822bf3fd8276bf7c2d98.webp",
+      "audio": null
+    },
+    {
+      "id": "f13697c160111ccf5bcfb24cf1d14c48",
+      "collectionId": "01aa974471c00c88c3c213971914b7e7",
+      "name": "ชุดผู้ไทหญิง",
+      "description": "ชุดฟ้อนผู้ไทหญิงประกอบด้วยเสื้อดำขริบแดงแขนทรงกระบอก ผ้าถุงดำมีเชิงและลวดลาย ผ้าสไบลายดอกพริก เล็บฟ้อน และเครื่องประดับเงิน เช่น สร้อย ต่างหู และกำไล",
+      "model": "/uploads/nonhom/models/f13697c160111ccf5bcfb24cf1d14c48.glb",
+      "thumbnail": "/uploads/nonhom/images/f13697c160111ccf5bcfb24cf1d14c48.webp",
+      "audio": null
+    },
+    {
+      "id": "2bfd147c3d8a165c84640f6452972bde",
+      "collectionId": "01aa974471c00c88c3c213971914b7e7",
+      "name": "เล็บผู้ไท",
+      "description": "เล็บฟ้อนเป็นเครื่องประกอบการฟ้อนผู้ไท โดยทั่วไปใช้ 8 นิ้ว ช่วยเน้นจังหวะและเส้นสายของท่ารำให้สง่างามตามแบบชุมชนบ้านโนนหอม",
+      "model": "/uploads/nonhom/models/2bfd147c3d8a165c84640f6452972bde.glb",
+      "thumbnail": "/uploads/nonhom/images/2bfd147c3d8a165c84640f6452972bde.webp",
+      "audio": null
+    },
+    {
+      "id": "ccc6c6cb6a0be49f71f8be8a946801c2",
+      "collectionId": "01aa974471c00c88c3c213971914b7e7",
+      "name": "ฝ้ายเขียนหัว",
+      "description": "ฝ้ายเขียนหัวเป็นเครื่องประกอบการฟ้อนผู้ไท ใช้ร่วมกับเล็บและชุดฟ้อน เพื่อคงรูปแบบการแสดงที่ชุมชนถือว่าเป็นแบบดั้งเดิม",
+      "model": "/uploads/nonhom/models/ccc6c6cb6a0be49f71f8be8a946801c2.glb",
+      "thumbnail": "/uploads/nonhom/images/ccc6c6cb6a0be49f71f8be8a946801c2.webp",
+      "audio": null
+    },
+    {
+      "id": "8c3f53c78eadc71473a7624988d5984f",
+      "collectionId": "01aa974471c00c88c3c213971914b7e7",
+      "name": "ชุดมวยโบราณ",
+      "description": "การรำมวยโบราณเกิดจากการฝึกมวยเพื่อป้องกันตัวและการแสดงเชิงชายในท้องถิ่น ผสมผสานท่าฟ้อนเจิงกับท่วงท่ามวย มีทั้งท่ารำเดี่ยวและท่ารำขบวน",
+      "model": "/uploads/nonhom/models/8c3f53c78eadc71473a7624988d5984f.glb",
+      "thumbnail": "/uploads/nonhom/images/8c3f53c78eadc71473a7624988d5984f.webp",
+      "audio": null
+    },
+    {
+      "id": "a51e5c355f1a96c8332f0d913d943dcc",
+      "collectionId": "01aa974471c00c88c3c213971914b7e7",
+      "name": "กลองเส็ง",
+      "description": "การเล่นลายกลองเส็งเป็นศิลปะการตีกลองที่ใช้ในงานบุญ การเลี้ยงปู่ตา และการแข่งขัน ต้องอาศัยความชำนาญและการเล่นเป็นคณะ มีลายใหญ่และลายสลับที่สร้างจังหวะสนุกสนาน",
+      "model": "/uploads/nonhom/models/a51e5c355f1a96c8332f0d913d943dcc.glb",
+      "thumbnail": "/uploads/nonhom/images/a51e5c355f1a96c8332f0d913d943dcc.webp",
+      "audio": null
+    },
+    {
+      "id": "e1015631adf280e5107c01d798d5502d",
+      "collectionId": "b6f6c21ceed6ec6fd76dffc1349e5526",
+      "name": "ผ้าสไบขิด",
+      "description": "ผ้าสไบขิดทอด้วยเทคนิคเก็บลายจากเขาฟืม ใช้เส้นยืนสีแดงและเก็บดอกด้วยสีต่าง ๆ ลายสำคัญของชุมชนคือลายดอกพริกหรือลายดอกมะขิด",
+      "model": "/uploads/nonhom/models/e1015631adf280e5107c01d798d5502d.glb",
+      "thumbnail": "/uploads/nonhom/images/e1015631adf280e5107c01d798d5502d.webp",
+      "audio": null
+    },
+    {
+      "id": "c578d40b61d3d753c8b4c047d966f75b",
+      "collectionId": "b6f6c21ceed6ec6fd76dffc1349e5526",
+      "name": "ผ้าขาวม้า",
+      "description": "ผ้าขาวม้านิยมทอด้วยฝ้าย เป็นลายตารางสี่เหลี่ยมขนาดเล็กหรือใหญ่ เดิมนิยมสีดำและขาว ปัจจุบันปรับเป็นสีสดใสตามความต้องการของผู้ใช้",
+      "model": "/uploads/nonhom/models/c578d40b61d3d753c8b4c047d966f75b.glb",
+      "thumbnail": "/uploads/nonhom/images/c578d40b61d3d753c8b4c047d966f75b.webp",
+      "audio": null
+    },
+    {
+      "id": "684df01f6553f1b53e55f67e133559af",
+      "collectionId": "b6f6c21ceed6ec6fd76dffc1349e5526",
+      "name": "ผ้าหย่อง",
+      "description": "ผ้าหย่องเป็นผ้าพื้นเมืองที่ใช้สำหรับพาดบ่าในงานพิธีและชีวิตประจำวัน ทอด้วยฝ้ายและไหมพื้นบ้าน ลวดลายสะท้อนอัตลักษณ์ผู้ไทกะต๊ะที่สืบทอดจากรุ่นสู่รุ่น",
+      "model": "/uploads/nonhom/models/684df01f6553f1b53e55f67e133559af.glb",
+      "thumbnail": "/uploads/nonhom/images/684df01f6553f1b53e55f67e133559af.webp",
+      "audio": null
+    },
+    {
+      "id": "f5c06fc975330a7efaa6d79decfe117a",
+      "collectionId": "b6f6c21ceed6ec6fd76dffc1349e5526",
+      "name": "กระด้ง",
+      "description": "กระด้งเป็นภาชนะจักสานจากไม้ไผ่ ใช้ฝัดข้าวหรือเมล็ดพืชเพื่อแยกสิ่งสกปรก บางชนิดตาห่างใช้ตากเนื้อหรือปลา มีหลายขนาดตามการใช้งาน",
+      "model": "/uploads/nonhom/models/f5c06fc975330a7efaa6d79decfe117a.glb",
+      "thumbnail": "/uploads/nonhom/images/f5c06fc975330a7efaa6d79decfe117a.webp",
+      "audio": null
+    },
+    {
+      "id": "4cfc8262a23b9e8949cde351f4cbc6da",
+      "collectionId": "b6f6c21ceed6ec6fd76dffc1349e5526",
+      "name": "เสื่อขิด",
+      "description": "เสื่อขิดเป็นเครื่องสานสำหรับปูนั่งหรือรองนอน ในบ้านโนนหอมใช้ต้นผือและต้นกกมาทอเป็นลวดลาย เช่น ลายน้ำไหล ลายสัตว์ และลายประยุกต์",
+      "model": "/uploads/nonhom/models/4cfc8262a23b9e8949cde351f4cbc6da.glb",
+      "thumbnail": "/uploads/nonhom/images/4cfc8262a23b9e8949cde351f4cbc6da.webp",
+      "audio": null
+    },
+    {
+      "id": "e37b0e8780f96d4b5afa7b5a6b042886",
+      "collectionId": "b6f6c21ceed6ec6fd76dffc1349e5526",
+      "name": "หมอนขิด",
+      "description": "หมอนขิดเป็นหมอนรูปทรงสี่เหลี่ยม ใช้หนุนศีรษะหรือหนุนสิ่งของให้สูงขึ้น ในอดีตพบได้ทั่วไปในครัวเรือนอีสานและนิยมตกแต่งด้วยผ้าลายขิด ปัจจุบันแบบทอมือพบได้น้อยลง",
+      "model": "/uploads/nonhom/models/e37b0e8780f96d4b5afa7b5a6b042886.glb",
+      "thumbnail": "/uploads/nonhom/images/e37b0e8780f96d4b5afa7b5a6b042886.webp",
+      "audio": null
+    },
+    {
+      "id": "a8db534f232a7a5ae4db161795e0a5de",
+      "collectionId": "b6f6c21ceed6ec6fd76dffc1349e5526",
+      "name": "หนังสือใบลาน",
+      "description": "เอกสารโบราณเป็นแหล่งเรียนรู้ของคนรุ่นก่อน พบทั้งวรรณกรรมอีสาน ตำรายา คำสู่ขวัญ และบทเทศน์ ปัจจุบันในชุมชนยังคงเหลือเรื่องการะเกดเป็นหลักฐานสำคัญ",
+      "model": "/uploads/nonhom/models/a8db534f232a7a5ae4db161795e0a5de.glb",
+      "thumbnail": "/uploads/nonhom/images/a8db534f232a7a5ae4db161795e0a5de.webp",
+      "audio": null
+    },
+    {
+      "id": "4e1a5e38822955e2afca75b6d2001450",
+      "collectionId": "8fcac182681ef176ac88f4cf78277310",
+      "name": "ชุดยาต้มรากไม้",
+      "description": "หมอยาทำหน้าที่เป็นแพทย์ประจำชุมชน รักษาด้วยสมุนไพรจากแหล่งธรรมชาติ เช่น ดอนปู่ตา ผู้มารักษามักนำดอกไม้เทียนคู่มามอบให้ก่อนรับยาต้ม ยาฝน หรือยาทา",
+      "model": "/uploads/nonhom/models/4e1a5e38822955e2afca75b6d2001450.glb",
+      "thumbnail": "/uploads/nonhom/images/4e1a5e38822955e2afca75b6d2001450.webp",
+      "audio": null
+    },
+    {
+      "id": "de32a23958c4f9b884dd507db59a6762",
+      "collectionId": "8fcac182681ef176ac88f4cf78277310",
+      "name": "ดอกไม้เทียนคู่",
+      "description": "ดอกไม้เทียนคู่เป็นเครื่องคารวะที่ผู้ป่วยนำไปมอบแก่หมอยาหรือหมอเป่า ก่อนประกอบการรักษาตามความเชื่อและธรรมเนียมของชุมชน",
+      "model": "/uploads/nonhom/models/de32a23958c4f9b884dd507db59a6762.glb",
+      "thumbnail": "/uploads/nonhom/images/de32a23958c4f9b884dd507db59a6762.webp",
+      "audio": null
+    },
+    {
+      "id": "894b193139a187ccdc4b914daf993621",
+      "collectionId": "8fcac182681ef176ac88f4cf78277310",
+      "name": "พิธีเหยา",
+      "description": "พิธีเหยาเป็นพิธีเสี่ยงทายและรักษาโรคเมื่อหาสาเหตุไม่ได้ มีหมอเหยาเป็นผู้นำพิธี ใช้เครื่องคาย เช่น ข้าวสาร ไข่ไก่ เทียน เหล้าขาว ดาบ และขันน้ำหอมดอกไม้",
+      "model": "/uploads/nonhom/models/894b193139a187ccdc4b914daf993621.glb",
+      "thumbnail": "/uploads/nonhom/images/894b193139a187ccdc4b914daf993621.webp",
+      "audio": null
+    },
+    {
+      "id": "cc7e79b947a1263705bb5a4f897cbfe3",
+      "collectionId": "8fcac182681ef176ac88f4cf78277310",
+      "name": "บายศรี",
+      "description": "บายศรีใช้ในพิธีเรียกขวัญและฟ้อนเชิญขวัญ เพื่อรับขวัญผู้เจ็บป่วย ต้อนรับแขก หรือประกอบวาระสำคัญของชุมชนด้วยท่วงท่าฟ้อนที่อ่อนช้อย",
+      "model": "/uploads/nonhom/models/cc7e79b947a1263705bb5a4f897cbfe3.glb",
+      "thumbnail": "/uploads/nonhom/images/cc7e79b947a1263705bb5a4f897cbfe3.webp",
+      "audio": null
+    },
+    {
+      "id": "3e022ebc781678a405a3497613cf9d9c",
+      "collectionId": "8fcac182681ef176ac88f4cf78277310",
+      "name": "บุญข้าวสาก",
+      "description": "บุญข้าวสากหรือบุญสลากภัตจัดขึ้นวันขึ้น 15 ค่ำ เดือน 10 เพื่ออุทิศบุญให้ญาติผู้ล่วงลับและสิ่งศักดิ์สิทธิ์ที่คุ้มครองไร่นา ชาวบ้านจัดสำรับอาหารพร้อมสลากไปถวายวัด",
+      "model": "/uploads/nonhom/models/3e022ebc781678a405a3497613cf9d9c.glb",
+      "thumbnail": "/uploads/nonhom/images/3e022ebc781678a405a3497613cf9d9c.webp",
+      "audio": null
+    },
+    {
+      "id": "2cbfdb6a0754e14fdd44b04ea5739a03",
+      "collectionId": "8fcac182681ef176ac88f4cf78277310",
+      "name": "บุญข้าวประดับดิน",
+      "description": "บุญข้าวประดับดินจัดวันแรม 14 ค่ำ เดือน 9 เพื่ออุทิศส่วนกุศลให้บรรพบุรุษและผู้ไร้ญาติ ชาวบ้านนำอาหารคาวหวานไปถวายพระและห่อข้าวถวายเพล",
+      "model": "/uploads/nonhom/models/2cbfdb6a0754e14fdd44b04ea5739a03.glb",
+      "thumbnail": "/uploads/nonhom/images/2cbfdb6a0754e14fdd44b04ea5739a03.webp",
+      "audio": null
+    },
+    {
+      "id": "a3fc52a82e0fcd51170114c32d4aeee4",
+      "collectionId": "9013a5b06cf342e6f5f049897cfa32e2",
+      "name": "บุญกองข้าว",
+      "description": "บุญกองข้าวจัดช่วงเดือน 3 หลังฤดูเก็บเกี่ยว เพื่อเฉลิมฉลองผลผลิตและแสดงความกตัญญูต่อพระแม่โพสพ มีพิธีสู่ขวัญข้าวและนำข้าวเปลือกมารวมกันที่วัด",
+      "model": "/uploads/nonhom/models/a3fc52a82e0fcd51170114c32d4aeee4.glb",
+      "thumbnail": "/uploads/nonhom/images/a3fc52a82e0fcd51170114c32d4aeee4.webp",
+      "audio": null
+    },
+    {
+      "id": "d62569efe313eb2580e44d51bb0a8ed6",
+      "collectionId": "9013a5b06cf342e6f5f049897cfa32e2",
+      "name": "เงินฮาง",
+      "description": "เงินฮางเป็นเงินท้องถิ่นที่ใช้แลกเปลี่ยนซื้อขายในอีสานและลุ่มแม่น้ำโขงสมัยรัชกาลที่ 4-5 มีรูปทรงคล้ายรางข้าวหมูหรือรางหญ้าคอกม้า",
+      "model": "/uploads/nonhom/models/d62569efe313eb2580e44d51bb0a8ed6.glb",
+      "thumbnail": "/uploads/nonhom/images/d62569efe313eb2580e44d51bb0a8ed6.webp",
+      "audio": null
+    }
+  ]
+}

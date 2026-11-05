@@ -9,7 +9,9 @@ Senior Next.js 16 developer on "AllAR". Build the admin screens on top of an **e
   - `web/src/lib/auth.ts` → `requireAdmin(): Promise<Admin>` (redirects to `/admin/login` if no session), `getCurrentAdmin()`.
   - `web/src/lib/audit.ts` → `audit(adminId, action, entity, entityId, detail?)`.
   - `web/src/lib/uploads.ts` → `saveUpload(file: File, kind: 'model'|'usdz'|'image'|'audio'): Promise<string>` (validates type/size by magic bytes, returns `/uploads/...` path) and `deleteUpload(path)`.
-  - `web/src/app/admin/login/*` and `web/src/app/admin/layout.tsx` (shell + nav).
+  - `web/src/app/admin/login/*`, `web/src/app/admin/layout.tsx` and `web/src/app/admin/AdminNav.tsx` (shell + nav, nav only shows when logged in). `web/src/app/admin/page.tsx` is a placeholder dashboard — replace it.
+  - Every admin page must follow the existing pattern: the default export renders `<Suspense>` and an inner async component calls `await requireAdmin()` (request-time data must sit inside Suspense with Cache Components). `next build` must still pass with an unreachable `DATABASE_URL`.
+  - Server Actions accept request bodies up to 260 MB (already configured).
 - Data: `web/src/db/schema.ts`; public queries use `cacheTag('content')`.
 - UI language: **Thai**. Reuse the site's Tailwind tokens (`brand`, `brand-dark`, `brand-soft`, `ink`, `muted`, `line`, `paper`) and look of existing pages.
 
@@ -30,7 +32,7 @@ Admins can create, edit, reorder, publish/unpublish and delete communities, coll
 - Forms use `useActionState` for inline Thai error messages; disable submit while pending; max upload sizes shown in the UI (model 100 MB, usdz 100 MB, image 15 MB, audio 30 MB).
 - IDs: `crypto.randomUUID().replaceAll('-', '')`.
 - No client-side-only checks for security; the server action is the source of truth.
-- No new dependencies. Do not edit `web/src/lib/auth.ts`, `audit.ts`, `uploads.ts`, `web/src/db/*`, `web/src/app/admin/login/*`. No commits, pushes, branch changes.
+- No new dependencies. Do not edit `web/src/lib/auth.ts`, `audit.ts`, `uploads.ts`, `web/src/db/*`, `web/src/app/admin/login/*`, `web/src/app/admin/layout.tsx`, `web/src/app/admin/AdminNav.tsx`. No commits, pushes, branch changes.
 
 ## Acceptance
 1. `npx tsc --noEmit`, `npm run lint`, `npm run build` pass.

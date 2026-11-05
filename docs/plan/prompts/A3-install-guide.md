@@ -17,7 +17,7 @@ Technical writer for "AllAR". Write the guide a university server administrator 
 3. ติดตั้งครั้งแรก — clone · `cp .env.example .env` · how to generate strong passwords (`openssl rand -base64 24` / PowerShell equivalent) · `docker compose up -d --build` · check `docker compose ps` + `curl http://127.0.0.1:3000/api/health`
 4. นำเข้าข้อมูลที่ส่งแยก — verify `sha256sum -c` · import `allar_db.sql.gz` · extract `uploads.zip` into the uploads volume (exact commands) · restart web
 5. สร้างผู้ดูแลระบบคนแรก — the exact `docker compose exec web …` command
-6. เชื่อมกับโดเมนและ HTTPS — reverse proxy example for nginx (with `client_max_body_size 110m;`, MIME types `.glb`/`.usdz`, proxy headers) and a note that AR requires HTTPS
+6. เชื่อมกับโดเมนและ HTTPS — reverse proxy example for nginx (with `client_max_body_size 260m;`, `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;` and `X-Forwarded-Proto`, explain that the app trusts only the LAST X-Forwarded-For hop when `TRUST_PROXY=true`, so exactly one proxy must sit in front, MIME types `.glb`/`.usdz`, proxy headers) and a note that AR requires HTTPS
 7. สำรองและกู้คืนข้อมูล — where backups land, retention 30 days, how to run one manually, how to restore DB and uploads, monthly restore test
 8. อัปเดตเวอร์ชัน — `git pull` · `docker compose up -d --build` (migrations run automatically) · rollback
 9. ใช้ phpMyAdmin / ต่อฐานข้อมูลแบบชั่วคราว — `--profile tools`, bound to 127.0.0.1, SSH tunnel example

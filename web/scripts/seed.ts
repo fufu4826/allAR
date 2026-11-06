@@ -8,48 +8,6 @@ const path = (value: string | null) => value?.replace(/^\/r2\//, "/uploads/") ??
 const pool = mysql.createPool({ uri: process.env.DATABASE_URL, connectionLimit: 10, charset: "utf8mb4" });
 const db = drizzle(pool, { schema, mode: "default" });
 
-const draftNews = [
-  {
-    id: "news-tharae",
-    communityId: "community-2",
-    title: "เปิดตัวระบบ WebAR สแกนสถาปัตยกรรมโบราณตึกฝรั่งเศสท่าแร่",
-    summary:
-      "ทีมนักศึกษาฝึกงานร่วมกับผู้นำชุมชนท่าแร่ ติดตั้งป้าย QR Code แนะนำเส้นทางท่องเที่ยวเชิงวัฒนธรรมผ่านมุมมอง AR จำลองบรรยากาศในอดีต",
-    body: "ทีมนักศึกษาฝึกงานร่วมกับผู้นำชุมชนท่าแร่ ติดตั้งป้าย QR Code แนะนำเส้นทางท่องเที่ยวเชิงวัฒนธรรมผ่านมุมมอง AR จำลองบรรยากาศในอดีต พร้อมทั้งสาธิตการใช้งานระบบแก่ประชาชนและนักท่องเที่ยว เพื่อส่งเสริมการเรียนรู้ประวัติศาสตร์ท้องถิ่น",
-    category: "เทคโนโลยีชุมชน",
-    coverPath: null,
-    publishedAt: new Date("2026-10-24T00:00:00Z"),
-    isPublished: false,
-    sortOrder: 1,
-  },
-  {
-    id: "news-nonhom",
-    communityId: "community-5",
-    title: "จำลองผืนผ้าครามและลวดลายโบราณชนเผ่าภูไทสู่โมเดลสามมิติ",
-    summary:
-      "การบันทึกกระบวนการย้อมครามธรรมชาติและลวดลายผ้าทอมือเอกลักษณ์โนนหอม ให้ผู้คนได้เรียนรู้เนื้อผ้าและขั้นตอนการทอแบบ 3D Interaction",
-    body: "การบันทึกกระบวนการย้อมครามธรรมชาติและลวดลายผ้าทอมือเอกลักษณ์โนนหอม ให้ผู้คนได้เรียนรู้เนื้อผ้าและขั้นตอนการทอแบบ 3D Interaction ถ่ายทอดองค์ความรู้ภูมิปัญญาของชุมชนสู่คนรุ่นใหม่",
-    category: "ศิลปวัฒนธรรม",
-    coverPath: null,
-    publishedAt: new Date("2026-10-15T00:00:00Z"),
-    isPublished: false,
-    sortOrder: 2,
-  },
-  {
-    id: "news-phuphan",
-    communityId: "phuphan",
-    title: "สื่อการเรียนรู้เสมือนจริง 3 ดำมหัศจรรย์ สู่การศึกษาเพื่อความยั่งยืน",
-    summary:
-      "นำเทคโนโลยี AR มาต่อยอดองค์ความรู้ ไก่ดำ หมูดำ และโคเนื้อทาจิมะภูพาน เพื่อสร้างความเข้าใจแก่เยาวชนและผู้เข้าเยี่ยมชมศูนย์ศึกษาฯ",
-    body: "นำเทคโนโลยี AR มาต่อยอดองค์ความรู้ ไก่ดำ หมูดำ และโคเนื้อทาจิมะภูพาน เพื่อสร้างความเข้าใจแก่เยาวชนและผู้เข้าเยี่ยมชมศูนย์ศึกษาฯ ผ่านระบบจำลองสามมิติที่สามารถโต้ตอบได้",
-    category: "โครงการพระราชดำริ",
-    coverPath: null,
-    publishedAt: new Date("2026-10-05T00:00:00Z"),
-    isPublished: false,
-    sortOrder: 3,
-  },
-];
-
 async function seed() {
   for (const [i, community] of source.entries()) {
     const id = community.id || community.slug;
@@ -99,11 +57,6 @@ async function seed() {
       };
       await db.insert(schema.items).values(itemValues).onDuplicateKeyUpdate({ set: itemValues });
     }
-  }
-
-  // Seed draft news items
-  for (const item of draftNews) {
-    await db.insert(schema.news).values(item).onDuplicateKeyUpdate({ set: item });
   }
 
   const [communityCount] = await db.select({ count: count() }).from(schema.communities);

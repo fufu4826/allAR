@@ -23,7 +23,7 @@ export default function SiteNavbar() {
       <div className="top-announcement">
         <div className="container announcement-content">
           <span>
-            <i className="fa-solid fa-cube"></i> โครงการพัฒนานวัตกรรม AR & 3D เพื่อส่งเสริมอัตลักษณ์ชุมชนและวัฒนธรรมท้องถิ่น
+            <i className="fa-solid fa-cube"></i> โครงการเพิ่มศักยภาพแหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครในรูปแบบออนไลน์เสมือนจริง
           </span>
           <Link href="/map" className="announcement-link">
             สำรวจแผนที่ 3 มิติเต็มรูปแบบ <i className="fa-solid fa-arrow-right"></i>
@@ -42,8 +42,8 @@ export default function SiteNavbar() {
               <img src="/brand/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม มหาวิทยาลัยราชภัฏสกลนคร" className="institution-logo language-logo" />
             </span>
             <div className="logo-text">
-              <span className="brand-title">AR.HERITAGE</span>
-              <span className="brand-sub">5 แหล่งเรียนรู้สำคัญ</span>
+              <span className="brand-title">แหล่งเรียนรู้สกลนคร 3D</span>
+              <span className="brand-sub">Sakon Nakhon Learning Sites 3D</span>
             </div>
           </Link>
 

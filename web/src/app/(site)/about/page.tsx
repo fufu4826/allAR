@@ -2,8 +2,8 @@ import Link from "next/link";
 import { siteContact as siteContactExport } from "@/content/site";
 
 export const metadata = {
-  title: "เกี่ยวกับโครงการ | AR.HERITAGE 5 แหล่งเรียนรู้สำคัญ",
-  description: "เกี่ยวกับโครงการรังสรรค์มรดกทางวัฒนธรรมและภูมิปัญญาด้วยเทคโนโลยี AR & 3D มหาวิทยาลัยราชภัฏสกลนคร",
+  title: "เกี่ยวกับโครงการ | แหล่งเรียนรู้สกลนคร 3D",
+  description: "เกี่ยวกับโครงการเพิ่มศักยภาพแหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครในรูปแบบออนไลน์เสมือนจริง มหาวิทยาลัยราชภัฏสกลนคร",
 };
 
 const defaultContact = {
@@ -24,7 +24,7 @@ export default function AboutPage() {
         </span>
         <h1 className="section-title">เกี่ยวกับโครงการ</h1>
         <p className="section-subtitle">
-          โครงการพัฒนานวัตกรรม AR &amp; 3D เพื่อส่งเสริมอัตลักษณ์ชุมชนและวัฒนธรรมท้องถิ่น จังหวัดสกลนคร
+          โครงการเพิ่มศักยภาพแหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครในรูปแบบออนไลน์เสมือนจริง
         </p>
       </div>
 
@@ -51,7 +51,7 @@ export default function AboutPage() {
           <Link href="/c/watklang" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-place-of-worship" style={{ color: "#b47a32", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>2. วัดกลางศรีเชียงใหม่</strong> — สิมโบราณศิลปกรรมล้านช้างริมหนองหาร
+              <strong>2. วัดกลางศรีเชียงใหม่</strong> — ภาชนะดินเผาก่อนประวัติศาสตร์ ไหและเครื่องถ้วยเคลือบ พระพุทธรูป ศิลาจารึก
             </div>
           </Link>
           <Link href="/c/watnuea" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
@@ -63,13 +63,13 @@ export default function AboutPage() {
           <Link href="/c/nonhom" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-shirt" style={{ color: "#8d252d", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>4. ชุมชนโนนหอม</strong> — ภูมิปัญญาการย้อมครามธรรมชาติและวิถีชนเผ่าภูไท
+              <strong>4. ชุมชนโนนหอม</strong> — ชุมชนผู้ไทกะต๊ะ เครื่องแต่งกาย งานหัตถกรรม พิธีกรรม และวิถีชีวิต
             </div>
           </Link>
           <Link href="/c/phuphan" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-seedling" style={{ color: "#e9773e", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>5. ศูนย์ศึกษาการพัฒนาภูพานฯ</strong> — เกษตรทฤษฎีใหม่และ 3 ดำมหัศจรรย์
+              <strong>5. ศูนย์ศึกษาการพัฒนาภูพานฯ</strong> — แหล่งเรียนรู้งานหม่อนไหม ข้าว ประมง ปศุสัตว์ พืชสวน และสมุนไพร
             </div>
           </Link>
         </div>

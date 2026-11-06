@@ -1,0 +1,12 @@
+# Banned claims: phrases that must not appear in web/src (outside src/data, which is the field teams' own data).
+# One phrase per line, UTF-8. Lines starting with # are comments.
+Photogrammetry
+MitrEarth
+มิตรเอิร์ธ
+ฝึกงาน
+ภูไท
+ย้อมคราม
+3 ดำ
+ทฤษฎีใหม่
+สิมโบราณ
+Digital Cultural Innovation Lab

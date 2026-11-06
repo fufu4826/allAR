@@ -36,7 +36,7 @@ export default function SearchResults({ items }: { items: Result[] }) {
             });
           }}
           autoFocus
-          placeholder="พิมพ์คำค้นหา เช่น ผ้าคราม, สิม, ไก่ดำ, ตึกโบราณ…"
+          placeholder="พิมพ์คำค้นหา เช่น ผ้าขาวม้า, ไก่ดำ, พระพุทธรูป, บายศรี…"
           style={{
             width: "100%",
             padding: "14px 22px",

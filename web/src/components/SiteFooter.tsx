@@ -23,12 +23,12 @@ export default function SiteFooter() {
               <img src="/brand/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม มหาวิทยาลัยราชภัฏสกลนคร" className="institution-logo language-logo" />
             </span>
             <div className="logo-text">
-              <span className="brand-title">AR.HERITAGE</span>
-              <span className="brand-sub">นวัตกรรม 3D AR สู่ 5 แหล่งเรียนรู้</span>
+              <span className="brand-title">แหล่งเรียนรู้สกลนคร 3D</span>
+              <span className="brand-sub">Sakon Nakhon Learning Sites 3D</span>
             </div>
           </div>
           <p className="footer-desc">
-            โครงการรังสรรค์มรดกทางวัฒนธรรมด้วยนวัตกรรมเสมือนจริง สนับสนุนการเรียนรู้และอนุรักษ์คุณค่าท้องถิ่นผ่านเทคโนโลยี WebAR ยุคใหม่
+            โครงการเพิ่มศักยภาพแหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครในรูปแบบออนไลน์เสมือนจริง
           </p>
         </div>
 
@@ -74,7 +74,7 @@ export default function SiteFooter() {
 
       <div className="footer-bottom">
         <div className="container footer-bottom-flex">
-          <p>&copy; 2026 นวัตกรรม 3D AR สู่ 5 แหล่งเรียนรู้สำคัญ. จัดทำเพื่อการศึกษาและรายงานผลการฝึกงาน.</p>
+          <p>&copy; 2026 สถาบันภาษา ศิลปะและวัฒนธรรม มหาวิทยาลัยราชภัฏสกลนคร</p>
           <p className="powered-by">Powered by WebXR, Google Model-Viewer & Modern Web Tech</p>
         </div>
       </div>

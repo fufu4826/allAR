@@ -201,7 +201,7 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
 
               {/* Floating Active Landmark Detail HUD (Bottom-Left) */}
               {selectedItem && (
-                <div className="absolute bottom-5 left-5 z-30 max-w-sm w-full bg-slate-900/95 backdrop-blur-md border border-slate-700/90 rounded-2xl p-4 shadow-2xl text-white animate-fade-in">
+                <div className="absolute bottom-16 left-4 z-30 max-w-sm w-full bg-slate-900/95 backdrop-blur-md border border-slate-700/90 rounded-2xl p-4 shadow-2xl text-white animate-fade-in">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5">
                       <span className="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold shadow-md shadow-brand/40">
@@ -237,13 +237,25 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-800 flex items-center justify-between gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedSlug(null)}
-                      className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
-                    >
-                      <i className="fa-solid fa-rotate-left text-[10px]"></i> รีเซ็ตมุมมอง
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedSlug(null)}
+                        className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition"
+                      >
+                        <i className="fa-solid fa-rotate-left text-[10px]"></i> รีเซ็ต
+                      </button>
+                      <a
+                        href={selectedItem.gmapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1 transition font-medium"
+                        title="เปิดดูตำแหน่งจริงบน Google Maps"
+                      >
+                        <i className="fa-solid fa-map-location-dot text-rose-400 text-[11px]"></i>
+                        <span>Google Maps</span>
+                      </a>
+                    </div>
                     <Link
                       href={`/c/${selectedItem.slug}`}
                       className="btn btn-sm bg-brand hover:bg-brand-dark text-white text-xs px-3.5 py-1.5 rounded-xl shadow-md font-semibold flex items-center gap-1.5"
@@ -379,6 +391,26 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
                     <div className="mt-2.5 text-[11px] text-amber-300 bg-amber-500/10 rounded-xl px-3 py-1.5 border border-amber-500/25 flex items-center gap-1.5">
                       <i className="fa-solid fa-mountain text-amber-400 text-[10px] shrink-0"></i>
                       <span className="line-clamp-1">{item.sub}</span>
+                    </div>
+
+                    {/* Google Maps Coordinates & Location */}
+                    <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400 px-0.5">
+                      <span className="flex items-center gap-1 text-slate-400 truncate max-w-[210px]">
+                        <i className="fa-solid fa-location-dot text-rose-500 text-[10px] shrink-0"></i>
+                        <span className="truncate">{item.location}</span>
+                      </span>
+                      <a
+                        href={item.gmapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-sky-400 hover:text-sky-300 flex items-center gap-1 shrink-0 font-medium transition"
+                        title="เปิดดูพิกัดจริงบน Google Maps"
+                      >
+                        <i className="fa-solid fa-map-pin text-[10px] text-sky-400"></i>
+                        <span>GPS จริง</span>
+                        <i className="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                      </a>
                     </div>
 
                     {/* Description */}

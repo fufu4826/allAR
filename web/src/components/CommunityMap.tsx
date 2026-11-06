@@ -3,12 +3,21 @@
 import dynamic from "next/dynamic";
 import type { MapPin } from "./LeafletMap";
 
-// Leaflet ใช้ window จึงต้องโหลดฝั่งเบราว์เซอร์เท่านั้น
 const LeafletMap = dynamic(() => import("./LeafletMap"), {
   ssr: false,
-  loading: () => <div className="grid h-full place-items-center text-muted">กำลังโหลดแผนที่…</div>,
+  loading: () => (
+    <div className="grid h-full w-full place-items-center bg-[#eef2f6] text-stone-600 font-medium text-sm">
+      กำลังโหลดแผนที่ 2 มิติ…
+    </div>
+  ),
 });
 
-export default function CommunityMap({ pins }: { pins: MapPin[] }) {
-  return <LeafletMap pins={pins} />;
+export interface CommunityMapProps {
+  pins: MapPin[];
+  selectedId?: string | null;
+  onSelectLandmark?: (slug: string) => void;
+}
+
+export default function CommunityMap({ pins, selectedId, onSelectLandmark }: CommunityMapProps) {
+  return <LeafletMap pins={pins} selectedId={selectedId} onSelectLandmark={onSelectLandmark} />;
 }

@@ -175,60 +175,6 @@ async function HomeContent() {
         </div>
       </section>
 
-      {/* Section: 3D Map CTA Teaser */}
-      <section className="section" style={{ padding: '48px 0' }}>
-        <div className="container">
-          <div style={{
-            background: 'linear-gradient(135deg, #0b1325 0%, #1e293b 100%)',
-            borderRadius: '24px',
-            padding: '48px 32px',
-            textAlign: 'center',
-            color: '#ffffff',
-            boxShadow: '0 20px 40px -15px rgba(0,0,0,0.3)',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            <span style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 16px',
-              borderRadius: '999px',
-              background: 'rgba(249, 115, 22, 0.2)',
-              color: '#fb923c',
-              fontSize: '12px',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              marginBottom: '16px'
-            }}>
-              <i className="fa-solid fa-cubes"></i> Interactive 3D Digital Twin Map
-            </span>
-            <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#ffffff', marginBottom: '12px', lineHeight: 1.2 }}>
-              แผนที่มรดกวัฒนธรรมสามมิติ 5 แหล่งอัตลักษณ์สกลนคร
-            </h2>
-            <p style={{ color: '#cbd5e1', fontSize: '15px', maxWidth: '640px', margin: '0 auto 24px auto', lineHeight: 1.6 }}>
-              สำรวจโมเดลสามมิติ พิกัดภูมิศาสตร์จริง 18 อำเภอ ทะเลสาบหนองหาร แนวเทือกเขาภูพาน และโครงข่ายทางหลวงในหน้าเว็บแผนที่แบบเต็มรูปแบบ
-            </p>
-            <Link
-              href="/map"
-              className="btn btn-primary"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '12px 28px',
-                borderRadius: '16px',
-                fontSize: '15px',
-                fontWeight: '700',
-                boxShadow: '0 8px 20px rgba(249, 115, 22, 0.35)'
-              }}
-            >
-              <i className="fa-solid fa-up-right-from-square"></i> เข้าสู่หน้าแผนที่ 3 มิติเต็มรูปแบบ
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Section: News & Community Updates */}
       <section id="news" className="section news">
         <div className="container">

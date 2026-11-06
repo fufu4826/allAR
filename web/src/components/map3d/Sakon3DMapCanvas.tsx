@@ -195,20 +195,19 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
     // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x080e1a);
-    scene.fog = new THREE.FogExp2(0x080e1a, 0.0075);
 
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
     camera.position.copy(DEFAULT_CAM_POS);
     cameraRef.current = camera;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    renderer.setClearColor(0x000000, 0);
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.08;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
@@ -675,11 +674,24 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
       for (let i = 0; i < SAKON_LANDMARKS_3D.length; i++) {
         const lm = SAKON_LANDMARKS_3D[i];
-        const px = (lm.lon - SAKON_CENTER_LON) * SCALE_LON + (lm.modelConfig.offset?.x || 0);
-        const pz = -(lm.lat - SAKON_CENTER_LAT) * SCALE_LAT + (lm.modelConfig.offset?.z || 0);
+        const exactX = (lm.lon - SAKON_CENTER_LON) * SCALE_LON;
+        const exactZ = -(lm.lat - SAKON_CENTER_LAT) * SCALE_LAT;
+        const exactElev = getTerrainElev(exactX, exactZ);
+
+        // Ground pin dot at exact GPS coordinate on terrain
+        tempV.set(exactX, exactElev.y + 0.15, exactZ);
+        tempV.applyMatrix4(provinceGroup.matrixWorld);
+        tempV.project(camera);
+        const dotX = (tempV.x * 0.5 + 0.5) * currentWidth;
+        const dotY = (-(tempV.y * 0.5) + 0.5) * currentHeight;
+        const dotVisible = tempV.z <= 1.0;
+
+        // Floating label badge above 3D model
+        const px = exactX + (lm.modelConfig.offset?.x || 0);
+        const pz = exactZ + (lm.modelConfig.offset?.z || 0);
         const elev = getTerrainElev(px, pz);
 
-        tempV.set(px, elev.y + 2.15, pz);
+        tempV.set(px, elev.y + 1.15, pz);
         tempV.applyMatrix4(provinceGroup.matrixWorld);
         tempV.project(camera);
 
@@ -709,11 +721,11 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
         const dotEl = dotRefs.current[lm.id];
         if (dotEl) {
-          if (!visible) {
+          if (!dotVisible) {
             dotEl.style.display = "none";
           } else {
             dotEl.style.display = "block";
-            dotEl.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) translate(-50%, -50%)`;
+            dotEl.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
             dotEl.style.zIndex = `${isSelected ? 150 : 15}`;
           }
         }
@@ -746,6 +758,15 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
     animate();
 
+    // If mounted with an already-selected landmark (e.g., switching from 2D to 3D mode), fly to it
+    if (selectedIdRef.current) {
+      const initialLm = SAKON_LANDMARKS_3D.find((lm) => lm.id === selectedIdRef.current);
+      if (initialLm) {
+        lastFlyIdRef.current = initialLm.id;
+        flyTo(initialLm);
+      }
+    }
+
     // 11. Responsive Resize
     const handleResize = () => {
       if (!container) return;
@@ -772,10 +793,15 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
         container.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [flyTo]);
 
   return (
-    <div className={`relative w-full ${className || "h-[620px]"} select-none bg-slate-950 font-sans`}>
+    <div
+      className={`relative w-full ${className || "h-[620px]"} select-none font-sans`}
+      style={{
+        background: "radial-gradient(ellipse at 50% 44%, #263850 0%, #142033 65%, #0c1422 100%)",
+      }}
+    >
       {/* 3D WebGL Canvas */}
       <div ref={mountRef} className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing" />
 
@@ -832,22 +858,11 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
                   isSelected ? "scale-105" : "hover:scale-105"
                 } transition-transform duration-150`}
               >
-                <div
-                  className={`px-3 py-1.5 rounded-full shadow-lg border backdrop-blur-md flex items-center gap-1.5 transition-colors ${
-                    isSelected
-                      ? "bg-white text-slate-900 border-brand ring-2 ring-brand shadow-orange-500/40"
-                      : "bg-white/98 text-slate-800 border-slate-200 hover:border-brand shadow-md"
-                  }`}
-                >
-                  <span
-                    className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${
-                      isSelected ? "bg-brand text-white" : "bg-orange-100 text-maroon-700"
-                    }`}
-                  >
-                    {item.number}
+                <div className={`mw-pin-pill ${isSelected ? "active" : ""}`}>
+                  <span className="mw-pin-icon">
+                    <i className={item.faIcon}></i>
                   </span>
-                  <i className={`${item.faIcon} text-xs text-brand`}></i>
-                  <span className="text-xs font-bold whitespace-nowrap">{item.shortName}</span>
+                  <span className="mw-pin-text">{item.shortName}</span>
                 </div>
                 <div className="w-2.5 h-2.5 bg-white border-r border-b border-slate-200 rotate-45 -mt-1 shadow-sm"></div>
               </div>
@@ -856,63 +871,48 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
         })}
       </div>
 
-      {/* Top Floating Controls */}
-      <div className="absolute top-4 left-4 right-4 z-30 flex items-center justify-between gap-3 pointer-events-none">
-        {/* Compass Widget (Direct GPU transform with 0ms delay) */}
-        <div className="pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl px-3.5 py-2 shadow-lg flex items-center gap-3 text-slate-800">
+      {/* Top-Left Compass Pill */}
+      <div className="mw-top-left">
+        <div className="mw-compass-pill">
           <div
             ref={compassNeedleRef}
-            className="w-7 h-7 flex items-center justify-center will-change-transform"
+            className="w-5 h-5 flex items-center justify-center will-change-transform"
           >
-            <i className="fa-solid fa-compass text-brand text-xl"></i>
+            <i className="fa-solid fa-compass text-brand text-base"></i>
           </div>
-          <div className="text-left">
-            <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium block leading-none mb-1">
-              ทิศทางกล้อง
-            </span>
-            <span ref={compassLabelRef} className="text-xs font-bold text-slate-800 block leading-none">
-              ทิศเหนือ (N)
-            </span>
-          </div>
+          <span ref={compassLabelRef}>ทิศเหนือ (N)</span>
         </div>
+      </div>
 
-        {/* Action Buttons */}
-        <div className="pointer-events-auto flex items-center gap-2">
-          {/* Roads Toggle */}
-          <button
-            type="button"
-            onClick={handleToggleRoads}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold border shadow-md transition flex items-center gap-2 ${
-              roadsVisible
-                ? "bg-brand text-white border-brand shadow-orange-500/25"
-                : "bg-white/95 text-slate-700 border-slate-200 hover:border-orange-300 hover:text-brand"
-            }`}
-          >
-            <i className="fa-solid fa-route"></i>
-            <span className="hidden sm:inline">ทางหลวง</span>
-          </button>
+      {/* Bottom-Right Compact 3D Layer Controls */}
+      <div className="mw-layer-bar">
+        <button
+          type="button"
+          onClick={handleToggleRoads}
+          className={`mw-layer-btn ${roadsVisible ? "active" : ""}`}
+        >
+          <i className="fa-solid fa-route"></i>
+          <span>ทางหลวง</span>
+        </button>
 
-          {/* Texture Switcher */}
-          <button
-            type="button"
-            onClick={handleToggleTexture}
-            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/95 text-slate-700 border border-slate-200 hover:border-orange-300 hover:text-brand shadow-md transition flex items-center gap-2"
-          >
-            <i className="fa-solid fa-layer-group text-brand"></i>
-            <span className="hidden sm:inline">{texMode === "cartoon" ? "การ์ตูน 3D" : "ดาวเทียม"}</span>
-          </button>
+        <button
+          type="button"
+          onClick={handleToggleTexture}
+          className="mw-layer-btn"
+        >
+          <i className="fa-solid fa-layer-group text-brand"></i>
+          <span>{texMode === "cartoon" ? "ภาพการ์ตูน" : "ภาพดาวเทียม"}</span>
+        </button>
 
-          {/* Reset Camera */}
-          <button
-            type="button"
-            onClick={handleResetCamera}
-            title="รีเซ็ตมุมมอง 75° ภาพรวมสกลนคร"
-            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/95 text-slate-700 border border-slate-200 hover:border-orange-300 hover:text-brand shadow-md transition flex items-center gap-2"
-          >
-            <i className="fa-solid fa-rotate-left"></i>
-            <span className="hidden sm:inline">รีเซ็ตมุมมอง</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleResetCamera}
+          title="รีเซ็ตมุมมองภาพรวมสกลนคร"
+          className="mw-layer-btn"
+        >
+          <i className="fa-solid fa-rotate-left"></i>
+          <span>มุมมองรวม</span>
+        </button>
       </div>
     </div>
   );

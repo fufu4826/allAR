@@ -518,7 +518,7 @@ def main():
     draw.ellipse([card_x0 + 32, card_y0 + 28, card_x0 + 80, card_y0 + 76], fill=(255, 107, 74), outline=(255, 255, 255), width=3)
     draw.text((card_x0 + 56, card_y0 + 52), "★", font=get_font(26, bold=True), fill=(255, 255, 255), anchor="mm")
     
-    draw.text((card_x0 + 98, card_y0 + 26), "5 แหล่งอัตลักษณ์สำคัญ", font=get_font(28, bold=True), fill=(35, 45, 60))
+    draw.text((card_x0 + 98, card_y0 + 26), "5 แหล่งเรียนรู้สำคัญ", font=get_font(28, bold=True), fill=(35, 45, 60))
     draw.text((card_x0 + 98, card_y0 + 60), "5 CULTURAL IDENTITIES OF SAKON NAKHON", font=get_font(14, bold=True), fill=(130, 145, 160))
     
     draw.line([(card_x0 + 32, card_y0 + 95), (card_x1 - 32, card_y0 + 95)], fill=(235, 240, 245), width=2)
@@ -585,7 +585,7 @@ def main():
     draw.text((82, 165), "S A K O N   N A K H O N", font=sub_font, fill=(105, 120, 140))
     
     draw.rounded_rectangle([80, 215, 680, 258], radius=14, fill=(255, 255, 255, 235), outline=(215, 225, 235), width=1)
-    draw.text((100, 225), "📍 แผนที่ 5 แหล่งอัตลักษณ์ตามภูมิสัณฐานจริง (อ้างอิง: มิตรเอิร์ธ MitrEarth)", font=get_font(18, bold=True), fill=(55, 75, 95))
+    draw.text((100, 225), "📍 แผนที่ 5 แหล่งเรียนรู้ตามภูมิสัณฐานจริง (อ้างอิง: มิตรเอิร์ธ MitrEarth)", font=get_font(18, bold=True), fill=(55, 75, 95))
     
     # Navigation Pills (Home, Map) like in Image 2
     draw.rounded_rectangle([80, 275, 210, 320], radius=16, fill=(255, 255, 255), outline=(215, 225, 235), width=2)

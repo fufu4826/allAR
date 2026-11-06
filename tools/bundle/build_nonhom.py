@@ -57,9 +57,11 @@ for c in collections:
     first = next((i for i in items if i["collectionId"] == c["id"] and i["thumbnail"]), None)
     c["image"] = first["thumbnail"] if first else None
 
+FEATURED = ["ชุดผู้ไทหญิง", "ผ้าสไบขิด", "บายศรี", "เงินฮาง"]
 cover = add("photo", f"ภาพ/{com[6]}", f"{SLUG}/cover.webp") if com[6] else None
 out = {
-    "settings": {"cover": cover, "recommended": []},
+    # Featured on the home page: one per category (chosen by the project owner, 2026-11-06).
+    "settings": {"cover": cover, "recommended": [i["id"] for n in FEATURED for i in items if i["name"] == n]},
     "community": {"name": com[0], "shortName": com[1], "location": com[2], "description": com[3],
                   "lat": float(com[4]), "lng": float(com[5])},
     "collections": collections,

@@ -28,7 +28,7 @@ async function HomeContent() {
   await connection();
   const [communities, featured, latestNews, galleryImages] = await Promise.all([
     getCommunities(),
-    getFeaturedItems(8),
+    getFeaturedItems(12),
     getPublishedNews(),
     getPublishedGallery(),
   ]);

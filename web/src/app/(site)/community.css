@@ -127,3 +127,16 @@
 .theme-watnuea .section-desc, .theme-watnuea .model-status, .theme-watnuea .model-source, [data-theme="watnuea"] .section-desc, [data-theme="watnuea"] .model-status, [data-theme="watnuea"] .model-source, [data-community="watnuea"] .section-desc, [data-community="watnuea"] .model-status, [data-community="watnuea"] .model-source { color: #6a5c77; }
 .theme-watnuea .community-category, [data-theme="watnuea"] .community-category, [data-community="watnuea"] .community-category { border-color: #dcd1e4; }
 .theme-watnuea .community-footer, [data-theme="watnuea"] .community-footer, [data-community="watnuea"] .community-footer { border-top: 8px solid #9e84b3; }
+
+/* Phu Phan: woven Nakhon Tham indigo pattern and border (front-end team update 2026-11-06). */
+[data-theme='phuphan'] .hero-art {
+  background:linear-gradient(#142c5a55,#142c5a55),url('/brand/nakhontham-indigo.webp') center / 263px 211px repeat;
+}
+[data-theme='phuphan'] .community-hero::after {
+  height:12px;
+  background:url('/brand/indigo-border.webp') repeat-x left center / auto 12px;
+  opacity:1;
+}
+@media(max-width:850px) {
+  [data-theme='phuphan'] .hero-art { background-size:auto, 200px auto; }
+}

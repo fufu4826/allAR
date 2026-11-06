@@ -250,9 +250,6 @@ async function HomeContent() {
               <i className="fa-solid fa-building-columns"></i> Supporting Organizations
             </span>
             <h2 className="section-title">หน่วยงานร่วมขับเคลื่อนโครงการ</h2>
-            <p className="section-subtitle">
-              ความร่วมมือทางวิชาการ การพัฒนาเทคโนโลยี และการสนับสนุนจากภาคีเครือข่ายภาครัฐ สถาบันการศึกษา และชุมชนท้องถิ่น
-            </p>
           </div>
 
           <div className="org-grid">

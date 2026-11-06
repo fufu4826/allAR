@@ -77,12 +77,19 @@ export default function InteractiveMapSection({ pins }: InteractiveMapSectionPro
             </div>
 
             <div className="map-toolbar-actions flex items-center flex-wrap gap-2">
+              <Link
+                href="/map"
+                className="btn btn-primary btn-sm shadow-md"
+                title="เปิดหน้าแผนที่ 3 มิติเต็มรูปแบบในหน้าใหม่"
+              >
+                <i className="fa-solid fa-up-right-from-square"></i> เปิดหน้าแผนที่ 3D เต็มจอ
+              </Link>
               <button
                 type="button"
                 className={`btn btn-sm ${mapMode === "3d" ? "btn-primary" : "btn-outline"}`}
                 onClick={() => setMapMode("3d")}
               >
-                <i className="fa-solid fa-cubes"></i> แผนที่ 3 มิติ (3D)
+                <i className="fa-solid fa-cubes"></i> 3D
               </button>
               <button
                 type="button"
@@ -94,7 +101,7 @@ export default function InteractiveMapSection({ pins }: InteractiveMapSectionPro
               <a
                 href="/brand/sakon_nakhon_5identities_map.png"
                 download="แผนที่5แหล่งอัตลักษณ์_สกลนคร.png"
-                className="btn btn-primary btn-sm"
+                className="btn btn-outline btn-sm"
               >
                 <i className="fa-solid fa-download"></i> ดาวน์โหลด HD
               </a>

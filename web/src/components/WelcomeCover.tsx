@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 /** Full-screen welcome cover from the front-end team's prototype; shown on the home page only. */
@@ -33,9 +34,9 @@ export default function WelcomeCover() {
             เมืองสกลนคร
           </h2>
           <p>ร่วมค้นพบเรื่องราว วัฒนธรรม และภูมิปัญญาท้องถิ่น ผ่านโมเดลสามมิติและเทคโนโลยีความเป็นจริงเสริม</p>
-          <a className="welcome-enter" href="#home">
+          <Link className="welcome-enter" href="/map">
             เข้าสู่เว็บไซต์ <i className="fa-solid fa-arrow-right" aria-hidden="true"></i>
-          </a>
+          </Link>
         </div>
         <div className="welcome-bottom">
           <span>มรดกวัฒนธรรม · เรื่องราวชุมชน · 3D AR</span>

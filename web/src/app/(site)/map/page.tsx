@@ -1,0 +1,38 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { connection } from "next/server";
+import { getCommunities } from "@/lib/queries";
+import MapWorkstation from "@/components/map3d/MapWorkstation";
+import PageSkeleton from "@/components/PageSkeleton";
+
+export const metadata: Metadata = {
+  title: "แผนที่ 3 มิติ 5 แหล่งอัตลักษณ์สำคัญ จ.สกลนคร | AR.HERITAGE",
+  description:
+    "แผนที่สามมิติ Interactive 5 แหล่งอัตลักษณ์สำคัญ จ.สกลนคร ผสานข้อมูลภูมิสัณฐานมิตรเอิร์ธ 18 อำเภอ หนองหาร และเทือกเขาภูพาน",
+};
+
+export default function MapPage() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <MapPageContent />
+    </Suspense>
+  );
+}
+
+async function MapPageContent() {
+  await connection();
+  const communities = await getCommunities();
+
+  const pins = communities.map((c, i) => ({
+    slug: c.slug,
+    number: i + 1,
+    name: c.shortName,
+    location: c.location,
+    position: c.position,
+    color: c.color,
+    itemCount: c.items.length,
+    placeholder: !!c.placeholder,
+  }));
+
+  return <MapWorkstation pins={pins} />;
+}

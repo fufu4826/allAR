@@ -23,8 +23,8 @@ export interface Landmark3DItem {
     rotationY?: number;
     offset?: { x: number; y: number; z: number };
   };
-  sideOffset?: { x: number; z: number }; // for clear staggered pins
-  pinAnchor?: "center" | "left" | "right"; // anchor alignment for pins
+  labelOffset2D?: { x: number; y: number }; // 2D screen offset so models stay at real GPS while labels don't collide
+  pinAnchor?: "center" | "left" | "right"; // anchor alignment for badges
 }
 
 export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
@@ -53,6 +53,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
       rotationY: Math.PI * 0.85,
       offset: { x: 0, y: 0.05, z: 0 },
     },
+    labelOffset2D: { x: 0, y: -6 },
+    pinAnchor: "center",
   },
   {
     id: "watklang",
@@ -79,8 +81,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
       rotationY: Math.PI * 0.35,
       offset: { x: 0, y: 0.05, z: 0 },
     },
-    sideOffset: { x: 6.2, z: 0.3 }, // Separated distinctly to East/Right side
-    pinAnchor: "left", // Badge body extends to the right of anchor
+    labelOffset2D: { x: 62, y: 12 }, // Real GPS location, label shifted East
+    pinAnchor: "left",
   },
   {
     id: "watnuea",
@@ -107,8 +109,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
       rotationY: Math.PI * 0.25,
       offset: { x: 0, y: 0.05, z: 0 },
     },
-    sideOffset: { x: -6.2, z: -0.3 }, // Separated distinctly to West/Left side
-    pinAnchor: "right", // Badge body extends to the left of anchor
+    labelOffset2D: { x: -62, y: -12 }, // Real GPS location, label shifted West
+    pinAnchor: "right",
   },
   {
     id: "nonhom",
@@ -135,8 +137,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
       rotationY: Math.PI * 0.15,
       offset: { x: 0, y: 0.05, z: 0 },
     },
-    sideOffset: { x: 3.5, z: 0.8 }, // Separated to Southeast
-    pinAnchor: "left", // Badge body extends to the right
+    labelOffset2D: { x: 38, y: 16 }, // Real GPS location, label shifted East/Down
+    pinAnchor: "left",
   },
   {
     id: "phuphan",
@@ -163,7 +165,7 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
       rotationY: Math.PI * 0.10,
       offset: { x: 0, y: 0.05, z: 0 },
     },
-    sideOffset: { x: -3.8, z: 0.8 }, // Separated to Southwest
-    pinAnchor: "right", // Badge body extends to the left
+    labelOffset2D: { x: -38, y: -10 }, // Real GPS location, label shifted West/Up
+    pinAnchor: "right",
   },
 ];

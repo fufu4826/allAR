@@ -64,6 +64,8 @@ interface ProjectedPin {
   item: Landmark3DItem;
   x: number;
   y: number;
+  baseX: number;
+  baseY: number;
   visible: boolean;
   zIndex: number;
 }
@@ -71,9 +73,10 @@ interface ProjectedPin {
 export interface Sakon3DMapCanvasProps {
   selectedId?: string | null;
   onSelectLandmark?: (id: string) => void;
+  className?: string;
 }
 
-export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon3DMapCanvasProps) {
+export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, className }: Sakon3DMapCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
 
   const [projectedPins, setProjectedPins] = useState<ProjectedPin[]>([]);
@@ -101,8 +104,8 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
       isAnimatingRef.current = true;
       return;
     }
-    const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.sideOffset?.x || 0);
-    const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.sideOffset?.z || 0);
+    const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON;
+    const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT;
     const elev = getTerrainElev(x, z);
 
     cameraTargetRef.current.set(x, elev.y + 0.3, z);
@@ -512,13 +515,13 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
     SECONDARY_HIGHWAYS.forEach((r) => roadGroup.add(createRoadRibbon(r)));
     provinceGroup.add(roadGroup);
 
-    // 9. Load 5 GLB Models with Authentic Placement & Staggered Separation
+    // 9. Load 5 GLB Models with Authentic Placement at Real GPS Locations
     const gltfLoader = new GLTFLoader();
     let loadedCount = 0;
 
     SAKON_LANDMARKS_3D.forEach((landmark) => {
-      const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.sideOffset?.x || 0);
-      const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.sideOffset?.z || 0);
+      const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON;
+      const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT;
       const elev = getTerrainElev(x, z);
 
       const landmarkGroup = new THREE.Group();
@@ -633,16 +636,18 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
       const currentHeight = container.clientHeight || 580;
 
       const updatedPins: ProjectedPin[] = SAKON_LANDMARKS_3D.map((lm) => {
-        const px = (lm.lon - SAKON_CENTER_LON) * SCALE_LON + (lm.sideOffset?.x || 0);
-        const pz = -(lm.lat - SAKON_CENTER_LAT) * SCALE_LAT + (lm.sideOffset?.z || 0);
+        const px = (lm.lon - SAKON_CENTER_LON) * SCALE_LON;
+        const pz = -(lm.lat - SAKON_CENTER_LAT) * SCALE_LAT;
         const elev = getTerrainElev(px, pz);
 
-        tempV.set(px, elev.y + 2.35, pz);
+        tempV.set(px, elev.y + 2.15, pz);
         tempV.applyMatrix4(provinceGroup.matrixWorld);
         tempV.project(camera);
 
-        const screenX = (tempV.x * 0.5 + 0.5) * currentWidth;
-        const screenY = (-(tempV.y * 0.5) + 0.5) * currentHeight;
+        const baseScreenX = (tempV.x * 0.5 + 0.5) * currentWidth;
+        const baseScreenY = (-(tempV.y * 0.5) + 0.5) * currentHeight;
+        const screenX = baseScreenX + (lm.labelOffset2D?.x || 0);
+        const screenY = baseScreenY + (lm.labelOffset2D?.y || 0);
         const visible = tempV.z <= 1.0;
         const zIndex = Math.round((2.0 - tempV.z) * 35);
 
@@ -650,6 +655,8 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
           item: lm,
           x: screenX,
           y: screenY,
+          baseX: baseScreenX,
+          baseY: baseScreenY,
           visible,
           zIndex,
         };
@@ -701,7 +708,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
   }, []);
 
   return (
-    <div className="relative w-full h-[620px] select-none bg-slate-950 font-sans">
+    <div className={`relative w-full ${className || "h-[620px]"} select-none bg-slate-950 font-sans`}>
       {/* 3D WebGL Canvas */}
       <div ref={mountRef} className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing" />
 
@@ -715,15 +722,59 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
 
       {/* 2D Markers Overlay */}
       <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+        {/* SVG Connector Lines from real ground coordinate to offset label */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+          {projectedPins.map((pin) => {
+            if (!pin.visible) return null;
+            const hasOffset = Math.abs(pin.x - pin.baseX) > 8 || Math.abs(pin.y - pin.baseY) > 8;
+            if (!hasOffset) return null;
+            const isSelected = selectedId === pin.item.id;
+            return (
+              <line
+                key={`line-${pin.item.id}`}
+                x1={pin.baseX}
+                y1={pin.baseY}
+                x2={pin.x}
+                y2={pin.y}
+                stroke={isSelected ? "#f97316" : "rgba(251, 191, 36, 0.7)"}
+                strokeWidth={isSelected ? 2.5 : 1.5}
+                strokeDasharray={isSelected ? "none" : "3 3"}
+              />
+            );
+          })}
+        </svg>
+
+        {/* Real Ground Position Dots */}
+        {projectedPins.map((pin) => {
+          if (!pin.visible) return null;
+          const isSelected = selectedId === pin.item.id;
+          return (
+            <div
+              key={`dot-${pin.item.id}`}
+              className="absolute pointer-events-none transition-transform duration-300"
+              style={{
+                left: `${pin.baseX}px`,
+                top: `${pin.baseY}px`,
+                transform: "translate(-50%, -50%)",
+                zIndex: isSelected ? 150 : 15,
+              }}
+            >
+              <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-amber-500 shadow-md animate-ping opacity-75"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute top-0.5 left-0.5 shadow-sm"></div>
+            </div>
+          );
+        })}
+
+        {/* Floating Label Badges (Offset to prevent any overlapping!) */}
         {projectedPins.map((pin) => {
           if (!pin.visible) return null;
           const isSelected = selectedId === pin.item.id;
           const anchor = pin.item.pinAnchor || "center";
           const transformTranslate =
             anchor === "left"
-              ? "translate(-18%, -100%)"
+              ? "translate(-12%, -100%)"
               : anchor === "right"
-              ? "translate(-82%, -100%)"
+              ? "translate(-88%, -100%)"
               : "translate(-50%, -100%)";
           const alignClass =
             anchor === "left"
@@ -739,7 +790,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
               style={{
                 left: `${pin.x}px`,
                 top: `${pin.y}px`,
-                transform: `${transformTranslate} scale(${isSelected ? 1.12 : 1.0})`,
+                transform: `${transformTranslate} scale(${isSelected ? 1.10 : 1.0})`,
                 zIndex: isSelected ? 200 : pin.zIndex,
               }}
               onClick={() => handleSelect(pin.item)}
@@ -752,8 +803,8 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
                 <div
                   className={`px-3 py-1.5 rounded-full shadow-xl border backdrop-blur-md flex items-center gap-1.5 transition-all ${
                     isSelected
-                      ? "bg-white text-slate-900 border-brand ring-2 ring-brand shadow-orange-500/40"
-                      : "bg-white/95 text-slate-800 border-slate-200 hover:border-amber-400"
+                      ? "bg-white text-slate-900 border-brand ring-2 ring-brand shadow-orange-500/50"
+                      : "bg-white/95 text-slate-800 border-slate-200 hover:border-amber-400 shadow-lg"
                   }`}
                 >
                   <span className="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] font-bold">
@@ -763,7 +814,6 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon
                   <span className="text-xs font-bold whitespace-nowrap">{pin.item.shortName}</span>
                 </div>
                 <div className="w-2.5 h-2.5 bg-slate-900 rotate-45 -mt-1 shadow-md"></div>
-                <div className="w-2 h-2 rounded-full bg-amber-500 mt-0.5 animate-pulse"></div>
               </div>
             </div>
           );

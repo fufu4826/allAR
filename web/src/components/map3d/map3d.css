@@ -597,3 +597,44 @@
     max-height: 560px;
   }
 }
+
+/* Narrow phones (<= 480px): compass shows only its icon so it does not cover the 3D/2D switch,
+   and the bottom layer buttons stay on one line. */
+@media (max-width: 480px) {
+  .mw-top-left {
+    top: 12px;
+    left: 10px;
+  }
+  .mw-top-right {
+    top: 12px;
+    right: 10px;
+    gap: 6px;
+  }
+  .mw-compass-pill {
+    padding: 8px;
+    gap: 0;
+  }
+  .mw-compass-pill span {
+    display: none;
+  }
+  .mw-mode-btn {
+    padding: 7px 10px;
+    font-size: 11.5px;
+    white-space: nowrap;
+  }
+  .mw-layer-bar {
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    justify-content: space-between;
+  }
+  .mw-sat-credit {
+    bottom: 62px;
+    right: 10px;
+  }
+  .mw-layer-btn {
+    padding: 7px 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+}

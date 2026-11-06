@@ -693,6 +693,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     // 10. Animation & Render Loop
     let reqId = 0;
     const tempV = new THREE.Vector3();
+    const labelWidths: Record<string, number> = {};
     const camDir = new THREE.Vector3();
 
     // Stop rendering while the tab is hidden or the map is scrolled off-screen (saves battery on phones).
@@ -766,13 +767,19 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
           } else {
             badgeEl.style.display = "block";
             const anchor = lm.pinAnchor || "center";
-            const anchorTransform =
-              anchor === "left"
-                ? "translate(-12%, -100%)"
-                : anchor === "right"
-                ? "translate(-88%, -100%)"
-                : "translate(-50%, -100%)";
-            badgeEl.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) ${anchorTransform} scale(${isSelected ? 1.10 : 1.0})`;
+            const anchorFrac = anchor === "left" ? 0.12 : anchor === "right" ? 0.88 : 0.5;
+            // Keep the label inside the canvas on narrow screens. Width is measured once (text never changes).
+            let labelWidth = labelWidths[lm.id];
+            if (!labelWidth) {
+              labelWidth = badgeEl.offsetWidth;
+              if (labelWidth) labelWidths[lm.id] = labelWidth;
+            }
+            const margin = 6;
+            const left = Math.min(
+              Math.max(screenX - labelWidth * anchorFrac, margin),
+              Math.max(margin, currentWidth - labelWidth - margin),
+            );
+            badgeEl.style.transform = `translate3d(${left}px, ${screenY}px, 0) translate(0, -100%) scale(${isSelected ? 1.10 : 1.0})`;
             badgeEl.style.zIndex = `${isSelected ? 200 : zIndex}`;
           }
         }
@@ -974,7 +981,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
           href="https://s2maps.eu"
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute bottom-1 left-2 z-30 rounded bg-black/55 px-2 py-0.5 text-[10px] leading-tight text-white/90"
+          className="mw-sat-credit absolute bottom-1 left-2 z-30 rounded bg-black/55 px-2 py-0.5 text-[10px] leading-tight text-white/90"
         >
           ภาพดาวเทียม: Sentinel-2 cloudless 2016 โดย EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016) · CC BY 4.0
         </a>

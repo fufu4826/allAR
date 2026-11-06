@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import FeaturedViewer from "@/components/FeaturedViewer";
-import InteractiveMapSection from "@/components/InteractiveMapSection";
 import GallerySection from "@/components/GallerySection";
 import { getCommunities, getFeaturedItems, getPublishedNews, getPublishedGallery } from "@/lib/queries";
 import { supportingOrganizations } from "@/content/site";
@@ -33,16 +32,6 @@ async function HomeContent() {
     getPublishedGallery(),
   ]);
 
-  const pins = communities.map((c, i) => ({
-    slug: c.slug,
-    number: i + 1,
-    name: c.shortName,
-    location: c.location,
-    position: c.position,
-    color: c.color,
-    itemCount: c.items.length,
-    placeholder: !!c.placeholder,
-  }));
 
   const topNews = latestNews.slice(0, 3);
 
@@ -185,9 +174,6 @@ async function HomeContent() {
           <FeaturedViewer items={featured} />
         </div>
       </section>
-
-      {/* Section: Interactive Province Map */}
-      <InteractiveMapSection pins={pins} />
 
       {/* Section: News & Community Updates */}
       <section id="news" className="section news">

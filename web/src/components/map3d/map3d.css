@@ -1,0 +1,599 @@
+/* ========================================================
+   3D & 2D Map Workstation Scoped Styles (Unlayered to override reset)
+   ======================================================== */
+
+.mw-shell {
+  width: 100%;
+  height: calc(100vh - 109px);
+  min-height: 640px;
+  max-height: calc(100vh - 109px);
+  background: #f5efe8;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  overflow: hidden;
+  user-select: none;
+  font-family: var(--font-thai, var(--font-prompt), sans-serif);
+}
+
+.mw-viewport {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid #e2d7cb;
+  box-shadow: 0 12px 32px -8px rgba(38, 4, 11, 0.14);
+  background: radial-gradient(ellipse at 50% 44%, #263850 0%, #142033 65%, #0c1422 100%);
+}
+
+/* Floating Map Controls (z-index 1100 to stay above Leaflet's z-index 400-1000) */
+.mw-top-left {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1100;
+  pointer-events: none;
+}
+
+.mw-compass-pill {
+  pointer-events: auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(226, 215, 203, 0.9);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #292524;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.mw-top-right {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mw-mode-group {
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(226, 215, 203, 0.95);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mw-mode-btn {
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: #57534e;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+}
+
+.mw-mode-btn:hover {
+  color: #1c1917;
+}
+
+.mw-mode-btn.active {
+  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.32);
+}
+
+.mw-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(226, 215, 203, 0.95);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #44403c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mw-icon-btn:hover {
+  color: #ea580c;
+  transform: translateY(-1px);
+}
+
+/* Bottom-Right Layer Toolbar */
+.mw-layer-bar {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1100;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(226, 215, 203, 0.95);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mw-layer-btn {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: #44403c;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.mw-layer-btn:hover {
+  background: #f5efe8;
+  color: #1c1917;
+}
+
+.mw-layer-btn.active {
+  background: #ea580c;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.28);
+}
+
+/* 3D & 2D Map Floating Pin Badges (No numbers, clean icon + text) */
+.mw-pin-pill {
+  padding: 5px 13px 5px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1.5px solid #e7ded5;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+
+.mw-pin-pill:hover {
+  border-color: #ea580c;
+}
+
+.mw-pin-pill.active {
+  background: #ffffff;
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.35), 0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+.mw-pin-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mw-pin-pill.active .mw-pin-icon {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #ffffff;
+}
+
+.mw-pin-text {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1c1917;
+}
+
+/* 2D Map (Leaflet) Custom Markers & Controls */
+.mw-leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.mw-2d-dot {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #ea580c;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  z-index: 2;
+}
+
+.mw-2d-dot.active {
+  width: 18px;
+  height: 18px;
+  top: -9px;
+  left: -9px;
+  background: #881337;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.35), 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.mw-2d-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.mw-viewport .leaflet-top.leaflet-left {
+  top: 16px;
+  left: 16px;
+}
+
+.mw-viewport .leaflet-bar {
+  border: 1px solid rgba(226, 215, 203, 0.95) !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14) !important;
+}
+
+.mw-viewport .leaflet-bar a {
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  color: #44403c !important;
+  font-weight: 700 !important;
+}
+
+.mw-viewport .leaflet-bar a:hover {
+  background: #fff7ed !important;
+  color: #ea580c !important;
+}
+
+/* Selected Landmark HUD Card (Bottom-Left) */
+.mw-hud-card {
+  position: absolute;
+  bottom: 16px;
+  left: 56px;
+  z-index: 1100;
+  width: 370px;
+  max-width: calc(100% - 72px);
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  border: 1px solid #e7ded5;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
+  color: #292524;
+}
+
+.mw-hud-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mw-hud-title {
+  font-size: 14.5px !important;
+  font-weight: 800;
+  color: #1c1917;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.mw-hud-eng {
+  font-size: 11.5px;
+  color: #78716c;
+  display: block;
+  margin-top: 2px;
+}
+
+.mw-hud-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: none;
+  background: #f4ede6;
+  color: #57534e;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.mw-hud-close:hover {
+  background: #e7ded5;
+  color: #1c1917;
+}
+
+.mw-hud-desc {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: #57534e;
+  line-height: 1.6;
+}
+
+.mw-hud-footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0e8df;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mw-hud-cta {
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+  color: #ffffff !important;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+  transition: all 0.2s ease;
+}
+
+.mw-hud-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.4);
+}
+
+/* Right Sidebar Panel ("5 แหล่งอัตลักษณ์สำคัญ") */
+.mw-sidebar {
+  width: 400px;
+  height: 100%;
+  min-height: 0;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid #e2d7cb;
+  box-shadow: 0 12px 32px -8px rgba(38, 4, 11, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.mw-sidebar-header {
+  padding: 18px 20px 15px;
+  border-bottom: 1px solid #f0e8df;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.mw-sidebar-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(136, 19, 55, 0.25);
+  flex-shrink: 0;
+}
+
+.mw-sidebar-title {
+  font-size: 18px !important;
+  font-weight: 800;
+  color: #1c1917;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.mw-sidebar-sub {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #a8a29e;
+  text-transform: uppercase;
+  margin-top: 2px;
+  display: block;
+}
+
+.mw-card-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #faf7f4;
+  scroll-behavior: smooth;
+}
+
+.mw-card {
+  padding: 15px 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1.5px solid #ede5dc;
+  box-shadow: 0 2px 6px rgba(38, 4, 11, 0.03);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.mw-card:hover {
+  border-color: #fdba74;
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.08);
+  transform: translateY(-1px);
+}
+
+.mw-card.active {
+  background: #fffaf5;
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.14), 0 8px 20px rgba(234, 88, 12, 0.1);
+}
+
+.mw-card-top {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.mw-card-title {
+  font-size: 14.5px !important;
+  font-weight: 700;
+  color: #1c1917;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.mw-card-eng {
+  font-size: 11.5px;
+  color: #78716c;
+  font-weight: 500;
+  margin-top: 1px;
+  display: block;
+}
+
+.mw-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  color: #ea580c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.mw-card.active .mw-card-icon {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #ffffff;
+}
+
+.mw-card-desc {
+  margin-top: 9px;
+  font-size: 12.2px;
+  color: #57534e;
+  line-height: 1.62;
+}
+
+.mw-card-footer {
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid #f3ece4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mw-gps-link {
+  font-size: 11px;
+  color: #78716c;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s ease;
+}
+
+.mw-gps-link:hover {
+  color: #ea580c;
+}
+
+.mw-ar-btn {
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #c2410c !important;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.mw-ar-btn:hover {
+  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+  border-color: transparent;
+  color: #ffffff !important;
+}
+
+.mw-sidebar-footer {
+  padding: 11px 18px;
+  background: #ffffff;
+  border-top: 1px solid #f0e8df;
+  font-size: 11px;
+  color: #78716c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.mw-ready-pill {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+  .mw-shell {
+    flex-direction: column;
+    height: auto;
+    max-height: none;
+  }
+  .mw-viewport {
+    /* explicit height: the shell is height:auto here, so height:100% would collapse the label overlay to 0 */
+    flex: none;
+    height: min(70vh, 560px);
+    min-height: 420px;
+  }
+  .mw-sidebar {
+    width: 100%;
+    max-height: 560px;
+  }
+}

@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import CommunityMap from "@/components/CommunityMap";
+import Sakon3DMap from "@/components/map3d/Sakon3DMap";
 import { mapHighlights, mitrEarthInfo } from "@/content/site";
 
 interface Pin {
@@ -21,7 +22,7 @@ interface InteractiveMapSectionProps {
 }
 
 export default function InteractiveMapSection({ pins }: InteractiveMapSectionProps) {
-  const [mapMode, setMapMode] = useState<"illustrated" | "osm">("illustrated");
+  const [mapMode, setMapMode] = useState<"illustrated" | "osm" | "3d">("3d");
   const containerRef = useRef<HTMLDivElement>(null);
 
   const toggleFullscreen = () => {
@@ -58,18 +59,31 @@ export default function InteractiveMapSection({ pins }: InteractiveMapSectionPro
             <div className="map-toolbar-actions">
               <button
                 type="button"
-                className="btn btn-outline btn-sm"
-                onClick={() => setMapMode((prev) => (prev === "illustrated" ? "osm" : "illustrated"))}
+                className={`btn btn-sm ${mapMode === "illustrated" ? "btn-primary" : "btn-outline"}`}
+                onClick={() => setMapMode("illustrated")}
               >
-                <i className={mapMode === "illustrated" ? "fa-solid fa-map" : "fa-solid fa-image"}></i>{" "}
-                {mapMode === "illustrated" ? "แผนที่จริง (OpenStreetMap)" : "แผนที่ภาพวาด (Illustrated Map)"}
+                <i className="fa-solid fa-image"></i> แผนที่ภาพวาด
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${mapMode === "osm" ? "btn-primary" : "btn-outline"}`}
+                onClick={() => setMapMode("osm")}
+              >
+                <i className="fa-solid fa-map"></i> แผนที่จริง (OSM)
+              </button>
+              <button
+                type="button"
+                className={`btn btn-sm ${mapMode === "3d" ? "btn-primary" : "btn-outline"}`}
+                onClick={() => setMapMode("3d")}
+              >
+                <i className="fa-solid fa-cubes"></i> แผนที่ 3 มิติ (3D)
               </button>
               <a
                 href="/brand/sakon_nakhon_5identities_map.png"
                 download="แผนที่5แหล่งอัตลักษณ์_สกลนคร.png"
                 className="btn btn-primary btn-sm"
               >
-                <i className="fa-solid fa-download"></i> ดาวน์โหลดแผนที่ความละเอียดสูง (HD)
+                <i className="fa-solid fa-download"></i> ดาวน์โหลด HD
               </a>
               <button
                 type="button"
@@ -85,7 +99,7 @@ export default function InteractiveMapSection({ pins }: InteractiveMapSectionPro
 
           {/* Main Map Display */}
           <div className="map-image-frame" id="mapFrame" style={{ minHeight: "450px" }}>
-            {mapMode === "illustrated" ? (
+            {mapMode === "illustrated" && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src="/brand/sakon_nakhon_5identities_map.webp"
@@ -94,9 +108,15 @@ export default function InteractiveMapSection({ pins }: InteractiveMapSectionPro
                 id="masterMapImg"
                 style={{ width: "100%", height: "auto", display: "block", borderRadius: "12px" }}
               />
-            ) : (
+            )}
+            {mapMode === "osm" && (
               <div style={{ width: "100%", height: "500px", borderRadius: "12px", overflow: "hidden" }}>
                 <CommunityMap pins={pins} />
+              </div>
+            )}
+            {mapMode === "3d" && (
+              <div style={{ width: "100%", borderRadius: "12px", overflow: "hidden" }}>
+                <Sakon3DMap />
               </div>
             )}
           </div>

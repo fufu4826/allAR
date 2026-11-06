@@ -1,0 +1,44 @@
+/* Indigo and white textile theme, inspired by Phu Phan woven cloth. */
+.theme-phuphan { --ink:#1d3462; --accent:#385fa9; --accent-light:#eaf0fa; --paper:#f7f9fd; --hero:#1e3565; --hero-end:#385fa9; }
+.theme-phuphan .community-header { box-shadow:0 2px 18px #15294a12; }
+.theme-phuphan .community-hero { position:relative; background:linear-gradient(115deg,#192e59 0%,#244780 58%,#385fa9 100%); }
+.theme-phuphan .community-hero::after { content:""; position:absolute; inset:auto 0 0; height:12px; background:repeating-linear-gradient(135deg,#fff 0 5px,#8db1de 5px 8px,#254477 8px 13px,#8db1de 13px 16px); opacity:.8; }
+.theme-phuphan .hero-layout { position:relative; z-index:1; }
+.theme-phuphan .hero-kicker { color:#bcd4f5; }
+.theme-phuphan .hero-tags { display:inline-flex; padding:7px 14px; border:1px solid #ffffff52; border-radius:100px; background:#ffffff0c; color:#e3edfc; }
+.theme-phuphan .hero-art { width:min(100%,390px); height:390px; justify-self:end; border:1px solid #ffffff50; border-radius:190px 190px 24px 24px; background:linear-gradient(#18346145,#18346145),url('assets/phuphan-indigo-pattern.svg') center / 120px 160px; box-shadow:0 24px 50px #09193050, inset 0 0 0 8px #ffffff12; overflow:hidden; }
+.theme-phuphan .art-orbit { display:none; }
+.theme-phuphan .art-icon { width:136px; height:136px; font-size:4rem; background:#1b3669e8; border:1px solid #d5e5fcaa; box-shadow:0 0 0 10px #ffffff22; }
+.theme-phuphan .art-caption { bottom:15px; right:18px; padding:6px 10px; background:#1a315fd9; border-radius:5px; }
+.theme-phuphan .location-box { border:1px solid #d3def0; background:linear-gradient(115deg,#edf3fc,#f8fbff); }
+.theme-phuphan .story-card, .theme-phuphan .model-card { border-color:#dce6f5; }
+.theme-phuphan .section-desc, .theme-phuphan .model-status, .theme-phuphan .model-source { color:#586c8c; }
+.theme-phuphan .community-category { border-color:#ccdaed; }
+.theme-phuphan .community-category:not(.active):hover { border-color:var(--accent); background:#eaf0fa; }
+.theme-phuphan .community-footer { border-top:8px solid #a7c4e9; }
+@media(max-width:850px) { .theme-phuphan .hero-art { width:min(100%,330px); height:230px; margin:20px auto 38px; justify-self:center; border-radius:130px 130px 16px 16px; background-size:100px auto; }.theme-phuphan .art-icon { width:100px; height:100px; font-size:3rem; } }
+/* Woven pattern and border sourced from the Phu Phan AR site. */
+.theme-phuphan .hero-art {
+  background:linear-gradient(#142c5a55,#142c5a55),url('assets/nakhontham-indigo.webp') center / 263px 211px repeat;
+}
+.theme-phuphan .community-hero::after {
+  height:12px;
+  background:url('assets/indigo-border.webp') repeat-x left center / auto 12px;
+  opacity:1;
+}
+.theme-phuphan .community-footer {
+  position:relative;
+  border-top:0;
+  padding-top:35px;
+  background:linear-gradient(rgba(12,26,57,.89),rgba(12,26,57,.89)),url('assets/nakhontham-indigo.webp') repeat center / 263px 211px;
+}
+.theme-phuphan .community-footer::before {
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:14px;
+  background:url('assets/indigo-border.webp') repeat-x left center / auto 14px;
+}
+@media(max-width:850px) {
+  .theme-phuphan .hero-art { background-size:auto, 200px auto; }
+}

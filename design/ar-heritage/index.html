@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Heritage & Identity | นวัตกรรมเทคโนโลยี 3D AR สู่ 5 แหล่งอัตลักษณ์สำคัญ</title>
+  
+  <!-- Google Fonts: Prompt & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Model Viewer for 3D & AR Interactive Display -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="cover.css">
+</head>
+<body>
+
+  <!-- Welcome cover -->
+  <section class="welcome-cover" id="welcome" aria-labelledby="welcome-title">
+    <div class="welcome-overlay"></div>
+    <div class="welcome-inner">
+      <div class="welcome-brand" aria-label="AR Heritage">
+        <div class="welcome-emblems">
+          <img src="assets/snru-logo.png" alt="ตรามหาวิทยาลัยราชภัฏสกลนคร">
+          <img src="assets/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม">
+        </div>
+        <div class="welcome-brand-text"><strong>AR.HERITAGE</strong><span>5 แหล่งอัตลักษณ์สำคัญ</span></div>
+      </div>
+      <div class="welcome-content">
+        <span class="welcome-eyebrow"><span></span> SAKON NAKHON · THAILAND</span>
+        <h2 id="welcome-title">เปิดประตูสู่<br><em>5 แหล่งอัตลักษณ์</em><br>เมืองสกลนคร</h2>
+        <p>ร่วมค้นพบเรื่องราว วัฒนธรรม และภูมิปัญญาท้องถิ่น ผ่านโมเดลสามมิติและเทคโนโลยีความเป็นจริงเสริม</p>
+        <a class="welcome-enter" href="#home">เข้าสู่เว็บไซต์ <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="welcome-bottom"><span>มรดกวัฒนธรรม · เรื่องราวชุมชน · 3D AR</span><a href="#home">เลื่อนเพื่อสำรวจ <i class="fa-solid fa-arrow-down" aria-hidden="true"></i></a></div>
+    </div>
+  </section>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-announcement">
+    <div class="container announcement-content">
+      <span><i class="fa-solid fa-cube"></i> โครงการพัฒนานวัตกรรม AR & 3D เพื่อส่งเสริมอัตลักษณ์ชุมชนและวัฒนธรรมท้องถิ่น</span>
+      <a href="#ar-showcase" class="announcement-link">ทดลองใช้งาน AR เสมือนจริง <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#home" class="logo">
+        <span class="institution-logos">
+            <img src="assets/snru-logo.png" alt="ตรามหาวิทยาลัยราชภัฏสกลนคร" class="institution-logo university-logo">
+            <img src="assets/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม มหาวิทยาลัยราชภัฏสกลนคร" class="institution-logo language-logo">
+          </span>
+        <div class="logo-text">
+          <span class="brand-title">AR.HERITAGE</span>
+          <span class="brand-sub">5 แหล่งอัตลักษณ์สำคัญ</span>
+        </div>
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <nav class="nav-menu" id="navMenu">
+        <ul class="nav-list">
+          <li><a href="#home" class="nav-link active">หน้าแรก</a></li>
+          <li><a href="#ar-showcase" class="nav-link">โมเดล 3D AR 5 ชุมชน</a></li>
+          <li><a href="#identity-map" class="nav-link">แผนที่ 5 แหล่งสำคัญ</a></li>
+          <li><a href="#news" class="nav-link">ข่าวสาร & อัปเดต</a></li>
+          <li><a href="#gallery" class="nav-link">แกลเลอรี</a></li>
+          <li><a href="#organization" class="nav-link">หน่วยงาน</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero">
+    <div class="hero-tech-bg"></div>
+    <div class="container hero-container">
+      <div class="hero-content">
+        <div class="tech-pill">
+          <span class="pulse-dot"></span>
+          <i class="fa-solid fa-vr-cardboard"></i> Augmented Reality & 3D Interactive
+        </div>
+
+        <h1 class="hero-title">
+          เปิดประตูสู่เรื่องราว<br>
+          <span class="gradient-text">5 แหล่งอัตลักษณ์สำคัญ</span><br>
+          ด้วยเทคโนโลยีความเป็นจริงเสริม (AR)
+        </h1>
+
+        <p class="hero-desc">
+          การประยุกต์ใช้นวัตกรรม 3D Photogrammetry และเทคโนโลยี WebAR 
+          เชื่อมโยงมรดกทางวัฒนธรรม ประวัติศาสตร์ สถาปัตยกรรม และภูมิปัญญาท้องถิ่น
+          ให้ทุกคนสามารถสัมผัสและเรียนรู้ได้เสมือนจริงผ่านสมาร์ตโฟน
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#ar-showcase" class="btn btn-primary">
+            <i class="fa-solid fa-shapes"></i> สำรวจโมเดล 3D AR
+          </a>
+        </div>
+
+        <!-- 5 Identity Quick Badges -->
+        <div class="identity-strip">
+          <span class="strip-label">ครอบคลุม 5 แหล่งสำคัญ:</span>
+          <div class="strip-tags">
+            <span class="strip-tag"><i class="fa-solid fa-church"></i> ท่าแร่</span>
+            <span class="strip-tag"><i class="fa-solid fa-place-of-worship"></i> ท่าวัด (กลางศรีเชียงใหม่)</span>
+            <span class="strip-tag"><i class="fa-solid fa-monument"></i> ท่าวัด (มหาพรหมโพธิราช)</span>
+            <span class="strip-tag"><i class="fa-solid fa-shirt"></i> ชุมชนโนนหอม</span>
+            <span class="strip-tag"><i class="fa-solid fa-seedling"></i> ศูนย์ฯ ภูพาน</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Latest news -->
+      <aside class="hero-visual hero-news" aria-labelledby="hero-news-title">
+        <div class="visual-card">
+          <div class="hero-news-header">
+            <div>
+              <span class="hero-news-label"><i class="fa-regular fa-newspaper"></i> NEWS &amp; ARTICLES</span>
+              <h2 id="hero-news-title">ข่าวสารและความเคลื่อนไหว</h2>
+              <p>เรื่องราวจาก 5 แหล่งอัตลักษณ์สำคัญ</p>
+            </div>
+            <span class="hero-news-header-icon" aria-hidden="true"><i class="fa-solid fa-newspaper"></i></span>
+          </div>
+          <div class="hero-news-list">
+            <a class="hero-news-item" href="#news-tharae">
+              <span class="hero-news-number" aria-hidden="true">01</span>
+              <span class="hero-news-body">
+                <span class="hero-news-meta">เทคโนโลยีชุมชน <span aria-hidden="true">•</span> 24 ตุลาคม 2026</span>
+                <span class="hero-news-title">เปิดตัวระบบ WebAR สแกนสถาปัตยกรรมโบราณตึกฝรั่งเศสท่าแร่</span>
+                <span class="hero-news-location"><i class="fa-solid fa-location-dot"></i> ชุมชนท่าแร่</span>
+              </span>
+              <i class="fa-solid fa-arrow-right hero-news-arrow" aria-hidden="true"></i>
+            </a>
+            <a class="hero-news-item" href="#news-nonhom">
+              <span class="hero-news-number" aria-hidden="true">02</span>
+              <span class="hero-news-body">
+                <span class="hero-news-meta">ศิลปวัฒนธรรม <span aria-hidden="true">•</span> 15 ตุลาคม 2026</span>
+                <span class="hero-news-title">จำลองผืนผ้าครามและลวดลายโบราณชนเผ่าภูไทสู่โมเดลสามมิติ</span>
+                <span class="hero-news-location"><i class="fa-solid fa-location-dot"></i> ชุมชนโนนหอม</span>
+              </span>
+              <i class="fa-solid fa-arrow-right hero-news-arrow" aria-hidden="true"></i>
+            </a>
+            <a class="hero-news-item" href="#news-phuphan">
+              <span class="hero-news-number" aria-hidden="true">03</span>
+              <span class="hero-news-body">
+                <span class="hero-news-meta">โครงการพระราชดำริ <span aria-hidden="true">•</span> 5 ตุลาคม 2026</span>
+                <span class="hero-news-title">สื่อการเรียนรู้เสมือนจริง 3 ดำมหัศจรรย์ สู่การศึกษาเพื่อความยั่งยืน</span>
+                <span class="hero-news-location"><i class="fa-solid fa-location-dot"></i> ศูนย์ฯ ภูพาน</span>
+              </span>
+              <i class="fa-solid fa-arrow-right hero-news-arrow" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="hero-news-footer">
+            <span>ติดตามเรื่องราวและองค์ความรู้จากชุมชน</span>
+            <a href="#news">ดูข่าวทั้งหมด <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Section: 5 Cultural Identities & 3D AR Showcase -->
+  <section id="ar-showcase" class="section ar-showcase">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-layer-group"></i> 5 Cultural Identities</span>
+        <h2 class="section-title">5 แหล่งอัตลักษณ์สำคัญ & การแสดงผล 3D AR</h2>
+        <p class="section-subtitle">
+          เลือกสัมผัสเรื่องราว องค์ความรู้ และโมเดลสามมิติที่ผ่านการสแกนและขึ้นรูปด้วยเทคโนโลยีความเป็นจริงเสริม
+        </p>
+      </div>
+
+      <div class="community-choices">
+        <a class="community-choice choice-tharae" href="tharae.html"><span class="choice-number">01 / SAKON NAKHON</span><span class="choice-icon"><i class="fa-solid fa-church"></i></span><span class="choice-info"><strong>ชุมชนท่าแร่</strong><small>สถาปัตยกรรม • ศรัทธา • ประเพณี</small></span><span class="choice-action">สำรวจชุมชน <i class="fa-solid fa-arrow-right"></i></span></a>
+        <a class="community-choice choice-watklang" href="watklang.html"><span class="choice-number">02 / SAKON NAKHON</span><span class="choice-icon"><i class="fa-solid fa-place-of-worship"></i></span><span class="choice-info"><strong>วัดกลางศรีเชียงใหม่</strong><small>ศิลปกรรม • สถาปัตยกรรม • ชุมชน</small></span><span class="choice-action">สำรวจชุมชน <i class="fa-solid fa-arrow-right"></i></span></a>
+        <a class="community-choice choice-watnuea" href="watnuea.html"><span class="choice-number">03 / SAKON NAKHON</span><span class="choice-icon"><i class="fa-solid fa-monument"></i></span><span class="choice-info"><strong>วัดมหาพรหมโพธิราช</strong><small>โบราณสถาน • พุทธศิลป์ • ประวัติศาสตร์</small></span><span class="choice-action">สำรวจชุมชน <i class="fa-solid fa-arrow-right"></i></span></a>
+        <a class="community-choice choice-nonhom" href="nonhom.html"><span class="choice-number">04 / SAKON NAKHON</span><span class="choice-icon"><i class="fa-solid fa-shirt"></i></span><span class="choice-info"><strong>ชุมชนโนนหอม</strong><small>ผ้าคราม • ภูมิปัญญา • วิถีชุมชน</small></span><span class="choice-action">สำรวจชุมชน <i class="fa-solid fa-arrow-right"></i></span></a>
+        <a class="community-choice choice-phuphan" href="phuphan.html"><span class="choice-number">05 / SAKON NAKHON</span><span class="choice-icon"><i class="fa-solid fa-seedling"></i></span><span class="choice-info"><strong>ศูนย์ศึกษาการพัฒนาภูพานฯ</strong><small>เกษตร • ธรรมชาติ • การเรียนรู้</small></span><span class="choice-action">สำรวจชุมชน <i class="fa-solid fa-arrow-right"></i></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: 5 Cultural Identities Interactive Map -->
+  <section id="identity-map" class="section identity-map-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-map-location-dot"></i> Interactive Province Map</span>
+        <h2 class="section-title">แผนที่มรดกวัฒนธรรม 5 แหล่งอัตลักษณ์สำคัญ</h2>
+        <p class="section-subtitle">
+          แผนที่สามมิติผสานศิลปะภาพวาดนำเที่ยว แสดงพิกัดจริงตามภูมิศาสตร์ 18 อำเภอ ทะเลสาบหนองหาร แนวเทือกเขาภูพาน และโครงข่ายทางหลวงเชื่อมโยง 5 ชุมชน
+        </p>
+      </div>
+
+      <div class="map-showcase-card">
+        <!-- Top Map Toolbar -->
+        <div class="map-toolbar">
+          <div class="map-toolbar-status">
+            <span class="pulse-dot"></span>
+            <span class="map-status-text"><strong>สกลนคร (Sakon Nakhon)</strong> • พิกัด 5 แหล่งอัตลักษณ์ตามแผนที่จริง</span>
+          </div>
+          <div class="map-toolbar-actions">
+            <a href="assets/sakon_nakhon_5identities_map.png" download="แผนที่5แหล่งอัตลักษณ์_สกลนคร.png" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-download"></i> ดาวน์โหลดแผนที่ความละเอียดสูง (HD)
+            </a>
+            <button class="btn btn-outline btn-sm" id="btnToggleMapFullscreen" title="ขยายเต็มจอ">
+              <i class="fa-solid fa-expand"></i> ขยายแผนที่
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Map Display with Interactive Pin Triggers -->
+        <div class="map-image-frame" id="mapFrame">
+          <img src="assets/sakon_nakhon_5identities_map.png" alt="แผนที่ท่องเที่ยว 5 แหล่งอัตลักษณ์สำคัญ จังหวัดสกลนคร" class="map-master-img" id="masterMapImg">
+        </div>
+
+        <!-- 5 Cultural Highlights Grid with MitrEarth Geographic Data -->
+        <div class="map-highlights-grid">
+          <!-- Item 1 -->
+          <div class="map-highlight-item" data-id="tharae">
+            <div class="hl-badge"><span class="pin-badge">1</span></div>
+            <div class="hl-body">
+              <div class="hl-title">ชุมชนท่าแร่ (บ้านท่าแร่)</div>
+              <div class="hl-sub"><i class="fa-solid fa-mountain"></i> ภูมิสัณฐานมิตรเอิร์ธ: สันดอนทรายขอบแอ่งหนองหารด้านเหนือ • 163 ม. รทก.</div>
+              <p class="hl-desc">
+                <strong>ลักษณะภูมิศาสตร์ (มิตรเอิร์ธ):</strong> ตั้งอยู่บนแนวสันดอนทรายธรรมชาติ (Natural Levee) ริมขอบแอ่งยุบตัวหนองหาร พื้นที่ยกตัวสูงน้ำไม่ท่วมถึงในฤดูน้ำหลาก เหมาะแก่การตั้งชุมชนคาทอลิกโบราณและสถาปัตยกรรมตึกโคโลเนียลกว่า 100 ปี
+              </p>
+            </div>
+            <a href="tharae.html" class="hl-btn" title="ชมโมเดล 3D"><i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="map-highlight-item" data-id="watklang">
+            <div class="hl-badge"><span class="pin-badge">2</span></div>
+            <div class="hl-body">
+              <div class="hl-title">ท่าวัด (วัดกลางศรีเชียงใหม่)</div>
+              <div class="hl-sub"><i class="fa-solid fa-mountain"></i> ภูมิสัณฐานมิตรเอิร์ธ: ลานตะพักตะกอนน้ำพาริมหนองหาร • 160 ม. รทก.</div>
+              <p class="hl-desc">
+                <strong>ลักษณะภูมิศาสตร์ (มิตรเอิร์ธ):</strong> ลานตะพักตะกอนน้ำพาริมทะเลสาบฝั่งตะวันออกเฉียงใต้ (Lacustrine Terrace) บริเวณดินเหนียวและตะกอนน้ำพา เป็นที่ตั้งของสิมโบราณศิลปะล้านช้างอันวิจิตรริมฝั่งหนองหาร
+              </p>
+            </div>
+            <a href="watklang.html" class="hl-btn" title="ชมโมเดล 3D"><i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="map-highlight-item" data-id="watnuea">
+            <div class="hl-badge"><span class="pin-badge">3</span></div>
+            <div class="hl-body">
+              <div class="hl-title">ท่าวัด (วัดมหาพรหมโพธิราช)</div>
+              <div class="hl-sub"><i class="fa-solid fa-mountain"></i> ภูมิสัณฐานมิตรเอิร์ธ: ตะพักศิลาแลงริมขอบหนองหาร • 161 ม. รทก.</div>
+              <p class="hl-desc">
+                <strong>ลักษณะภูมิศาสตร์ (มิตรเอิร์ธ):</strong> แนวตะพักศิลาแลงริมขอบแอ่งน้ำ มีชั้นศิลาแลงและหินทรายในระดับตื้น ซึ่งคนโบราณยุคทวารวดีใช้สลักเป็นใบเสมาศิลาแลงและฐานอุโบสถเก่าแก่คู่เมืองสกลนคร
+              </p>
+            </div>
+            <a href="watnuea.html" class="hl-btn" title="ชมโมเดล 3D"><i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="map-highlight-item" data-id="nonhom">
+            <div class="hl-badge"><span class="pin-badge">4</span></div>
+            <div class="hl-body">
+              <div class="hl-title">ชุมชนโนนหอม (บ้านโนนหอม)</div>
+              <div class="hl-sub"><i class="fa-solid fa-mountain"></i> ภูมิสัณฐานมิตรเอิร์ธ: เนินดอนลอนลูกคลื่นหินทราย • 172 ม. รทก.</div>
+              <p class="hl-desc">
+                <strong>ลักษณะภูมิศาสตร์ (มิตรเอิร์ธ):</strong> พื้นที่ดอนลอนลูกคลื่น (Rolling Sandstone Ridge) เชื่อมต่อระหว่างแอ่งหนองหารกับตีนเขาภูพาน ดินทรายปนศิลาแลงระบายน้ำดี เหมาะแก่การเพาะปลูกต้นครามและภูมิปัญญาการย้อมครามชนเผ่าภูไท
+              </p>
+            </div>
+            <a href="nonhom.html" class="hl-btn" title="ชมโมเดล 3D"><i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="map-highlight-item" data-id="phuphan">
+            <div class="hl-badge"><span class="pin-badge">5</span></div>
+            <div class="hl-body">
+              <div class="hl-title">ศูนย์ศึกษาการพัฒนาภูพานฯ</div>
+              <div class="hl-sub"><i class="fa-solid fa-mountain"></i> ภูมิสัณฐานมิตรเอิร์ธ: ลาดตะพักเชิงเขาปะทะภูพาน • 215 ม. รทก.</div>
+              <p class="hl-desc">
+                <strong>ลักษณะภูมิศาสตร์ (มิตรเอิร์ธ):</strong> ลาดเชิงเขาปะทะ (Piedmont Slope) ของแนวเทือกเขาภูพาน บริเวณปากอ่างเก็บน้ำห้วยยาง รับมวลน้ำและแร่ธาตุธรรมชาติจากสันเขา จึงเหมาะเป็นต้นแบบเกษตรทฤษฎีใหม่และ 3 ดำมหัศจรรย์
+              </p>
+            </div>
+            <a href="phuphan.html" class="hl-btn" title="ชมโมเดล 3D"><i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <!-- Reference Source Footer Badge -->
+        <div class="map-source-footer" style="margin-top: 20px; padding: 12px 18px; background: var(--warm-white); border: 1px dashed var(--slate-300); border-radius: 12px; font-size: 0.85rem; color: var(--slate-600); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <span><i class="fa-solid fa-earth-asia" style="color: var(--orange-500);"></i> <strong>แหล่งข้อมูลอ้างอิงภูมิศาสตร์ & ธรณีสัณฐาน:</strong> แพลตฟอร์มมิตรเอิร์ธ (MitrEarth) • ภาควิชาธรณีวิทยา คณะวิทยาศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย</span>
+          <span style="font-size: 0.8rem; color: var(--slate-500);"><i class="fa-solid fa-layer-group"></i> Digital Elevation Model (DEM) & Landform Classification</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: News & Community Updates -->
+  <section id="news" class="section news">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-newspaper"></i> News & Articles</span>
+        <h2 class="section-title">ข่าวสารและองค์ความรู้ 5 แหล่งอัตลักษณ์</h2>
+        <p class="section-subtitle">ติดตามความเคลื่อนไหว กิจกรรมการลงพื้นที่ และการถ่ายทอดเทคโนโลยีสู่ชุมชน</p>
+      </div>
+
+      <div class="news-grid">
+        <!-- News Card 1 -->
+        <article class="news-card" id="news-tharae">
+          <div class="news-image news-bg-1">
+            <span class="news-cat">เทคโนโลยีชุมชน</span>
+          </div>
+          <div class="news-content">
+            <div class="news-meta">
+              <span><i class="fa-regular fa-calendar"></i> 24 ตุลาคม 2026</span>
+              <span><i class="fa-solid fa-map-pin"></i> ชุมชนท่าแร่</span>
+            </div>
+            <h3 class="news-title">เปิดตัวระบบ WebAR สแกนสถาปัตยกรรมโบราณตึกฝรั่งเศสท่าแร่</h3>
+            <p class="news-excerpt">
+              ทีมนักศึกษาฝึกงานร่วมกับผู้นำชุมชนท่าแร่ ติดตั้งป้าย QR Code แนะนำเส้นทางท่องเที่ยวเชิงวัฒนธรรมผ่านมุมมอง AR จำลองบรรยากาศในอดีต
+            </p>
+            <a href="#news" class="read-more">อ่านบทความฉบับเต็ม <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </article>
+
+        <!-- News Card 2 -->
+        <article class="news-card" id="news-nonhom">
+          <div class="news-image news-bg-2">
+            <span class="news-cat">ศิลปวัฒนธรรม</span>
+          </div>
+          <div class="news-content">
+            <div class="news-meta">
+              <span><i class="fa-regular fa-calendar"></i> 15 ตุลาคม 2026</span>
+              <span><i class="fa-solid fa-map-pin"></i> ชุมชนโนนหอม</span>
+            </div>
+            <h3 class="news-title">จำลองผืนผ้าครามและลวดลายโบราณชนเผ่าภูไทสู่โมเดลสามมิติ</h3>
+            <p class="news-excerpt">
+              การบันทึกกระบวนการย้อมครามธรรมชาติและลวดลายผ้าทอมือเอกลักษณ์โนนหอม ให้ผู้คนได้เรียนรู้เนื้อผ้าและขั้นตอนการทอแบบ 3D Interaction
+            </p>
+            <a href="#news" class="read-more">อ่านบทความฉบับเต็ม <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </article>
+
+        <!-- News Card 3 -->
+        <article class="news-card" id="news-phuphan">
+          <div class="news-image news-bg-3">
+            <span class="news-cat">โครงการพระราชดำริ</span>
+          </div>
+          <div class="news-content">
+            <div class="news-meta">
+              <span><i class="fa-regular fa-calendar"></i> 5 ตุลาคม 2026</span>
+              <span><i class="fa-solid fa-map-pin"></i> ศูนย์ฯ ภูพาน</span>
+            </div>
+            <h3 class="news-title">สื่อการเรียนรู้เสมือนจริง 3 ดำมหัศจรรย์ สู่การศึกษาเพื่อความยั่งยืน</h3>
+            <p class="news-excerpt">
+              นำเทคโนโลยี AR มาต่อยอดองค์ความรู้ ไก่ดำ หมูดำ และโคเนื้อทาจิมะภูพาน เพื่อสร้างความเข้าใจแก่เยาวชนและผู้เข้าเยี่ยมชมศูนย์ศึกษาฯ
+            </p>
+            <a href="#news" class="read-more">อ่านบทความฉบับเต็ม <i class="fa-solid fa-arrow-right"></i></a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Photo Gallery -->
+  <section id="gallery" class="section gallery">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-images"></i> Fieldwork & Activity Gallery</span>
+        <h2 class="section-title">แกลเลอรีภาพกิจกรรมและบรรยากาศการทำงาน</h2>
+        <p class="section-subtitle">ภาพถ่ายบรรยากาศการลงพื้นที่จริง การสแกนวัตถุ และการทำงานร่วมกับหน่วยงานและชุมชน</p>
+      </div>
+
+      <!-- Gallery Filters -->
+      <div class="gallery-filters">
+        <button class="gallery-btn active" data-filter="all">ทั้งหมด</button>
+        <button class="gallery-btn" data-filter="fieldwork">ลงพื้นที่ชุมชน</button>
+        <button class="gallery-btn" data-filter="scanning">การสร้างโมเดล 3D</button>
+        <button class="gallery-btn" data-filter="testing">ทดสอบระบบ AR</button>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="gallery-grid">
+        <div class="gallery-item" data-category="fieldwork">
+          <div class="gallery-img-box g-img-1">
+            <div class="gallery-overlay">
+              <i class="fa-solid fa-maximize"></i>
+              <h4>สำรวจตึกโบราณท่าแร่</h4>
+              <p>เก็บข้อมูลสถาปัตยกรรมโคโลเนียล</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="scanning">
+          <div class="gallery-img-box g-img-2">
+            <div class="gallery-overlay">
+              <i class="fa-solid fa-maximize"></i>
+              <h4>การประมวลผล 3D Mesh</h4>
+              <p>ขึ้นรูปและคำนวณพื้นผิวโพลีกอน</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="fieldwork">
+          <div class="gallery-img-box g-img-3">
+            <div class="gallery-overlay">
+              <i class="fa-solid fa-maximize"></i>
+              <h4>ศูนย์ศึกษาการพัฒนาภูพานฯ</h4>
+              <p>ศึกษาโครงการพระราชดำริและ 3 ดำ</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="testing">
+          <div class="gallery-img-box g-img-4">
+            <div class="gallery-overlay">
+              <i class="fa-solid fa-maximize"></i>
+              <h4>ทดลองฉาย AR ในสถานที่จริง</h4>
+              <p>ทดสอบการตรวจจับพื้นผิวและการตอบสนอง</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="fieldwork">
+          <div class="gallery-img-box g-img-5">
+            <div class="gallery-overlay">
+              <i class="fa-solid fa-maximize"></i>
+              <h4>วิถีทอผ้าครามโนนหอม</h4>
+              <p>บันทึกภูมิปัญญาและเฉดสีย้อมธรรมชาติ</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-item" data-category="testing">
+          <div class="gallery-img-box g-img-6">
+            <div class="gallery-overlay">
+              <i class="fa-solid fa-maximize"></i>
+              <h4>ประชุมหารือร่วมกับหน่วยงาน</h4>
+              <p>ทบทวนผลงานและแผนพัฒนาต่อเนื่อง</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Supporting Organizations -->
+  <section id="organization" class="section organization">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge"><i class="fa-solid fa-building-columns"></i> Supporting Organizations</span>
+        <h2 class="section-title">หน่วยงานร่วมขับเคลื่อนโครงการ</h2>
+        <p class="section-subtitle">ความร่วมมือทางวิชาการ การพัฒนาเทคโนโลยี และการสนับสนุนจากภาคีเครือข่ายภาครัฐ สถาบันการศึกษา และชุมชนท้องถิ่น</p>
+      </div>
+
+      <div class="org-grid">
+        <!-- Organization Card 1 -->
+        <div class="org-card">
+          <div class="org-icon">
+            <i class="fa-solid fa-landmark"></i>
+          </div>
+          <span class="org-type-badge">หน่วยงานหลักด้านการวิจัย & พัฒนาระบบ</span>
+          <h3>ศูนย์พัฒนานวัตกรรมดิจิทัล & วัฒนธรรมสร้างสรรค์</h3>
+          <p class="org-role">Digital Cultural Innovation Lab • มหาวิทยาลัยราชภัฏสกลนคร</p>
+          <p class="org-summary">
+            ศูนย์กลางการวิจัยและพัฒนาเทคโนโลยีสารสนเทศเพื่อการอนุรักษ์มรดกทางวัฒนธรรม ดำเนินการสำรวจ รวบรวมข้อมูล ขึ้นรูปโมเดล 3D และพัฒนาแพลตฟอร์ม WebAR
+          </p>
+          <div class="org-details">
+            <p><i class="fa-solid fa-location-dot"></i> อำเภอเมือง จังหวัดสกลนคร</p>
+            <p><i class="fa-solid fa-bullseye"></i> พันธกิจ: พัฒนาสื่อดิจิทัลเสมือนจริงเพื่อยกระดับคุณค่ามรดกทางวัฒนธรรมสู่เศรษฐกิจสร้างสรรค์</p>
+          </div>
+          <div class="tech-stack-strip">
+            <span class="t-badge"><i class="fa-solid fa-cube"></i> Three.js / WebXR</span>
+            <span class="t-badge"><i class="fa-brands fa-html5"></i> Web Front-End</span>
+            <span class="t-badge"><i class="fa-solid fa-vector-square"></i> Blender 3D</span>
+          </div>
+        </div>
+
+        <!-- Organization Card 2 -->
+        <div class="org-card">
+          <div class="org-icon">
+            <i class="fa-solid fa-earth-asia"></i>
+          </div>
+          <span class="org-type-badge">หน่วยงานความร่วมมือด้านภูมิศาสตร์ & ธรณีสัณฐาน</span>
+          <h3>แพลตฟอร์มมิตรเอิร์ธ (MitrEarth)</h3>
+          <p class="org-role">ภาควิชาธรณีวิทยา คณะวิทยาศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย</p>
+          <p class="org-summary">
+            สนับสนุนข้อมูลภูมิสารสนเทศ แบบจำลองระดับความสูงเชิงเลข (DEM) และการวิเคราะห์ภูมิสัณฐาน เพื่อเชื่อมโยงมรดกวัฒนธรรมเข้ากับบริบททางธรรมชาติอย่างลึกซึ้ง
+          </p>
+          <div class="org-details">
+            <p><i class="fa-solid fa-location-dot"></i> ปทุมวัน กรุงเทพมหานคร</p>
+            <p><i class="fa-solid fa-bullseye"></i> พันธกิจ: ส่งเสริมการนำฐานข้อมูลธรณีวิทยาและภูมิศาสตร์สู่การประยุกต์ใช้เพื่อการเรียนรู้สาธารณะ</p>
+          </div>
+          <div class="tech-stack-strip">
+            <span class="t-badge"><i class="fa-solid fa-mountain"></i> Digital Elevation Model</span>
+            <span class="t-badge"><i class="fa-solid fa-map-location-dot"></i> GIS & Landforms</span>
+            <span class="t-badge"><i class="fa-solid fa-globe"></i> Open Data</span>
+          </div>
+        </div>
+
+        <!-- Organization Card 3 -->
+        <div class="org-card">
+          <div class="org-icon">
+            <i class="fa-solid fa-people-roof"></i>
+          </div>
+          <span class="org-type-badge">ภาคีเครือข่ายชุมชน & แหล่งวัฒนธรรม</span>
+          <h3>คณะกรรมการชุมชนและแหล่งวัฒนธรรม 5 แหล่งอัตลักษณ์</h3>
+          <p class="org-role">ชุมชนท่าแร่ • ชุมชนท่าวัด • ชุมชนโนนหอม • ศูนย์ศึกษาการพัฒนาภูพานฯ</p>
+          <p class="org-summary">
+            ภาคีเครือข่ายปราชญ์ชาวบ้าน ผู้นำชุมชน และผู้บริหารแหล่งเรียนรู้ ร่วมให้ข้อมูลประวัติศาสตร์ อนุญาตให้บันทึกภาพ 3D และทดสอบการใช้งานสื่อ AR
+          </p>
+          <div class="org-details">
+            <p><i class="fa-solid fa-location-dot"></i> แหล่งอัตลักษณ์ทั้ง 5 แห่ง จังหวัดสกลนคร</p>
+            <p><i class="fa-solid fa-bullseye"></i> พันธกิจ: อนุรักษ์ ถ่ายทอดภูมิปัญญาท้องถิ่น และต่อยอดสู่การท่องเที่ยวชุมชนอย่างยั่งยืน</p>
+          </div>
+          <div class="tech-stack-strip">
+            <span class="t-badge"><i class="fa-solid fa-handshake-angle"></i> Community Co-Design</span>
+            <span class="t-badge"><i class="fa-solid fa-book-open-reader"></i> Local Wisdom</span>
+            <span class="t-badge"><i class="fa-solid fa-qrcode"></i> On-Site QR Signage</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-col brand-col">
+        <div class="logo footer-logo">
+          <span class="institution-logos">
+            <img src="assets/snru-logo.png" alt="ตรามหาวิทยาลัยราชภัฏสกลนคร" class="institution-logo university-logo">
+            <img src="assets/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม มหาวิทยาลัยราชภัฏสกลนคร" class="institution-logo language-logo">
+          </span>
+          <div class="logo-text">
+            <span class="brand-title">AR.HERITAGE</span>
+            <span class="brand-sub">นวัตกรรม 3D AR สู่ 5 แหล่งอัตลักษณ์</span>
+          </div>
+        </div>
+        <p class="footer-desc">
+          โครงการรังสรรค์มรดกทางวัฒนธรรมด้วยนวัตกรรมเสมือนจริง สนับสนุนการเรียนรู้และอนุรักษ์คุณค่าท้องถิ่นผ่านเทคโนโลยี WebAR ยุคใหม่
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>5 แหล่งอัตลักษณ์</h4>
+        <ul>
+          <li><a href="tharae.html">1. ชุมชนท่าแร่</a></li>
+          <li><a href="watklang.html">2. ท่าวัด (วัดกลางศรีเชียงใหม่)</a></li>
+          <li><a href="watnuea.html">3. ท่าวัด (วัดมหาพรหมโพธิราช)</a></li>
+          <li><a href="nonhom.html">4. ชุมชนโนนหอม</a></li>
+          <li><a href="phuphan.html">5. ศูนย์ศึกษาการพัฒนาภูพานฯ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>เมนูลัด</h4>
+        <ul>
+          <li><a href="#home">หน้าแรก</a></li>
+          <li><a href="#news">ข่าวสาร & อัปเดต</a></li>
+          <li><a href="#gallery">แกลเลอรีภาพ</a></li>
+          <li><a href="#organization">หน่วยงาน</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>ติดต่อผู้พัฒนา / โครงการ</h4>
+        <div class="contact-links">
+          <p><i class="fa-solid fa-envelope"></i> intern.arproject@example.ac.th</p>
+          <p><i class="fa-solid fa-location-dot"></i> สกลนคร, ประเทศไทย</p>
+        </div>
+        <div class="social-strip">
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container footer-bottom-flex">
+        <p>&copy; 2026 นวัตกรรม 3D AR สู่ 5 แหล่งอัตลักษณ์สำคัญ. จัดทำเพื่อการศึกษาและรายงานผลการฝึกงาน.</p>
+        <p class="powered-by">Powered by WebXR, Google Model-Viewer & Modern Web Tech</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal for AR & Download Notification -->
+  <div class="modal-backdrop" id="actionModal">
+    <div class="modal-card">
+      <div class="modal-icon" id="modalIcon">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <h3 id="modalTitle">แจ้งเตือน</h3>
+      <p id="modalMsg">ข้อความแจ้งเตือน</p>
+      <button class="btn btn-primary" id="modalCloseBtn">ตกลง</button>
+    </div>
+  </div>
+
+  <script src="phuphan-models.js"></script>
+  <script src="script.js?v=2"></script>
+</body>
+</html>

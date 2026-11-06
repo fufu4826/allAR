@@ -6,3 +6,4 @@
 deploy/** text eol=lf
 web/Dockerfile text eol=lf
 web/.dockerignore text eol=lf
+*.cmd text eol=crlf

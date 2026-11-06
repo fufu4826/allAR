@@ -68,7 +68,7 @@ function AddCollectionForm({
               name="name"
               required
               maxLength={255}
-              placeholder="เช่น กลุ่มทอผ้าย้อมคราม"
+              placeholder="เช่น แหล่งเรียนรู้งานหม่อนไหม"
               className={inputClass}
             />
           </label>

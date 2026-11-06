@@ -71,12 +71,13 @@ export const communities: Community[] = [
     name: "ชุมชนโนนหอม",
     shortName: "ชุมชนโนนหอม",
     englishName: "NON HOM COMMUNITY",
-    tagline: "ค้นพบภูมิปัญญาผ้าย้อมครามและเรื่องราววิถีชุมชนโนนหอม",
-    tags: "ผ้าคราม • ภูมิปัญญา • วิถีชุมชน",
+    // tagline/tags drafted from the Non Hom field team's own description (nonhom.json)
+    tagline: "ชุมชนผู้ไทกะต๊ะ ที่ยังคงสืบทอดภูมิปัญญา เครื่องแต่งกาย งานหัตถกรรม พิธีกรรม และวิถีชีวิต",
+    tags: "ผู้ไท • พิธีกรรม • หัตถกรรม",
     theme: "nonhom",
     location: nonhom.community.location,
     description: nonhom.community.description,
-    // from the Non Hom field team's form (5 Nov 2026)
+    // from the 3D-map PR #1; the field team's form has 17.050825, 104.214036 (user kept the PR value for now, 6 Nov 2026)
     position: [17.054889, 104.211806],
     color: "#8d252d",
     cover: nonhom.settings.cover,

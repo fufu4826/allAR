@@ -7,9 +7,9 @@ import { toMapLandmarks } from "@/components/map3d/data/landmarksData";
 import PageSkeleton from "@/components/PageSkeleton";
 
 export const metadata: Metadata = {
-  title: "แผนที่ 3 มิติ 5 แหล่งเรียนรู้สำคัญ จ.สกลนคร | AR.HERITAGE",
+  title: "แผนที่ 3 มิติ 5 แหล่งเรียนรู้สำคัญ จ.สกลนคร | แหล่งเรียนรู้สกลนคร 3D",
   description:
-    "แผนที่สามมิติ Interactive 5 แหล่งเรียนรู้สำคัญ จ.สกลนคร ผสานข้อมูลภูมิสัณฐานมิตรเอิร์ธ 18 อำเภอ หนองหาร และเทือกเขาภูพาน",
+    "แผนที่สามมิติ Interactive 5 แหล่งเรียนรู้สำคัญ จ.สกลนคร 18 อำเภอ หนองหาร และเทือกเขาภูพาน",
 };
 
 export default function MapPage() {

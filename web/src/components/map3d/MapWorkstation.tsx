@@ -225,10 +225,6 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
 
         {/* Clean Minimal Reference Footer */}
         <div className="mw-sidebar-footer">
-          <span className="flex items-center gap-1.5 truncate">
-            <i className="fa-solid fa-earth-asia text-brand"></i>
-            <span>ข้อมูลภูมิสัณฐาน: มิตรเอิร์ธ (MitrEarth)</span>
-          </span>
           <span className="mw-ready-pill">WebAR Ready</span>
         </div>
       </aside>

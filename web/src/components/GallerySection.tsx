@@ -28,7 +28,7 @@ export default function GallerySection({ images }: GallerySectionProps) {
           </span>
           <h2 className="section-title">แกลเลอรีภาพกิจกรรมและบรรยากาศการทำงาน</h2>
           <p className="section-subtitle">
-            ภาพถ่ายบรรยากาศการลงพื้นที่จริง การสแกนวัตถุ และการทำงานร่วมกับหน่วยงานและชุมชน
+            ภาพถ่ายบรรยากาศการลงพื้นที่จริง และการทำงานร่วมกับหน่วยงานและชุมชน
           </p>
         </div>
 

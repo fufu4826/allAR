@@ -5,7 +5,7 @@ import PageSkeleton from "@/components/PageSkeleton";
 import { getPublishedNews } from "@/lib/queries";
 
 export const metadata = {
-  title: "ข่าวสารและความเคลื่อนไหว | AR.HERITAGE 5 แหล่งเรียนรู้สำคัญ",
+  title: "ข่าวสารและความเคลื่อนไหว | แหล่งเรียนรู้สกลนคร 3D",
   description: "ติดตามข่าวสาร กิจกรรม และองค์ความรู้จาก 5 แหล่งเรียนรู้สำคัญ จังหวัดสกลนคร",
 };
 

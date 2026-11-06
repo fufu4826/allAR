@@ -56,7 +56,7 @@ async function HomeContent() {
             </h1>
 
             <p className="hero-desc">
-              การประยุกต์ใช้นวัตกรรม 3D Photogrammetry และเทคโนโลยี WebAR เชื่อมโยงมรดกทางวัฒนธรรม ประวัติศาสตร์
+              การประยุกต์ใช้โมเดล 3 มิติและเทคโนโลยี WebAR เชื่อมโยงมรดกทางวัฒนธรรม ประวัติศาสตร์
               สถาปัตยกรรม และภูมิปัญญาท้องถิ่น ให้ทุกคนสามารถสัมผัสและเรียนรู้ได้เสมือนจริงผ่านสมาร์ตโฟน
             </p>
 
@@ -148,7 +148,7 @@ async function HomeContent() {
             </span>
             <h2 className="section-title">5 แหล่งเรียนรู้สำคัญ &amp; การแสดงผล 3D AR</h2>
             <p className="section-subtitle">
-              เลือกสัมผัสเรื่องราว องค์ความรู้ และโมเดลสามมิติที่ผ่านการสแกนและขึ้นรูปด้วยเทคโนโลยีความเป็นจริงเสริม
+              เลือกสัมผัสเรื่องราว องค์ความรู้ และโมเดล 3 มิติและเทคโนโลยีความเป็นจริงเสริม
             </p>
           </div>
 
@@ -261,25 +261,33 @@ async function HomeContent() {
                 <div className="org-icon">
                   <i className={org.icon}></i>
                 </div>
-                <span className="org-type-badge">{org.typeBadge}</span>
+                {org.typeBadge && <span className="org-type-badge">{org.typeBadge}</span>}
                 <h3>{org.name}</h3>
-                <p className="org-role">{org.role}</p>
-                <p className="org-summary">{org.summary}</p>
-                <div className="org-details">
-                  <p>
-                    <i className="fa-solid fa-location-dot"></i> {org.location}
-                  </p>
-                  <p>
-                    <i className="fa-solid fa-bullseye"></i> พันธกิจ: {org.mission}
-                  </p>
-                </div>
-                <div className="tech-stack-strip">
-                  {org.tags.map((tag, tIdx) => (
-                    <span key={tIdx} className="t-badge">
-                      <i className={tag.icon}></i> {tag.label}
-                    </span>
-                  ))}
-                </div>
+                {org.role && <p className="org-role">{org.role}</p>}
+                {org.summary && <p className="org-summary">{org.summary}</p>}
+                {(org.location || org.mission) && (
+                  <div className="org-details">
+                    {org.location && (
+                      <p>
+                        <i className="fa-solid fa-location-dot"></i> {org.location}
+                      </p>
+                    )}
+                    {org.mission && (
+                      <p>
+                        <i className="fa-solid fa-bullseye"></i> วัตถุประสงค์: {org.mission}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {org.tags && org.tags.length > 0 && (
+                  <div className="tech-stack-strip">
+                    {org.tags.map((tag, tIdx) => (
+                      <span key={tIdx} className="t-badge">
+                        <i className={tag.icon}></i> {tag.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -34,7 +34,7 @@ export default function FeaturedViewer({ items }: FeaturedViewerProps) {
           โมเดล 3D และวัตถุเด่นประจำโครงการ
         </h3>
         <p className="section-subtitle">
-          เลือกสัมผัสวัตถุพิพิธภัณฑ์และโมเดล 3 มิติที่สแกนด้วยเทคโนโลยีความละเอียดสูง
+          เลือกสัมผัสวัตถุพิพิธภัณฑ์ผ่านโมเดล 3 มิติ
         </p>
       </div>
 

@@ -10,7 +10,7 @@ export default function WelcomeCover() {
     <section className="welcome-cover" id="welcome" aria-labelledby="welcome-title">
       <div className="welcome-overlay"></div>
       <div className="welcome-inner">
-        <div className="welcome-brand" aria-label="AR Heritage">
+        <div className="welcome-brand" aria-label="แหล่งเรียนรู้สกลนคร 3D">
           <div className="welcome-emblems">
             {/* eslint-disable-next-line @next/next/no-img-element -- small static logos */}
             <img src="/brand/snru-logo.png" alt="ตรามหาวิทยาลัยราชภัฏสกลนคร" />
@@ -18,8 +18,8 @@ export default function WelcomeCover() {
             <img src="/brand/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม" />
           </div>
           <div className="welcome-brand-text">
-            <strong>AR.HERITAGE</strong>
-            <span>5 แหล่งเรียนรู้สำคัญ</span>
+            <strong>แหล่งเรียนรู้สกลนคร 3D</strong>
+            <span>Sakon Nakhon Learning Sites 3D</span>
           </div>
         </div>
         <div className="welcome-content">

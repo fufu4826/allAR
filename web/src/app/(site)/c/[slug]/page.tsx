@@ -43,7 +43,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
         <div className="community-container hero-layout">
           <div className="hero-copy">
             <Link href="/#ar-showcase" className="breadcrumb">
-              <i className="fa-solid fa-arrow-left"></i> 5 แหล่งอัตลักษณ์
+              <i className="fa-solid fa-arrow-left"></i> 5 แหล่งเรียนรู้
             </Link>
             <p className="hero-kicker">{community.englishName || "SAKON NAKHON HERITAGE"}</p>
             <h1>{community.name}</h1>

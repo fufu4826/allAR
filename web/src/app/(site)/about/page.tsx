@@ -2,7 +2,7 @@ import Link from "next/link";
 import { siteContact as siteContactExport } from "@/content/site";
 
 export const metadata = {
-  title: "เกี่ยวกับโครงการ | AR.HERITAGE 5 แหล่งอัตลักษณ์สำคัญ",
+  title: "เกี่ยวกับโครงการ | AR.HERITAGE 5 แหล่งเรียนรู้สำคัญ",
   description: "เกี่ยวกับโครงการรังสรรค์มรดกทางวัฒนธรรมและภูมิปัญญาด้วยเทคโนโลยี AR & 3D มหาวิทยาลัยราชภัฏสกลนคร",
 };
 
@@ -31,7 +31,7 @@ export default function AboutPage() {
       <div style={{ background: "white", padding: "32px", borderRadius: "20px", border: "1px solid var(--slate-200)", lineHeight: 1.85, color: "var(--slate-700)" }}>
         <p style={{ fontSize: "1.05rem", marginBottom: "18px" }}>
           เว็บไซต์คลังภูมิปัญญาและผลิตภัณฑ์ชุมชนรูปแบบ 3 มิติและความจริงเสริม (3D/AR) รวบรวมวัตถุพิพิธภัณฑ์
-          ผลิตภัณฑ์ ภูมิปัญญา และสถานที่สำคัญของ 5 แหล่งอัตลักษณ์สำคัญในจังหวัดสกลนคร
+          ผลิตภัณฑ์ ภูมิปัญญา และสถานที่สำคัญของ 5 แหล่งเรียนรู้สำคัญในจังหวัดสกลนคร
           เพื่อให้ทุกคนสามารถเข้าชมได้ผ่านเว็บเบราว์เซอร์ และวางจำลองโมเดลในพื้นที่จริงผ่านสมาร์ตโฟน (WebAR)
         </p>
         <p style={{ fontSize: "1.05rem", marginBottom: "24px" }}>
@@ -39,7 +39,7 @@ export default function AboutPage() {
         </p>
 
         <h2 style={{ fontSize: "1.3rem", fontWeight: 700, margin: "32px 0 16px", color: "var(--slate-900)" }}>
-          5 แหล่งอัตลักษณ์สำคัญ
+          5 แหล่งเรียนรู้สำคัญ
         </h2>
         <div style={{ display: "grid", gap: "12px" }}>
           <Link href="/c/tharae" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>

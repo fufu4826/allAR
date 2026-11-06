@@ -5,8 +5,8 @@ import PageSkeleton from "@/components/PageSkeleton";
 import { getPublishedNews } from "@/lib/queries";
 
 export const metadata = {
-  title: "ข่าวสารและความเคลื่อนไหว | AR.HERITAGE 5 แหล่งอัตลักษณ์สำคัญ",
-  description: "ติดตามข่าวสาร กิจกรรม และองค์ความรู้จาก 5 แหล่งอัตลักษณ์สำคัญ จังหวัดสกลนคร",
+  title: "ข่าวสารและความเคลื่อนไหว | AR.HERITAGE 5 แหล่งเรียนรู้สำคัญ",
+  description: "ติดตามข่าวสาร กิจกรรม และองค์ความรู้จาก 5 แหล่งเรียนรู้สำคัญ จังหวัดสกลนคร",
 };
 
 export default function NewsPage() {
@@ -29,7 +29,7 @@ async function NewsContent() {
         </span>
         <h1 className="section-title">ข่าวสารและความเคลื่อนไหว</h1>
         <p className="section-subtitle">
-          เรื่องราว กิจกรรมการลงพื้นที่ และการถ่ายทอดเทคโนโลยี WebAR สู่ 5 แหล่งอัตลักษณ์สำคัญ
+          เรื่องราว กิจกรรมการลงพื้นที่ และการถ่ายทอดเทคโนโลยี WebAR สู่ 5 แหล่งเรียนรู้สำคัญ
         </p>
       </div>
 

@@ -41,12 +41,12 @@ for i, (path, w) in enumerate([("web/public/brand/snru-logo.png", 44), ("web/pub
     x = badge[0] + 8 + (0 if i == 0 else 50)
     img.paste(logo, (x, badge[1] + (70 - logo.height) // 2), logo)
 d.text((190, 52), "AR.HERITAGE", font=bold(30), fill="white")
-d.text((190, 92), "5 แหล่งอัตลักษณ์สำคัญ", font=regular(20), fill="#f4d4bd")
+d.text((190, 92), "5 แหล่งเรียนรู้สำคัญ", font=regular(20), fill="#f4d4bd")
 
 d.rectangle((60, 214, 100, 216), fill="#f4a35d")
 d.text((114, 200), "SAKON NAKHON · THAILAND", font=bold(20), fill="#f5d4b6")
 y = 238
-for text, color in [("เปิดประตูสู่", "white"), ("5 แหล่งอัตลักษณ์", "#ffb982"), ("เมืองสกลนคร", "white")]:
+for text, color in [("เปิดประตูสู่", "white"), ("5 แหล่งเรียนรู้", "#ffb982"), ("เมืองสกลนคร", "white")]:
     d.text((60, y), text, font=bold(66), fill=color)
     y += 86
 d.text((60, y + 18), "สำรวจวัฒนธรรมและภูมิปัญญาชุมชน ผ่านโมเดล 3 มิติและ AR", font=regular(25), fill="#fff4eb")

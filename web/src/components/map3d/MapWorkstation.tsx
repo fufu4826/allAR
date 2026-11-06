@@ -155,7 +155,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
         )}
       </div>
 
-      {/* Right Column: Clean White Rounded Panel ("5 แหล่งอัตลักษณ์สำคัญ") */}
+      {/* Right Column: Clean White Rounded Panel ("5 แหล่งเรียนรู้สำคัญ") */}
       <aside className="mw-sidebar">
         {/* Clean Header */}
         <div className="mw-sidebar-header">
@@ -163,7 +163,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
             <i className="fa-solid fa-map-location-dot"></i>
           </div>
           <div style={{ minWidth: 0 }}>
-            <h2 className="mw-sidebar-title">5 แหล่งอัตลักษณ์สำคัญ</h2>
+            <h2 className="mw-sidebar-title">5 แหล่งเรียนรู้สำคัญ</h2>
             <span className="mw-sidebar-sub">5 CULTURAL IDENTITIES OF SAKON NAKHON</span>
           </div>
         </div>

@@ -19,7 +19,7 @@ export default function WelcomeCover() {
           </div>
           <div className="welcome-brand-text">
             <strong>AR.HERITAGE</strong>
-            <span>5 แหล่งอัตลักษณ์สำคัญ</span>
+            <span>5 แหล่งเรียนรู้สำคัญ</span>
           </div>
         </div>
         <div className="welcome-content">
@@ -29,7 +29,7 @@ export default function WelcomeCover() {
           <h2 id="welcome-title">
             เปิดประตูสู่
             <br />
-            <em>5 แหล่งอัตลักษณ์</em>
+            <em>5 แหล่งเรียนรู้</em>
             <br />
             เมืองสกลนคร
           </h2>

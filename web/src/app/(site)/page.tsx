@@ -50,7 +50,7 @@ async function HomeContent() {
             <h1 className="hero-title">
               เปิดประตูสู่เรื่องราว
               <br />
-              <span className="gradient-text">5 แหล่งอัตลักษณ์สำคัญ</span>
+              <span className="gradient-text">5 แหล่งเรียนรู้สำคัญ</span>
               <br />
               ด้วยเทคโนโลยีความเป็นจริงเสริม (AR)
             </h1>
@@ -88,7 +88,7 @@ async function HomeContent() {
                     <i className="fa-regular fa-newspaper"></i> NEWS &amp; ARTICLES
                   </span>
                   <h2 id="hero-news-title">ข่าวสารและความเคลื่อนไหว</h2>
-                  <p>เรื่องราวจาก 5 แหล่งอัตลักษณ์สำคัญ</p>
+                  <p>เรื่องราวจาก 5 แหล่งเรียนรู้สำคัญ</p>
                 </div>
                 <span className="hero-news-header-icon" aria-hidden="true">
                   <i className="fa-solid fa-newspaper"></i>
@@ -146,7 +146,7 @@ async function HomeContent() {
             <span className="section-badge">
               <i className="fa-solid fa-layer-group"></i> 5 Cultural Identities
             </span>
-            <h2 className="section-title">5 แหล่งอัตลักษณ์สำคัญ &amp; การแสดงผล 3D AR</h2>
+            <h2 className="section-title">5 แหล่งเรียนรู้สำคัญ &amp; การแสดงผล 3D AR</h2>
             <p className="section-subtitle">
               เลือกสัมผัสเรื่องราว องค์ความรู้ และโมเดลสามมิติที่ผ่านการสแกนและขึ้นรูปด้วยเทคโนโลยีความเป็นจริงเสริม
             </p>
@@ -182,7 +182,7 @@ async function HomeContent() {
             <span className="section-badge">
               <i className="fa-solid fa-newspaper"></i> News &amp; Articles
             </span>
-            <h2 className="section-title">ข่าวสารและองค์ความรู้ 5 แหล่งอัตลักษณ์</h2>
+            <h2 className="section-title">ข่าวสารและองค์ความรู้ 5 แหล่งเรียนรู้</h2>
             <p className="section-subtitle">ติดตามความเคลื่อนไหว กิจกรรมการลงพื้นที่ และการถ่ายทอดเทคโนโลยีสู่ชุมชน</p>
           </div>
 

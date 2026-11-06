@@ -119,7 +119,7 @@ async function Content() {
       <section>
         <div className="mb-4">
           <h1 className="text-2xl font-bold">จัดการข่าวสาร</h1>
-          <p className="text-sm text-muted">เพิ่มและแก้ไขข่าวสารหรือเรื่องราวประชาสัมพันธ์ของ 5 แหล่งอัตลักษณ์</p>
+          <p className="text-sm text-muted">เพิ่มและแก้ไขข่าวสารหรือเรื่องราวประชาสัมพันธ์ของ 5 แหล่งเรียนรู้</p>
         </div>
         <div className="mb-6">
           <details className="rounded-2xl border border-line bg-white p-4">

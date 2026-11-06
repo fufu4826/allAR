@@ -43,7 +43,7 @@ export default function SiteNavbar() {
             </span>
             <div className="logo-text">
               <span className="brand-title">AR.HERITAGE</span>
-              <span className="brand-sub">5 แหล่งอัตลักษณ์สำคัญ</span>
+              <span className="brand-sub">5 แหล่งเรียนรู้สำคัญ</span>
             </div>
           </Link>
 

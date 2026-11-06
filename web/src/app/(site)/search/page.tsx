@@ -4,8 +4,8 @@ import SearchResults from "./SearchResults";
 import { getSearchIndex } from "@/lib/queries";
 
 export const metadata = {
-  title: "ค้นหาชิ้นงาน 3D & AR | AR.HERITAGE 5 แหล่งอัตลักษณ์สำคัญ",
-  description: "ค้นหาผลิตภัณฑ์ วัตถุ และมรดกทางวัฒนธรรม 5 แหล่งอัตลักษณ์สำคัญ จังหวัดสกลนคร",
+  title: "ค้นหาชิ้นงาน 3D & AR | AR.HERITAGE 5 แหล่งเรียนรู้สำคัญ",
+  description: "ค้นหาผลิตภัณฑ์ วัตถุ และมรดกทางวัฒนธรรม 5 แหล่งเรียนรู้สำคัญ จังหวัดสกลนคร",
 };
 
 export default function SearchPage() {

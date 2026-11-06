@@ -24,7 +24,7 @@ export default function SiteFooter() {
             </span>
             <div className="logo-text">
               <span className="brand-title">AR.HERITAGE</span>
-              <span className="brand-sub">นวัตกรรม 3D AR สู่ 5 แหล่งอัตลักษณ์</span>
+              <span className="brand-sub">นวัตกรรม 3D AR สู่ 5 แหล่งเรียนรู้</span>
             </div>
           </div>
           <p className="footer-desc">
@@ -33,7 +33,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="footer-col">
-          <h4>5 แหล่งอัตลักษณ์</h4>
+          <h4>5 แหล่งเรียนรู้</h4>
           <ul>
             <li><Link href="/c/tharae">1. ชุมชนท่าแร่</Link></li>
             <li><Link href="/c/watklang">2. ท่าวัด (วัดกลางศรีเชียงใหม่)</Link></li>
@@ -74,7 +74,7 @@ export default function SiteFooter() {
 
       <div className="footer-bottom">
         <div className="container footer-bottom-flex">
-          <p>&copy; 2026 นวัตกรรม 3D AR สู่ 5 แหล่งอัตลักษณ์สำคัญ. จัดทำเพื่อการศึกษาและรายงานผลการฝึกงาน.</p>
+          <p>&copy; 2026 นวัตกรรม 3D AR สู่ 5 แหล่งเรียนรู้สำคัญ. จัดทำเพื่อการศึกษาและรายงานผลการฝึกงาน.</p>
           <p className="powered-by">Powered by WebXR, Google Model-Viewer & Modern Web Tech</p>
         </div>
       </div>

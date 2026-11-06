@@ -1,36 +1,33 @@
 "use client";
 
 import "./map3d.css";
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Sakon3DMap from "@/components/map3d/Sakon3DMap";
 import CommunityMap from "@/components/CommunityMap";
-import { SAKON_LANDMARKS_3D, type Landmark3DItem } from "@/components/map3d/data/landmarksData";
-
-interface Pin {
-  slug: string;
-  number: number;
-  name: string;
-  location: string;
-  position: [number, number];
-  color: string;
-  itemCount: number;
-  placeholder: boolean;
-}
+import type { MapLandmark } from "@/components/map3d/data/landmarksData";
 
 interface MapWorkstationProps {
-  pins: Pin[];
+  landmarks: MapLandmark[];
 }
 
-export default function MapWorkstation({ pins }: MapWorkstationProps) {
+// iPhone Safari has no element fullscreen API, so the button is hidden there.
+const noop = () => () => {};
+const canFullscreen = () =>
+  typeof document !== "undefined" &&
+  !!document.fullscreenEnabled &&
+  typeof document.documentElement.requestFullscreen === "function";
+
+export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
+  const fullscreenSupported = useSyncExternalStore(noop, canFullscreen, () => false);
   const [mapMode, setMapMode] = useState<"3d" | "osm">("3d");
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const workstationRef = useRef<HTMLDivElement>(null);
   const sidebarListRef = useRef<HTMLDivElement>(null);
 
-  const selectedItem: Landmark3DItem | undefined = useMemo(() => {
-    return SAKON_LANDMARKS_3D.find((lm) => lm.id === selectedSlug);
-  }, [selectedSlug]);
+  const selectedItem: MapLandmark | undefined = useMemo(() => {
+    return landmarks.find((lm) => lm.id === selectedSlug);
+  }, [landmarks, selectedSlug]);
 
   const handleSelectLandmark = (slug: string) => {
     if (!slug || selectedSlug === slug) {
@@ -38,14 +35,17 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
     } else {
       setSelectedSlug(slug);
       const cardEl = document.getElementById(`workstation-card-${slug}`);
-      if (cardEl && sidebarListRef.current) {
-        cardEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      const list = sidebarListRef.current;
+      if (cardEl && list) {
+        // Scroll only the card list; scrollIntoView would also scroll the page and push the map under the header.
+        const top = cardEl.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+        list.scrollTo({ top: top - 8, behavior: "smooth" });
       }
     }
   };
 
   const toggleFullscreen = () => {
-    if (!workstationRef.current) return;
+    if (!workstationRef.current || !canFullscreen()) return;
     if (!document.fullscreenElement) {
       workstationRef.current.requestFullscreen().catch(() => {});
     } else {
@@ -78,19 +78,23 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={toggleFullscreen}
-            className="mw-icon-btn"
-            title="ขยายเต็มจอ"
-          >
-            <i className="fa-solid fa-expand"></i>
-          </button>
+          {fullscreenSupported && (
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              className="mw-icon-btn"
+              title="ขยายเต็มจอ"
+              aria-label="ขยายเต็มจอ"
+            >
+              <i className="fa-solid fa-expand"></i>
+            </button>
+          )}
         </div>
 
         {mapMode === "3d" ? (
           <div className="relative w-full h-full">
             <Sakon3DMap
+              landmarks={landmarks}
               selectedId={selectedSlug}
               onSelectLandmark={handleSelectLandmark}
               className="w-full h-full"
@@ -99,7 +103,7 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
         ) : (
           <div className="relative w-full h-full">
             <CommunityMap
-              pins={pins}
+              landmarks={landmarks}
               selectedId={selectedSlug}
               onSelectLandmark={handleSelectLandmark}
             />
@@ -166,7 +170,7 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
 
         {/* Scrollable 5 Cards List (No numbers, no water level badge, full description text) */}
         <div ref={sidebarListRef} className="mw-card-list">
-          {SAKON_LANDMARKS_3D.map((item) => {
+          {landmarks.map((item) => {
             const isSelected = selectedSlug === item.id;
             return (
               <div

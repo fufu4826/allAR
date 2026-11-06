@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { getCommunities } from "@/lib/queries";
 import MapWorkstation from "@/components/map3d/MapWorkstation";
+import { toMapLandmarks } from "@/components/map3d/data/landmarksData";
 import PageSkeleton from "@/components/PageSkeleton";
 
 export const metadata: Metadata = {
@@ -23,16 +24,19 @@ async function MapPageContent() {
   await connection();
   const communities = await getCommunities();
 
-  const pins = communities.map((c, i) => ({
-    slug: c.slug,
-    number: i + 1,
-    name: c.shortName,
-    location: c.location,
-    position: c.position,
-    color: c.color,
-    itemCount: c.items.length,
-    placeholder: !!c.placeholder,
-  }));
+  const landmarks = toMapLandmarks(
+    communities.map((c) => ({
+      slug: c.slug,
+      name: c.name,
+      shortName: c.shortName,
+      englishName: c.englishName,
+      tagline: c.tagline,
+      location: c.location,
+      position: c.position,
+      itemCount: c.items.length,
+      placeholder: !!c.placeholder,
+    })),
+  );
 
-  return <MapWorkstation pins={pins} />;
+  return <MapWorkstation landmarks={landmarks} />;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { MapPin } from "./LeafletMap";
+import type { MapLandmark } from "@/components/map3d/data/landmarksData";
 
 const LeafletMap = dynamic(() => import("./LeafletMap"), {
   ssr: false,
@@ -13,11 +13,11 @@ const LeafletMap = dynamic(() => import("./LeafletMap"), {
 });
 
 export interface CommunityMapProps {
-  pins: MapPin[];
+  landmarks: MapLandmark[];
   selectedId?: string | null;
   onSelectLandmark?: (slug: string) => void;
 }
 
-export default function CommunityMap({ pins, selectedId, onSelectLandmark }: CommunityMapProps) {
-  return <LeafletMap pins={pins} selectedId={selectedId} onSelectLandmark={onSelectLandmark} />;
+export default function CommunityMap({ landmarks, selectedId, onSelectLandmark }: CommunityMapProps) {
+  return <LeafletMap landmarks={landmarks} selectedId={selectedId} onSelectLandmark={onSelectLandmark} />;
 }

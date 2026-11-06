@@ -3,21 +3,10 @@
 import { useEffect } from "react";
 import L from "leaflet";
 import { MapContainer, Marker, TileLayer, ZoomControl, useMap } from "react-leaflet";
-import { SAKON_LANDMARKS_3D, type Landmark3DItem } from "@/components/map3d/data/landmarksData";
-
-export type MapPin = {
-  slug: string;
-  number: number;
-  name: string;
-  location: string;
-  position: [number, number];
-  color: string;
-  itemCount: number;
-  placeholder?: boolean;
-};
+import type { MapLandmark } from "@/components/map3d/data/landmarksData";
 
 interface LeafletMapProps {
-  pins: MapPin[];
+  landmarks: MapLandmark[];
   selectedId?: string | null;
   onSelectLandmark?: (slug: string) => void;
 }
@@ -25,7 +14,11 @@ interface LeafletMapProps {
 const OVERVIEW_CENTER: [number, number] = [17.152, 104.135];
 const OVERVIEW_ZOOM = 11;
 
-function createLandmarkDivIcon(lm: Landmark3DItem, isSelected: boolean) {
+// shortName comes from the database, so escape it before putting it into the marker HTML.
+const escapeHtml = (text: string) =>
+  text.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]!);
+
+function createLandmarkDivIcon(lm: MapLandmark, isSelected: boolean) {
   const anchor = lm.pinAnchor || "center";
   const badgeTranslate =
     anchor === "left"
@@ -42,15 +35,15 @@ function createLandmarkDivIcon(lm: Landmark3DItem, isSelected: boolean) {
       <div style="position:relative;width:0;height:0;">
         <div class="mw-2d-dot ${isSelected ? "active" : ""}"></div>
         <div class="mw-pin-pill mw-2d-pill ${isSelected ? "active" : ""}" style="transform:${badgeTranslate};">
-          <span class="mw-pin-icon"><i class="${lm.faIcon}"></i></span>
-          <span class="mw-pin-text">${lm.shortName}</span>
+          <span class="mw-pin-icon"><i class="${escapeHtml(lm.faIcon)}"></i></span>
+          <span class="mw-pin-text">${escapeHtml(lm.shortName)}</span>
         </div>
       </div>
     `,
   });
 }
 
-function MapFlyController({ selectedId }: { selectedId?: string | null }) {
+function MapFlyController({ landmarks, selectedId }: { landmarks: MapLandmark[]; selectedId?: string | null }) {
   const map = useMap();
 
   useEffect(() => {
@@ -62,16 +55,16 @@ function MapFlyController({ selectedId }: { selectedId?: string | null }) {
       map.flyTo(OVERVIEW_CENTER, OVERVIEW_ZOOM, { duration: 0.7 });
       return;
     }
-    const found = SAKON_LANDMARKS_3D.find((lm) => lm.id === selectedId);
+    const found = landmarks.find((lm) => lm.id === selectedId);
     if (found) {
       map.flyTo([found.lat, found.lon], 15, { duration: 0.75 });
     }
-  }, [selectedId, map]);
+  }, [landmarks, selectedId, map]);
 
   return null;
 }
 
-export default function LeafletMap({ selectedId, onSelectLandmark }: LeafletMapProps) {
+export default function LeafletMap({ landmarks, selectedId, onSelectLandmark }: LeafletMapProps) {
   return (
     <div className="relative w-full h-full bg-[#e5edf5]">
       <MapContainer
@@ -87,9 +80,9 @@ export default function LeafletMap({ selectedId, onSelectLandmark }: LeafletMapP
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <MapFlyController selectedId={selectedId} />
+        <MapFlyController landmarks={landmarks} selectedId={selectedId} />
 
-        {SAKON_LANDMARKS_3D.map((lm) => {
+        {landmarks.map((lm) => {
           const isSelected = selectedId === lm.id;
           return (
             <Marker

@@ -4,10 +4,15 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { SAKON_DEM } from "./data/sakonDem";
 import { SAKON_BOUNDARY_GEO } from "./data/sakonBoundary";
-import { SAKON_LANDMARKS_3D, type Landmark3DItem } from "./data/landmarksData";
+import type { MapLandmark } from "./data/landmarksData";
 import { MAJOR_HIGHWAYS, SECONDARY_HIGHWAYS, type RoadDefinition } from "./data/roadsData";
+
+// Terrain textures. The satellite one is only downloaded when the visitor switches to it.
+const CARTOON_TEXTURE_URL = "/map3d/sakon_satellite_cartoon.webp";
+const SATELLITE_TEXTURE_URL = "/map3d/sakon_satellite_s2.webp";
 
 // Projection Constants
 const SAKON_CENTER_LON = 103.84395;
@@ -56,6 +61,22 @@ function isInsideBoundary(px: number, pz: number): boolean {
   return inside;
 }
 
+/** Dispose every geometry, material and texture under an object. */
+function disposeObject(root: THREE.Object3D) {
+  root.traverse((obj) => {
+    const mesh = obj as THREE.Mesh;
+    if (mesh.geometry) mesh.geometry.dispose();
+    const material = mesh.material as THREE.Material | THREE.Material[] | undefined;
+    if (!material) return;
+    for (const mat of Array.isArray(material) ? material : [material]) {
+      for (const value of Object.values(mat)) {
+        if (value instanceof THREE.Texture) value.dispose();
+      }
+      mat.dispose();
+    }
+  });
+}
+
 // Sakon Nakhon 5 Landmarks Overview Pivot
 const DEFAULT_TARGET = new THREE.Vector3(12.5, 0.1, 5.0);
 const DEFAULT_CAM_POS = new THREE.Vector3(12.5, 76.0, 38.0);
@@ -70,13 +91,16 @@ interface CameraAnimState {
 }
 
 export interface Sakon3DMapCanvasProps {
+  landmarks: MapLandmark[];
   selectedId?: string | null;
   onSelectLandmark?: (id: string) => void;
   className?: string;
 }
 
-export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, className }: Sakon3DMapCanvasProps) {
+export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandmark, className }: Sakon3DMapCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const landmarksRef = useRef<MapLandmark[]>(landmarks);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
 
   const [roadsVisible, setRoadsVisible] = useState<boolean>(true);
   const [texMode, setTexMode] = useState<"cartoon" | "satellite">("cartoon");
@@ -89,7 +113,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
   const roadGroupRef = useRef<THREE.Group | null>(null);
   const terrainMeshRef = useRef<THREE.Mesh | null>(null);
   const cartoonTextureRef = useRef<THREE.Texture | null>(null);
-  const googleTextureRef = useRef<THREE.Texture | null>(null);
+  const satelliteTextureRef = useRef<THREE.Texture | null>(null);
 
   // Direct DOM references for 0-delay hardware-accelerated pins & compass
   const badgeRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -102,8 +126,12 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     selectedIdRef.current = selectedId;
   }, [selectedId]);
 
+  useEffect(() => {
+    landmarksRef.current = landmarks;
+  }, [landmarks]);
+
   // Smooth fly to landmark with cubic ease-out
-  const flyTo = useCallback((landmark: Landmark3DItem | null) => {
+  const flyTo = useCallback((landmark: MapLandmark | null) => {
     if (!controlsRef.current || !cameraRef.current) return;
     const controls = controlsRef.current;
     const camera = cameraRef.current;
@@ -140,7 +168,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     if (selectedId) {
       if (lastFlyIdRef.current !== selectedId) {
         lastFlyIdRef.current = selectedId;
-        const found = SAKON_LANDMARKS_3D.find((lm) => lm.id === selectedId);
+        const found = landmarksRef.current.find((lm) => lm.id === selectedId);
         if (found) {
           flyTo(found);
         }
@@ -153,7 +181,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     }
   }, [selectedId, flyTo]);
 
-  const handleSelect = (item: Landmark3DItem) => {
+  const handleSelect = (item: MapLandmark) => {
     if (onSelectLandmark) {
       onSelectLandmark(item.id);
     }
@@ -179,7 +207,16 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       const next = prev === "cartoon" ? "satellite" : "cartoon";
       if (terrainMeshRef.current && (terrainMeshRef.current.material as THREE.MeshStandardMaterial)) {
         const mat = terrainMeshRef.current.material as THREE.MeshStandardMaterial;
-        mat.map = next === "cartoon" ? cartoonTextureRef.current : googleTextureRef.current;
+        if (next === "satellite" && !satelliteTextureRef.current) {
+          const renderer = rendererRef.current;
+          satelliteTextureRef.current = new THREE.TextureLoader().load(SATELLITE_TEXTURE_URL, (tex) => {
+            tex.colorSpace = THREE.SRGBColorSpace;
+            if (renderer) tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+            tex.generateMipmaps = true;
+            tex.needsUpdate = true;
+          });
+        }
+        mat.map = next === "cartoon" ? cartoonTextureRef.current : satelliteTextureRef.current;
         mat.needsUpdate = true;
       }
       return next;
@@ -200,11 +237,19 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     camera.position.copy(DEFAULT_CAM_POS);
     cameraRef.current = camera;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    // Phones and tablets: no shadows, no MSAA, lower pixel ratio, to keep mid-range devices smooth.
+    const lowPower = window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 768;
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: !lowPower,
+      alpha: true,
+      powerPreference: lowPower ? "default" : "high-performance",
+    });
+    rendererRef.current = renderer;
     renderer.setClearColor(0x000000, 0);
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPower ? 1.5 : 2));
+    renderer.shadowMap.enabled = !lowPower;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
@@ -253,20 +298,13 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
     // 3. Textures
     const textureLoader = new THREE.TextureLoader();
-    const cartoonTex = textureLoader.load("/map3d/sakon_satellite_cartoon.webp", (tex) => {
+    const cartoonTex = textureLoader.load(CARTOON_TEXTURE_URL, (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
       tex.generateMipmaps = true;
       if (terrainMeshRef.current) (terrainMeshRef.current.material as THREE.MeshStandardMaterial).needsUpdate = true;
     });
     cartoonTextureRef.current = cartoonTex;
-
-    const googleTex = textureLoader.load("/map3d/sakon_satellite_google.webp", (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-      tex.generateMipmaps = true;
-    });
-    googleTextureRef.current = googleTex;
 
     const satMaterial = new THREE.MeshStandardMaterial({
       map: cartoonTex,
@@ -554,10 +592,15 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     provinceGroup.add(roadGroup);
 
     // 9. Load 5 GLB Models with Authentic Placement
-    const gltfLoader = new GLTFLoader();
+    // Map models are meshopt-compressed (scripts/optimize-media.mjs), so the loader needs the decoder.
+    const gltfLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+    const sceneLandmarks = landmarksRef.current;
+    const modelCount = sceneLandmarks.filter((lm) => lm.modelUrl).length;
     let loadedCount = 0;
+    let disposed = false;
+    if (modelCount === 0) setIsLoading(false);
 
-    SAKON_LANDMARKS_3D.forEach((landmark) => {
+    sceneLandmarks.forEach((landmark) => {
       const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.modelConfig.offset?.x || 0);
       const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
       const elev = getTerrainElev(x, z);
@@ -565,10 +608,17 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       const landmarkGroup = new THREE.Group();
       landmarkGroup.position.set(x, elev.y + (landmark.modelConfig.offset?.y || 0.05), z);
 
+      provinceGroup.add(landmarkGroup);
+      if (!landmark.modelUrl) return;
+
       gltfLoader.load(
         landmark.modelUrl,
         (gltf) => {
           const model = gltf.scene;
+          if (disposed) {
+            disposeObject(model);
+            return;
+          }
           const s = landmark.modelConfig.scale || 2.0;
           model.scale.set(s, s, s);
           if (landmark.modelConfig.rotationY) model.rotation.y = landmark.modelConfig.rotationY;
@@ -627,7 +677,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
           landmarkGroup.add(model);
           loadedCount++;
-          if (loadedCount >= SAKON_LANDMARKS_3D.length) {
+          if (loadedCount >= modelCount) {
             setIsLoading(false);
           }
         },
@@ -635,11 +685,9 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
         (err) => {
           console.warn("Failed to load model: " + landmark.modelUrl, err);
           loadedCount++;
-          if (loadedCount >= SAKON_LANDMARKS_3D.length) setIsLoading(false);
+          if (!disposed && loadedCount >= modelCount) setIsLoading(false);
         }
       );
-
-      provinceGroup.add(landmarkGroup);
     });
 
     // 10. Animation & Render Loop
@@ -647,7 +695,17 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     const tempV = new THREE.Vector3();
     const camDir = new THREE.Vector3();
 
+    // Stop rendering while the tab is hidden or the map is scrolled off-screen (saves battery on phones).
+    let tabVisible = document.visibilityState === "visible";
+    let onScreen = true;
+    let running = false;
+
     const animate = () => {
+      if (!tabVisible || !onScreen) {
+        running = false;
+        return;
+      }
+      running = true;
       reqId = requestAnimationFrame(animate);
 
       // 1. Time-based Camera fly-to animation (Smooth cubic ease-out)
@@ -672,8 +730,8 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       const currentWidth = container.clientWidth || 800;
       const currentHeight = container.clientHeight || 580;
 
-      for (let i = 0; i < SAKON_LANDMARKS_3D.length; i++) {
-        const lm = SAKON_LANDMARKS_3D[i];
+      for (let i = 0; i < sceneLandmarks.length; i++) {
+        const lm = sceneLandmarks[i];
         const exactX = (lm.lon - SAKON_CENTER_LON) * SCALE_LON;
         const exactZ = -(lm.lat - SAKON_CENTER_LAT) * SCALE_LAT;
         const exactElev = getTerrainElev(exactX, exactZ);
@@ -756,11 +814,25 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       }
     };
 
+    const resume = () => {
+      if (!running && tabVisible && onScreen) animate();
+    };
+    const handleVisibility = () => {
+      tabVisible = document.visibilityState === "visible";
+      resume();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    const observer = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      resume();
+    });
+    observer.observe(container);
+
     animate();
 
     // If mounted with an already-selected landmark (e.g., switching from 2D to 3D mode), fly to it
     if (selectedIdRef.current) {
-      const initialLm = SAKON_LANDMARKS_3D.find((lm) => lm.id === selectedIdRef.current);
+      const initialLm = sceneLandmarks.find((lm) => lm.id === selectedIdRef.current);
       if (initialLm) {
         lastFlyIdRef.current = initialLm.id;
         flyTo(initialLm);
@@ -780,7 +852,11 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     window.addEventListener("resize", handleResize);
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(reqId);
+      running = false;
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("resize", handleResize);
       controls.removeEventListener("start", cancelAnim);
       if (renderer.domElement) {
@@ -788,7 +864,15 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
         renderer.domElement.removeEventListener("pointerdown", cancelAnim);
         renderer.domElement.removeEventListener("touchstart", cancelAnim);
       }
+      // Free GPU memory: geometries, materials and textures are not released by renderer.dispose().
+      controls.dispose();
+      disposeObject(scene);
+      cartoonTex.dispose();
+      satelliteTextureRef.current?.dispose();
+      satelliteTextureRef.current = null;
       renderer.dispose();
+      renderer.forceContextLoss();
+      rendererRef.current = null;
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
@@ -816,7 +900,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       {/* 2D Markers Overlay */}
       <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
         {/* Real Ground Position Dots (Direct GPU translate3d with 0ms delay) */}
-        {SAKON_LANDMARKS_3D.map((lm) => {
+        {landmarks.map((lm) => {
           return (
             <div
               key={`dot-${lm.id}`}
@@ -833,7 +917,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
         })}
 
         {/* Floating Label Badges (Direct GPU translate3d with 0ms delay, rock-solid lock) */}
-        {SAKON_LANDMARKS_3D.map((item) => {
+        {landmarks.map((item) => {
           const isSelected = selectedId === item.id;
           const anchor = item.pinAnchor || "center";
           const alignClass =
@@ -883,6 +967,18 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
           <span ref={compassLabelRef}>ทิศเหนือ (N)</span>
         </div>
       </div>
+
+      {/* Satellite imagery credit (CC BY 4.0 requires attribution) */}
+      {texMode === "satellite" && (
+        <a
+          href="https://s2maps.eu"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-1 left-2 z-30 rounded bg-black/55 px-2 py-0.5 text-[10px] leading-tight text-white/90"
+        >
+          ภาพดาวเทียม: Sentinel-2 cloudless 2016 โดย EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016) · CC BY 4.0
+        </a>
+      )}
 
       {/* Bottom-Right Compact 3D Layer Controls */}
       <div className="mw-layer-bar">

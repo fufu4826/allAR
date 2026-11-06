@@ -587,7 +587,10 @@
     max-height: none;
   }
   .mw-viewport {
-    min-height: 520px;
+    /* explicit height: the shell is height:auto here, so height:100% would collapse the label overlay to 0 */
+    flex: none;
+    height: min(70vh, 560px);
+    min-height: 420px;
   }
   .mw-sidebar {
     width: 100%;

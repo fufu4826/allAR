@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Prompt, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { siteDescription, siteOpenGraph, siteTitle } from "@/content/seo";
 
 const prompt = Prompt({
   variable: "--font-prompt",
@@ -15,9 +16,10 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "AR Heritage & Identity | นวัตกรรมเทคโนโลยี 3D AR สู่ 5 แหล่งอัตลักษณ์สำคัญ",
-  description:
-    "การประยุกต์ใช้นวัตกรรม 3D Photogrammetry และเทคโนโลยี WebAR เชื่อมโยงมรดกทางวัฒนธรรม ประวัติศาสตร์ สถาปัตยกรรม และภูมิปัญญาท้องถิ่น 5 แหล่งอัตลักษณ์สำคัญ จังหวัดสกลนคร",
+  title: siteTitle,
+  description: siteDescription,
+  openGraph: siteOpenGraph,
+  twitter: { card: "summary_large_image", title: siteTitle, description: siteDescription },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

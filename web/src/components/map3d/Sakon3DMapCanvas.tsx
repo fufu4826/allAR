@@ -60,6 +60,15 @@ function isInsideBoundary(px: number, pz: number): boolean {
 const DEFAULT_TARGET = new THREE.Vector3(12.5, 0.1, 5.0);
 const DEFAULT_CAM_POS = new THREE.Vector3(12.5, 76.0, 38.0);
 
+interface CameraAnimState {
+  startTime: number;
+  duration: number;
+  startPos: THREE.Vector3;
+  targetPos: THREE.Vector3;
+  startTarget: THREE.Vector3;
+  targetLookAt: THREE.Vector3;
+}
+
 export interface Sakon3DMapCanvasProps {
   selectedId?: string | null;
   onSelectLandmark?: (id: string) => void;
@@ -74,10 +83,9 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // References for camera tweening
-  const cameraTargetRef = useRef<THREE.Vector3>(DEFAULT_TARGET.clone());
-  const cameraPosRef = useRef<THREE.Vector3>(DEFAULT_CAM_POS.clone());
-  const isAnimatingRef = useRef<boolean>(false);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
+  const animStateRef = useRef<CameraAnimState | null>(null);
   const roadGroupRef = useRef<THREE.Group | null>(null);
   const terrainMeshRef = useRef<THREE.Mesh | null>(null);
   const cartoonTextureRef = useRef<THREE.Texture | null>(null);
@@ -94,29 +102,53 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     selectedIdRef.current = selectedId;
   }, [selectedId]);
 
-  // Smooth fly to landmark
+  // Smooth fly to landmark with cubic ease-out
   const flyTo = useCallback((landmark: Landmark3DItem | null) => {
-    if (!landmark) {
-      cameraTargetRef.current.copy(DEFAULT_TARGET);
-      cameraPosRef.current.copy(DEFAULT_CAM_POS);
-      isAnimatingRef.current = true;
-      return;
-    }
-    const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.modelConfig.offset?.x || 0);
-    const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
-    const elev = getTerrainElev(x, z);
+    if (!controlsRef.current || !cameraRef.current) return;
+    const controls = controlsRef.current;
+    const camera = cameraRef.current;
 
-    cameraTargetRef.current.set(x, elev.y + 0.3, z);
-    cameraPosRef.current.set(x, elev.y + 5.2, z + 4.8);
-    isAnimatingRef.current = true;
+    let targetLookAt: THREE.Vector3;
+    let targetPos: THREE.Vector3;
+
+    if (!landmark) {
+      targetLookAt = DEFAULT_TARGET.clone();
+      targetPos = DEFAULT_CAM_POS.clone();
+    } else {
+      const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.modelConfig.offset?.x || 0);
+      const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
+      const elev = getTerrainElev(x, z);
+
+      targetLookAt = new THREE.Vector3(x, elev.y + 0.6, z);
+      targetPos = new THREE.Vector3(x, elev.y + 6.0, z + 7.5);
+    }
+
+    animStateRef.current = {
+      startTime: performance.now(),
+      duration: 650,
+      startPos: camera.position.clone(),
+      targetPos,
+      startTarget: controls.target.clone(),
+      targetLookAt,
+    };
   }, []);
 
-  // Synchronize when selectedId prop changes
+  const lastFlyIdRef = useRef<string | null>(null);
+
+  // Synchronize when selectedId prop changes without redundant triggers
   useEffect(() => {
     if (selectedId) {
-      const found = SAKON_LANDMARKS_3D.find((lm) => lm.id === selectedId);
-      if (found) {
-        flyTo(found);
+      if (lastFlyIdRef.current !== selectedId) {
+        lastFlyIdRef.current = selectedId;
+        const found = SAKON_LANDMARKS_3D.find((lm) => lm.id === selectedId);
+        if (found) {
+          flyTo(found);
+        }
+      }
+    } else {
+      if (lastFlyIdRef.current !== null) {
+        lastFlyIdRef.current = null;
+        flyTo(null);
       }
     }
   }, [selectedId, flyTo]);
@@ -125,7 +157,6 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     if (onSelectLandmark) {
       onSelectLandmark(item.id);
     }
-    flyTo(item);
   };
 
   const handleResetCamera = useCallback(() => {
@@ -169,6 +200,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
     camera.position.copy(DEFAULT_CAM_POS);
+    cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     renderer.setSize(width, height);
@@ -182,12 +214,21 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.06;
+    controls.dampingFactor = 0.08;
     controls.target.copy(DEFAULT_TARGET);
-    controls.minDistance = 12;
-    controls.maxDistance = 150;
+    controls.minDistance = 2.0;
+    controls.maxDistance = 180.0;
     controls.maxPolarAngle = Math.PI / 2 - 0.08;
     controlsRef.current = controls;
+
+    // Immediately stop auto-animation on user touch/scroll/drag so user has 100% free control!
+    const cancelAnim = () => {
+      animStateRef.current = null;
+    };
+    controls.addEventListener("start", cancelAnim);
+    renderer.domElement.addEventListener("wheel", cancelAnim, { passive: true });
+    renderer.domElement.addEventListener("pointerdown", cancelAnim, { passive: true });
+    renderer.domElement.addEventListener("touchstart", cancelAnim, { passive: true });
 
     // 2. Natural Atmospheric Lighting
     const ambientLight = new THREE.AmbientLight(0xfffaf0, 0.52);
@@ -610,12 +651,18 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     const animate = () => {
       reqId = requestAnimationFrame(animate);
 
-      // Camera interpolation (Smooth Fly-to)
-      if (isAnimatingRef.current) {
-        controls.target.lerp(cameraTargetRef.current, 0.08);
-        camera.position.lerp(cameraPosRef.current, 0.08);
-        if (camera.position.distanceTo(cameraPosRef.current) < 0.04) {
-          isAnimatingRef.current = false;
+      // 1. Time-based Camera fly-to animation (Smooth cubic ease-out)
+      const anim = animStateRef.current;
+      if (anim) {
+        const elapsed = performance.now() - anim.startTime;
+        const progress = Math.min(1.0, elapsed / anim.duration);
+        const ease = 1 - Math.pow(1 - progress, 3);
+
+        camera.position.lerpVectors(anim.startPos, anim.targetPos, ease);
+        controls.target.lerpVectors(anim.startTarget, anim.targetLookAt, ease);
+
+        if (progress >= 1.0) {
+          animStateRef.current = null;
         }
       }
 
@@ -714,6 +761,12 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     return () => {
       cancelAnimationFrame(reqId);
       window.removeEventListener("resize", handleResize);
+      controls.removeEventListener("start", cancelAnim);
+      if (renderer.domElement) {
+        renderer.domElement.removeEventListener("wheel", cancelAnim);
+        renderer.domElement.removeEventListener("pointerdown", cancelAnim);
+        renderer.domElement.removeEventListener("touchstart", cancelAnim);
+      }
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
@@ -804,18 +857,20 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       </div>
 
       {/* Top Floating Controls */}
-      <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-2 pointer-events-none">
+      <div className="absolute top-4 left-4 right-4 z-30 flex items-center justify-between gap-3 pointer-events-none">
         {/* Compass Widget (Direct GPU transform with 0ms delay) */}
-        <div className="pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl px-3 py-1.5 shadow-md flex items-center gap-2.5 text-slate-800">
+        <div className="pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl px-3.5 py-2 shadow-lg flex items-center gap-3 text-slate-800">
           <div
             ref={compassNeedleRef}
-            className="w-6 h-6 flex items-center justify-center will-change-transform"
+            className="w-7 h-7 flex items-center justify-center will-change-transform"
           >
-            <i className="fa-solid fa-compass text-brand text-lg"></i>
+            <i className="fa-solid fa-compass text-brand text-xl"></i>
           </div>
-          <div className="text-[11px] leading-tight">
-            <span className="text-slate-400 block text-[9px]">ทิศทางกล้อง</span>
-            <span ref={compassLabelRef} className="font-semibold text-slate-800">
+          <div className="text-left">
+            <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium block leading-none mb-1">
+              ทิศทางกล้อง
+            </span>
+            <span ref={compassLabelRef} className="text-xs font-bold text-slate-800 block leading-none">
               ทิศเหนือ (N)
             </span>
           </div>
@@ -827,10 +882,10 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
           <button
             type="button"
             onClick={handleToggleRoads}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-medium border shadow-sm transition flex items-center gap-1.5 ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold border shadow-md transition flex items-center gap-2 ${
               roadsVisible
-                ? "bg-brand text-white border-brand shadow-orange-500/20"
-                : "bg-white/95 text-slate-700 border-slate-200 hover:bg-slate-50"
+                ? "bg-brand text-white border-brand shadow-orange-500/25"
+                : "bg-white/95 text-slate-700 border-slate-200 hover:border-orange-300 hover:text-brand"
             }`}
           >
             <i className="fa-solid fa-route"></i>
@@ -841,7 +896,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
           <button
             type="button"
             onClick={handleToggleTexture}
-            className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-white/95 text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-sm transition flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/95 text-slate-700 border border-slate-200 hover:border-orange-300 hover:text-brand shadow-md transition flex items-center gap-2"
           >
             <i className="fa-solid fa-layer-group text-brand"></i>
             <span className="hidden sm:inline">{texMode === "cartoon" ? "การ์ตูน 3D" : "ดาวเทียม"}</span>
@@ -852,7 +907,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
             type="button"
             onClick={handleResetCamera}
             title="รีเซ็ตมุมมอง 75° ภาพรวมสกลนคร"
-            className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-white/95 text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-sm transition flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/95 text-slate-700 border border-slate-200 hover:border-orange-300 hover:text-brand shadow-md transition flex items-center gap-2"
           >
             <i className="fa-solid fa-rotate-left"></i>
             <span className="hidden sm:inline">รีเซ็ตมุมมอง</span>

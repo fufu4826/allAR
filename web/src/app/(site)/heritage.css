@@ -2062,3 +2062,27 @@ model-viewer {
 .choice-action { color:var(--card-color); font-size:.8rem; font-weight:600; }
 .choice-action i { margin-left:4px; }
 .community-choice:focus-visible { outline:3px solid var(--orange-500); outline-offset:3px; }
+
+
+/* ========================================================
+   Full-Screen 3D Map Workstation Rules
+   ล็อกความสูงให้พอดีหน้าจอ ไม่มีช่องว่างล้นลงด้านล่าง
+   ======================================================== */
+html:has(.map-workstation-page),
+body:has(.map-workstation-page),
+body.map-workstation-active {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
+body:has(.map-workstation-page) .footer,
+body.map-workstation-active .footer {
+  display: none !important;
+}
+
+body:has(.map-workstation-page) .site-main,
+body.map-workstation-active .site-main {
+  height: calc(100vh - 109px) !important;
+  max-height: calc(100vh - 109px) !important;
+  overflow: hidden !important;
+}

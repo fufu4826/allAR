@@ -164,7 +164,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
           </div>
           <div style={{ minWidth: 0 }}>
             <h2 className="mw-sidebar-title">5 แหล่งเรียนรู้สำคัญ</h2>
-            <span className="mw-sidebar-sub">5 CULTURAL IDENTITIES OF SAKON NAKHON</span>
+            <span className="mw-sidebar-sub">5 LEARNING SITES OF SAKON NAKHON</span>
           </div>
         </div>
 

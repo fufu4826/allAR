@@ -2062,3 +2062,34 @@ model-viewer {
 .choice-action { color:var(--card-color); font-size:.8rem; font-weight:600; }
 .choice-action i { margin-left:4px; }
 .community-choice:focus-visible { outline:3px solid var(--orange-500); outline-offset:3px; }
+
+/* Narrow phones (<= 480px): keep the site name on one line inside the header. */
+@media (max-width: 480px) {
+  .logo {
+    gap: 8px;
+    min-width: 0;
+  }
+  .institution-logo {
+    width: 38px;
+    height: 46px;
+  }
+  .language-logo {
+    width: 44px;
+  }
+  .logo-text {
+    min-width: 0;
+  }
+  .brand-title {
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    line-height: 1.25;
+    white-space: nowrap;
+  }
+  .brand-sub {
+    font-size: 0.6rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

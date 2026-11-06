@@ -214,7 +214,14 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
                         <h3 className="text-sm font-bold leading-tight" style={{ color: "#ffffff" }}>
                           {selectedItem.name}
                         </h3>
-                        <span className="text-[11px] text-slate-400">{selectedItem.englishName}</span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[11px] text-slate-400">{selectedItem.englishName}</span>
+                          {selectedItem.dms && (
+                            <span className="text-[10px] text-amber-300/90 font-mono bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/60">
+                              {selectedItem.dms}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <button
@@ -395,9 +402,9 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
 
                     {/* Google Maps Coordinates & Location */}
                     <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400 px-0.5">
-                      <span className="flex items-center gap-1 text-slate-400 truncate max-w-[210px]">
+                      <span className="flex items-center gap-1.5 text-slate-400 truncate max-w-[210px]" title={item.location}>
                         <i className="fa-solid fa-location-dot text-rose-500 text-[10px] shrink-0"></i>
-                        <span className="truncate">{item.location}</span>
+                        <span className="truncate font-mono text-[10px] text-amber-200/90">{item.dms || item.location}</span>
                       </span>
                       <a
                         href={item.gmapsUrl}

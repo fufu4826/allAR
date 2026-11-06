@@ -15,6 +15,7 @@ export interface Landmark3DItem {
   tags: string;
   lat: number;
   lon: number;
+  dms?: string;
   gmapsUrl: string;
   location: string;
   modelUrl: string;
@@ -45,6 +46,7 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     tags: "สถาปัตยกรรมคาทอลิก • ดาวคริสต์มาส • WebAR Ready",
     lat: 17.2542,
     lon: 104.1840,
+    dms: "17°15'15.1\"N 104°11'02.4\"E",
     gmapsUrl: "https://www.google.com/maps?q=17.2542,104.1840",
     location: "ต.ท่าแร่ อ.เมืองสกลนคร (ฝั่งทิศเหนือของหนองหาร ริม ทล.22)",
     modelUrl: "/map3d/models/tharae.glb",
@@ -71,9 +73,10 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     desc: "ลานตะพักตะกอนน้ำพาริมทะเลสาบฝั่งตะวันออกเฉียงใต้ (Lacustrine Terrace) บริเวณดินเหนียวและตะกอนน้ำพา เป็นที่ตั้งของสิมโบราณศิลปะล้านช้างอันวิจิตร และใบเสมาหินทรายแปดทิศยุคทวารวดี",
     highlights: "ใบเสมาหินทรายโบราณ 8 ทิศ, พระอุโบสถสถาปัตยกรรมอีสานล้านช้าง, วิวริมหนองหาร",
     tags: "ใบเสมาหินทราย 8 ทิศ • สิมล้านช้าง • ทวารวดี",
-    lat: 17.1407,
-    lon: 104.2413,
-    gmapsUrl: "https://www.google.com/maps?q=17.1407,104.2413",
+    lat: 17.140694,
+    lon: 104.241306,
+    dms: "17°08'26.5\"N 104°14'28.7\"E",
+    gmapsUrl: "https://www.google.com/maps?q=17.140694,104.241306",
     location: "บ้านท่าวัด ต.เหล่าปอแดง อ.เมืองสกลนคร (ฝั่งตะวันออกของหนองหาร)",
     modelUrl: "/map3d/models/watklang.glb",
     modelConfig: {
@@ -81,8 +84,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
       rotationY: Math.PI * 0.35,
       offset: { x: 1.25, y: 0.05, z: 1.05 }, // Placed gracefully to the Southeast of Thawat village
     },
-    labelOffset2D: { x: 65, y: 15 }, // Floating label shifted East
-    pinAnchor: "left",
+    labelOffset2D: { x: 0, y: 0 },
+    pinAnchor: "center",
   },
   {
     id: "watnuea",
@@ -99,9 +102,10 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     desc: "แนวตะพักศิลาแลงริมขอบแอ่งน้ำ มีชั้นศิลาแลงและหินทรายในระดับตื้น ซึ่งคนโบราณยุคทวารวดีใช้สลักเป็นใบเสมาศิลาแลง และเป็นท่าเทียบแพท่องเที่ยวเชิงนิเวศ 'แพท่าวัด'",
     highlights: "หลวงพ่อพระพุทธรูปศิลาโบราณ, ท่าเทียบเรือแพท่องเที่ยวเชิงนิเวศ, ชมวิวเกาะดอนสวรรค์",
     tags: "พระศิลาโบราณ • ท่าเทียบแพท่องเที่ยว • วิวหนองหาร",
-    lat: 17.1446,
-    lon: 104.2396,
-    gmapsUrl: "https://www.google.com/maps?q=17.1446,104.2396",
+    lat: 17.144611,
+    lon: 104.239611,
+    dms: "17°08'40.6\"N 104°14'22.6\"E",
+    gmapsUrl: "https://www.google.com/maps?q=17.144611,104.239611",
     location: "บ้านท่าวัดเหนือ ต.เหล่าปอแดง อ.เมืองสกลนคร (ริมฝั่งหนองหาร)",
     modelUrl: "/map3d/models/watnuea.glb",
     modelConfig: {
@@ -109,8 +113,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
       rotationY: Math.PI * 0.25,
       offset: { x: -1.25, y: 0.05, z: -1.05 }, // Placed gracefully to the Northwest of Thawat village
     },
-    labelOffset2D: { x: -65, y: -15 }, // Floating label shifted West
-    pinAnchor: "right",
+    labelOffset2D: { x: 0, y: 0 },
+    pinAnchor: "center",
   },
   {
     id: "nonhom",
@@ -129,6 +133,7 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     tags: "ชนเผ่าภูไท • ผ้าย้อมครามธรรมชาติ • เรือนไม้โบราณ",
     lat: 17.0549,
     lon: 104.2118,
+    dms: "17°03'17.6\"N 104°12'42.5\"E",
     gmapsUrl: "https://www.google.com/maps?q=17.0549,104.2118",
     location: "ต.โนนหอม อ.เมืองสกลนคร (ทางหลวงสาย 223 ห่างจากตัวเมือง 13 กม.)",
     modelUrl: "/map3d/models/nonhom.glb",
@@ -157,6 +162,7 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     tags: "สัตว์ 3 ดำ • เกษตรทฤษฎีใหม่ • ศาสตร์พระราชา",
     lat: 17.0500,
     lon: 104.0200,
+    dms: "17°03'00.0\"N 104°01'12.0\"E",
     gmapsUrl: "https://www.google.com/maps?q=17.0500,104.0200",
     location: "บ้านนานกเค้า ต.ห้วยยาง อ.เมืองสกลนคร (แนวเชิงเขาภูพาน เลียบ ทล.213)",
     modelUrl: "/map3d/models/phuphan.glb",

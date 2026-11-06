@@ -60,16 +60,6 @@ function isInsideBoundary(px: number, pz: number): boolean {
 const DEFAULT_TARGET = new THREE.Vector3(12.5, 0.1, 5.0);
 const DEFAULT_CAM_POS = new THREE.Vector3(12.5, 76.0, 38.0);
 
-interface ProjectedPin {
-  item: Landmark3DItem;
-  x: number;
-  y: number;
-  baseX: number;
-  baseY: number;
-  visible: boolean;
-  zIndex: number;
-}
-
 export interface Sakon3DMapCanvasProps {
   selectedId?: string | null;
   onSelectLandmark?: (id: string) => void;
@@ -79,9 +69,6 @@ export interface Sakon3DMapCanvasProps {
 export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, className }: Sakon3DMapCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
 
-  const [projectedPins, setProjectedPins] = useState<ProjectedPin[]>([]);
-  const [compassHeading, setCompassHeading] = useState<number>(0);
-  const [compassDir, setCompassDir] = useState<string>("เหนือ (N)");
   const [roadsVisible, setRoadsVisible] = useState<boolean>(true);
   const [texMode, setTexMode] = useState<"cartoon" | "satellite">("cartoon");
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -95,6 +82,17 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
   const terrainMeshRef = useRef<THREE.Mesh | null>(null);
   const cartoonTextureRef = useRef<THREE.Texture | null>(null);
   const googleTextureRef = useRef<THREE.Texture | null>(null);
+
+  // Direct DOM references for 0-delay hardware-accelerated pins & compass
+  const badgeRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const dotRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const compassNeedleRef = useRef<HTMLDivElement | null>(null);
+  const compassLabelRef = useRef<HTMLSpanElement | null>(null);
+  const selectedIdRef = useRef<string | null | undefined>(selectedId);
+
+  useEffect(() => {
+    selectedIdRef.current = selectedId;
+  }, [selectedId]);
 
   // Smooth fly to landmark
   const flyTo = useCallback((landmark: Landmark3DItem | null) => {
@@ -624,11 +622,12 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       controls.update();
       renderer.render(scene, camera);
 
-      // Project pins onto 2D screen coordinates
+      // 2. Hardware-accelerated zero-delay pin projections (0ms delay)
       const currentWidth = container.clientWidth || 800;
       const currentHeight = container.clientHeight || 580;
 
-      const updatedPins: ProjectedPin[] = SAKON_LANDMARKS_3D.map((lm) => {
+      for (let i = 0; i < SAKON_LANDMARKS_3D.length; i++) {
+        const lm = SAKON_LANDMARKS_3D[i];
         const px = (lm.lon - SAKON_CENTER_LON) * SCALE_LON + (lm.modelConfig.offset?.x || 0);
         const pz = -(lm.lat - SAKON_CENTER_LAT) * SCALE_LAT + (lm.modelConfig.offset?.z || 0);
         const elev = getTerrainElev(px, pz);
@@ -637,34 +636,53 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
         tempV.applyMatrix4(provinceGroup.matrixWorld);
         tempV.project(camera);
 
-        const baseScreenX = (tempV.x * 0.5 + 0.5) * currentWidth;
-        const baseScreenY = (-(tempV.y * 0.5) + 0.5) * currentHeight;
-        const screenX = baseScreenX + (lm.labelOffset2D?.x || 0);
-        const screenY = baseScreenY + (lm.labelOffset2D?.y || 0);
+        const screenX = (tempV.x * 0.5 + 0.5) * currentWidth + (lm.labelOffset2D?.x || 0);
+        const screenY = (-(tempV.y * 0.5) + 0.5) * currentHeight + (lm.labelOffset2D?.y || 0);
         const visible = tempV.z <= 1.0;
         const zIndex = Math.round((2.0 - tempV.z) * 35);
+        const isSelected = selectedIdRef.current === lm.id;
 
-        return {
-          item: lm,
-          x: screenX,
-          y: screenY,
-          baseX: baseScreenX,
-          baseY: baseScreenY,
-          visible,
-          zIndex,
-        };
-      });
+        const badgeEl = badgeRefs.current[lm.id];
+        if (badgeEl) {
+          if (!visible) {
+            badgeEl.style.display = "none";
+          } else {
+            badgeEl.style.display = "block";
+            const anchor = lm.pinAnchor || "center";
+            const anchorTransform =
+              anchor === "left"
+                ? "translate(-12%, -100%)"
+                : anchor === "right"
+                ? "translate(-88%, -100%)"
+                : "translate(-50%, -100%)";
+            badgeEl.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) ${anchorTransform} scale(${isSelected ? 1.10 : 1.0})`;
+            badgeEl.style.zIndex = `${isSelected ? 200 : zIndex}`;
+          }
+        }
 
-      setProjectedPins(updatedPins);
+        const dotEl = dotRefs.current[lm.id];
+        if (dotEl) {
+          if (!visible) {
+            dotEl.style.display = "none";
+          } else {
+            dotEl.style.display = "block";
+            dotEl.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) translate(-50%, -50%)`;
+            dotEl.style.zIndex = `${isSelected ? 150 : 15}`;
+          }
+        }
+      }
 
-      // Update Compass Heading
+      // 3. Update Compass Heading with 0 delay (via direct DOM)
       camera.getWorldDirection(camDir);
       const headingAngleRad = Math.atan2(camDir.x, -camDir.z);
       const headingAngleDeg = (headingAngleRad * 180) / Math.PI;
-      setCompassHeading(-headingAngleDeg);
+
+      if (compassNeedleRef.current) {
+        compassNeedleRef.current.style.transform = `rotate(${-headingAngleDeg}deg)`;
+      }
 
       const normDeg = (headingAngleDeg + 360) % 360;
-      let label = "เหนือ (N)";
+      let label = "ทิศเหนือ (N)";
       if (normDeg > 337.5 || normDeg <= 22.5) label = "ทิศเหนือ (N)";
       else if (normDeg > 22.5 && normDeg <= 67.5) label = "ต.อ.เฉียงเหนือ (NE)";
       else if (normDeg > 67.5 && normDeg <= 112.5) label = "ทิศตะวันออก (E)";
@@ -673,7 +691,10 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       else if (normDeg > 202.5 && normDeg <= 247.5) label = "ต.ต.เฉียงใต้ (SW)";
       else if (normDeg > 247.5 && normDeg <= 292.5) label = "ทิศตะวันตก (W)";
       else if (normDeg > 292.5 && normDeg <= 337.5) label = "ต.ต.เฉียงเหนือ (NW)";
-      setCompassDir(label);
+
+      if (compassLabelRef.current && compassLabelRef.current.textContent !== label) {
+        compassLabelRef.current.textContent = label;
+      }
     };
 
     animate();
@@ -715,42 +736,16 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
       {/* 2D Markers Overlay */}
       <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
-        {/* SVG Connector Lines from real ground coordinate to offset label */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
-          {projectedPins.map((pin) => {
-            if (!pin.visible) return null;
-            const hasOffset = Math.abs(pin.x - pin.baseX) > 8 || Math.abs(pin.y - pin.baseY) > 8;
-            if (!hasOffset) return null;
-            const isSelected = selectedId === pin.item.id;
-            return (
-              <line
-                key={`line-${pin.item.id}`}
-                x1={pin.baseX}
-                y1={pin.baseY}
-                x2={pin.x}
-                y2={pin.y}
-                stroke={isSelected ? "#f97316" : "rgba(251, 191, 36, 0.7)"}
-                strokeWidth={isSelected ? 2.5 : 1.5}
-                strokeDasharray={isSelected ? "none" : "3 3"}
-              />
-            );
-          })}
-        </svg>
-
-        {/* Real Ground Position Dots */}
-        {projectedPins.map((pin) => {
-          if (!pin.visible) return null;
-          const isSelected = selectedId === pin.item.id;
+        {/* Real Ground Position Dots (Direct GPU translate3d with 0ms delay) */}
+        {SAKON_LANDMARKS_3D.map((lm) => {
           return (
             <div
-              key={`dot-${pin.item.id}`}
-              className="absolute pointer-events-none transition-transform duration-300"
-              style={{
-                left: `${pin.baseX}px`,
-                top: `${pin.baseY}px`,
-                transform: "translate(-50%, -50%)",
-                zIndex: isSelected ? 150 : 15,
+              key={`dot-${lm.id}`}
+              ref={(el) => {
+                dotRefs.current[lm.id] = el;
               }}
+              className="absolute top-0 left-0 pointer-events-none will-change-transform"
+              style={{ display: "none" }}
             >
               <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-amber-500 shadow-md animate-ping opacity-75"></div>
               <div className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute top-0.5 left-0.5 shadow-sm"></div>
@@ -758,17 +753,10 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
           );
         })}
 
-        {/* Floating Label Badges (Offset to prevent any overlapping!) */}
-        {projectedPins.map((pin) => {
-          if (!pin.visible) return null;
-          const isSelected = selectedId === pin.item.id;
-          const anchor = pin.item.pinAnchor || "center";
-          const transformTranslate =
-            anchor === "left"
-              ? "translate(-12%, -100%)"
-              : anchor === "right"
-              ? "translate(-88%, -100%)"
-              : "translate(-50%, -100%)";
+        {/* Floating Label Badges (Direct GPU translate3d with 0ms delay, rock-solid lock) */}
+        {SAKON_LANDMARKS_3D.map((item) => {
+          const isSelected = selectedId === item.id;
+          const anchor = item.pinAnchor || "center";
           const alignClass =
             anchor === "left"
               ? "items-start pl-2"
@@ -778,33 +766,31 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
           return (
             <div
-              key={pin.item.id}
-              className="absolute pointer-events-auto cursor-pointer transition-all duration-300"
-              style={{
-                left: `${pin.x}px`,
-                top: `${pin.y}px`,
-                transform: `${transformTranslate} scale(${isSelected ? 1.10 : 1.0})`,
-                zIndex: isSelected ? 200 : pin.zIndex,
+              key={`pin-${item.id}`}
+              ref={(el) => {
+                badgeRefs.current[item.id] = el;
               }}
-              onClick={() => handleSelect(pin.item)}
+              className="absolute top-0 left-0 pointer-events-auto cursor-pointer will-change-transform"
+              style={{ display: "none" }}
+              onClick={() => handleSelect(item)}
             >
               <div
                 className={`group flex flex-col ${alignClass} ${
                   isSelected ? "scale-105" : "hover:scale-105"
-                } transition-all duration-200`}
+                } transition-transform duration-150`}
               >
                 <div
-                  className={`px-3 py-1.5 rounded-full shadow-xl border backdrop-blur-md flex items-center gap-1.5 transition-all ${
+                  className={`px-3 py-1.5 rounded-full shadow-xl border backdrop-blur-md flex items-center gap-1.5 transition-colors ${
                     isSelected
                       ? "bg-white text-slate-900 border-brand ring-2 ring-brand shadow-orange-500/50"
                       : "bg-white/95 text-slate-800 border-slate-200 hover:border-amber-400 shadow-lg"
                   }`}
                 >
                   <span className="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] font-bold">
-                    {pin.item.number}
+                    {item.number}
                   </span>
-                  <i className={`${pin.item.faIcon} text-xs text-amber-500`}></i>
-                  <span className="text-xs font-bold whitespace-nowrap">{pin.item.shortName}</span>
+                  <i className={`${item.faIcon} text-xs text-amber-500`}></i>
+                  <span className="text-xs font-bold whitespace-nowrap">{item.shortName}</span>
                 </div>
                 <div className="w-2.5 h-2.5 bg-slate-900 rotate-45 -mt-1 shadow-md"></div>
               </div>
@@ -815,17 +801,19 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
 
       {/* Top Floating Controls */}
       <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-2 pointer-events-none">
-        {/* Compass Widget */}
+        {/* Compass Widget (Direct GPU transform with 0ms delay) */}
         <div className="pointer-events-auto bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2.5 text-white">
           <div
-            className="w-6 h-6 flex items-center justify-center transition-transform duration-200"
-            style={{ transform: `rotate(${compassHeading}deg)` }}
+            ref={compassNeedleRef}
+            className="w-6 h-6 flex items-center justify-center will-change-transform"
           >
             <i className="fa-solid fa-compass text-amber-400 text-lg"></i>
           </div>
           <div className="text-[11px] leading-tight">
             <span className="text-slate-400 block text-[9px]">ทิศทางกล้อง</span>
-            <span className="font-semibold">{compassDir}</span>
+            <span ref={compassLabelRef} className="font-semibold">
+              ทิศเหนือ (N)
+            </span>
           </div>
         </div>
 

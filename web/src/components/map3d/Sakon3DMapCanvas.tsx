@@ -780,19 +780,23 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
                 } transition-transform duration-150`}
               >
                 <div
-                  className={`px-3 py-1.5 rounded-full shadow-xl border backdrop-blur-md flex items-center gap-1.5 transition-colors ${
+                  className={`px-3 py-1.5 rounded-full shadow-lg border backdrop-blur-md flex items-center gap-1.5 transition-colors ${
                     isSelected
-                      ? "bg-white text-slate-900 border-brand ring-2 ring-brand shadow-orange-500/50"
-                      : "bg-white/95 text-slate-800 border-slate-200 hover:border-amber-400 shadow-lg"
+                      ? "bg-white text-slate-900 border-brand ring-2 ring-brand shadow-orange-500/40"
+                      : "bg-white/98 text-slate-800 border-slate-200 hover:border-brand shadow-md"
                   }`}
                 >
-                  <span className="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] font-bold">
+                  <span
+                    className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${
+                      isSelected ? "bg-brand text-white" : "bg-orange-100 text-maroon-700"
+                    }`}
+                  >
                     {item.number}
                   </span>
-                  <i className={`${item.faIcon} text-xs text-amber-500`}></i>
+                  <i className={`${item.faIcon} text-xs text-brand`}></i>
                   <span className="text-xs font-bold whitespace-nowrap">{item.shortName}</span>
                 </div>
-                <div className="w-2.5 h-2.5 bg-slate-900 rotate-45 -mt-1 shadow-md"></div>
+                <div className="w-2.5 h-2.5 bg-white border-r border-b border-slate-200 rotate-45 -mt-1 shadow-sm"></div>
               </div>
             </div>
           );
@@ -802,16 +806,16 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       {/* Top Floating Controls */}
       <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-2 pointer-events-none">
         {/* Compass Widget (Direct GPU transform with 0ms delay) */}
-        <div className="pointer-events-auto bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2.5 text-white">
+        <div className="pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl px-3 py-1.5 shadow-md flex items-center gap-2.5 text-slate-800">
           <div
             ref={compassNeedleRef}
             className="w-6 h-6 flex items-center justify-center will-change-transform"
           >
-            <i className="fa-solid fa-compass text-amber-400 text-lg"></i>
+            <i className="fa-solid fa-compass text-brand text-lg"></i>
           </div>
           <div className="text-[11px] leading-tight">
             <span className="text-slate-400 block text-[9px]">ทิศทางกล้อง</span>
-            <span ref={compassLabelRef} className="font-semibold">
+            <span ref={compassLabelRef} className="font-semibold text-slate-800">
               ทิศเหนือ (N)
             </span>
           </div>
@@ -823,10 +827,10 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
           <button
             type="button"
             onClick={handleToggleRoads}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-medium border shadow-md transition flex items-center gap-1.5 ${
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-medium border shadow-sm transition flex items-center gap-1.5 ${
               roadsVisible
-                ? "bg-amber-500 text-white border-amber-400 shadow-amber-500/20"
-                : "bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800"
+                ? "bg-brand text-white border-brand shadow-orange-500/20"
+                : "bg-white/95 text-slate-700 border-slate-200 hover:bg-slate-50"
             }`}
           >
             <i className="fa-solid fa-route"></i>
@@ -837,9 +841,9 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
           <button
             type="button"
             onClick={handleToggleTexture}
-            className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-slate-900/80 text-slate-300 border border-slate-700 hover:bg-slate-800 shadow-md transition flex items-center gap-1.5"
+            className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-white/95 text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-sm transition flex items-center gap-1.5"
           >
-            <i className="fa-solid fa-layer-group text-sky-400"></i>
+            <i className="fa-solid fa-layer-group text-brand"></i>
             <span className="hidden sm:inline">{texMode === "cartoon" ? "การ์ตูน 3D" : "ดาวเทียม"}</span>
           </button>
 
@@ -848,7 +852,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
             type="button"
             onClick={handleResetCamera}
             title="รีเซ็ตมุมมอง 75° ภาพรวมสกลนคร"
-            className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-slate-900/80 text-slate-300 border border-slate-700 hover:bg-slate-800 shadow-md transition flex items-center gap-1.5"
+            className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-white/95 text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-sm transition flex items-center gap-1.5"
           >
             <i className="fa-solid fa-rotate-left"></i>
             <span className="hidden sm:inline">รีเซ็ตมุมมอง</span>

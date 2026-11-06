@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import Link from "next/link";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -57,15 +56,9 @@ function isInsideBoundary(px: number, pz: number): boolean {
   return inside;
 }
 
-// Nong Han rotation pivot center
-const NONGHAN_LON = 104.1951;
-const NONGHAN_LAT = 17.1896;
-const NH_PIVOT_X = (NONGHAN_LON - SAKON_CENTER_LON) * SCALE_LON;
-const NH_PIVOT_Z = -(NONGHAN_LAT - SAKON_CENTER_LAT) * SCALE_LAT;
-const NH_PIVOT_Y = 0.1;
-
-const DEFAULT_TARGET = new THREE.Vector3(NH_PIVOT_X, NH_PIVOT_Y, NH_PIVOT_Z);
-const DEFAULT_CAM_POS = new THREE.Vector3(NH_PIVOT_X, NH_PIVOT_Y + 88.0, NH_PIVOT_Z + 23.5);
+// Sakon Nakhon 5 Landmarks Overview Pivot
+const DEFAULT_TARGET = new THREE.Vector3(12.5, 0.1, 5.0);
+const DEFAULT_CAM_POS = new THREE.Vector3(12.5, 76.0, 38.0);
 
 interface ProjectedPin {
   item: Landmark3DItem;
@@ -75,11 +68,14 @@ interface ProjectedPin {
   zIndex: number;
 }
 
-export default function Sakon3DMapCanvas() {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+export interface Sakon3DMapCanvasProps {
+  selectedId?: string | null;
+  onSelectLandmark?: (id: string) => void;
+}
 
-  const [selectedLandmark, setSelectedLandmark] = useState<Landmark3DItem | null>(null);
+export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark }: Sakon3DMapCanvasProps) {
+  const mountRef = useRef<HTMLDivElement>(null);
+
   const [projectedPins, setProjectedPins] = useState<ProjectedPin[]>([]);
   const [compassHeading, setCompassHeading] = useState<number>(0);
   const [compassDir, setCompassDir] = useState<string>("เหนือ (N)");
@@ -110,22 +106,33 @@ export default function Sakon3DMapCanvas() {
     const elev = getTerrainElev(x, z);
 
     cameraTargetRef.current.set(x, elev.y + 0.3, z);
-    cameraPosRef.current.set(x, elev.y + 4.8, z + 4.2);
+    cameraPosRef.current.set(x, elev.y + 5.2, z + 4.8);
     isAnimatingRef.current = true;
   }, []);
 
-  const handleSelectLandmark = useCallback(
-    (item: Landmark3DItem) => {
-      setSelectedLandmark(item);
-      flyTo(item);
-    },
-    [flyTo]
-  );
+  // Synchronize when selectedId prop changes
+  useEffect(() => {
+    if (selectedId) {
+      const found = SAKON_LANDMARKS_3D.find((lm) => lm.id === selectedId);
+      if (found) {
+        flyTo(found);
+      }
+    }
+  }, [selectedId, flyTo]);
+
+  const handleSelect = (item: Landmark3DItem) => {
+    if (onSelectLandmark) {
+      onSelectLandmark(item.id);
+    }
+    flyTo(item);
+  };
 
   const handleResetCamera = useCallback(() => {
-    setSelectedLandmark(null);
+    if (onSelectLandmark) {
+      onSelectLandmark("");
+    }
     flyTo(null);
-  }, [flyTo]);
+  }, [flyTo, onSelectLandmark]);
 
   const handleToggleRoads = useCallback(() => {
     setRoadsVisible((prev) => {
@@ -152,12 +159,12 @@ export default function Sakon3DMapCanvas() {
     if (!container) return;
 
     const width = container.clientWidth || 800;
-    const height = container.clientHeight || 550;
+    const height = container.clientHeight || 580;
 
     // 1. Scene, Camera, Renderer
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0b1120);
-    scene.fog = new THREE.FogExp2(0x0b1120, 0.0075);
+    scene.background = new THREE.Color(0x080e1a);
+    scene.fog = new THREE.FogExp2(0x080e1a, 0.0075);
 
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
     camera.position.copy(DEFAULT_CAM_POS);
@@ -168,7 +175,7 @@ export default function Sakon3DMapCanvas() {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.02;
+    renderer.toneMappingExposure = 1.05;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
 
@@ -181,14 +188,14 @@ export default function Sakon3DMapCanvas() {
     controls.maxPolarAngle = Math.PI / 2 - 0.08;
     controlsRef.current = controls;
 
-    // 2. Natural Lighting
-    const ambientLight = new THREE.AmbientLight(0xfffaf0, 0.48);
+    // 2. Natural Atmospheric Lighting
+    const ambientLight = new THREE.AmbientLight(0xfffaf0, 0.52);
     scene.add(ambientLight);
 
-    const hemiLight = new THREE.HemisphereLight(0xf0fdf4, 0x453826, 0.45);
+    const hemiLight = new THREE.HemisphereLight(0xf0fdf4, 0x453826, 0.48);
     scene.add(hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(0xfff7ed, 0.82);
+    const dirLight = new THREE.DirectionalLight(0xfff7ed, 0.88);
     dirLight.position.set(40, 85, 35);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 1024;
@@ -196,7 +203,7 @@ export default function Sakon3DMapCanvas() {
     dirLight.shadow.bias = -0.0003;
     scene.add(dirLight);
 
-    const fillLight = new THREE.DirectionalLight(0xbae6fd, 0.22);
+    const fillLight = new THREE.DirectionalLight(0xbae6fd, 0.25);
     fillLight.position.set(-45, 30, -35);
     scene.add(fillLight);
 
@@ -227,7 +234,7 @@ export default function Sakon3DMapCanvas() {
     });
 
     const sideEarthMaterial = new THREE.MeshStandardMaterial({
-      color: 0x451a03,
+      color: 0x3d1708,
       roughness: 0.95,
       flatShading: true,
     });
@@ -320,7 +327,7 @@ export default function Sakon3DMapCanvas() {
     provinceGroup.add(terrainMesh);
     terrainMeshRef.current = terrainMesh;
 
-    // 5. Geological Side Skirt Walls
+    // 5. Side Skirt Walls
     const skirtPositions: number[] = [];
     const skirtUvs: number[] = [];
     const skirtIndices: number[] = [];
@@ -360,7 +367,7 @@ export default function Sakon3DMapCanvas() {
     skirtMesh.castShadow = true;
     provinceGroup.add(skirtMesh);
 
-    // 6. Base Pedestal
+    // 6. Pedestal
     const sakonShape2D = new THREE.Shape();
     sakonShape2D.moveTo(SAKON_BOUNDARY_GEO[0][0], SAKON_BOUNDARY_GEO[0][1]);
     for (let i = 1; i < bLen; i++) {
@@ -505,7 +512,7 @@ export default function Sakon3DMapCanvas() {
     SECONDARY_HIGHWAYS.forEach((r) => roadGroup.add(createRoadRibbon(r)));
     provinceGroup.add(roadGroup);
 
-    // 9. Load 5 GLB Models
+    // 9. Load 5 GLB Models with Authentic Placement & Staggered Separation
     const gltfLoader = new GLTFLoader();
     let loadedCount = 0;
 
@@ -545,7 +552,7 @@ export default function Sakon3DMapCanvas() {
             }
           });
 
-          // Special Cross and Bethlehem Star for Tha Rae
+          // Special Cross and Bethlehem Star for Tha Rae Cathedral
           if (landmark.id === "tharae") {
             const crossGroup = new THREE.Group();
             const crossMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25, metalness: 0.1 });
@@ -623,7 +630,7 @@ export default function Sakon3DMapCanvas() {
 
       // Project pins onto 2D screen coordinates
       const currentWidth = container.clientWidth || 800;
-      const currentHeight = container.clientHeight || 550;
+      const currentHeight = container.clientHeight || 580;
 
       const updatedPins: ProjectedPin[] = SAKON_LANDMARKS_3D.map((lm) => {
         const px = (lm.lon - SAKON_CENTER_LON) * SCALE_LON + (lm.sideOffset?.x || 0);
@@ -694,15 +701,15 @@ export default function Sakon3DMapCanvas() {
   }, []);
 
   return (
-    <div className="relative w-full h-[580px] md:h-[640px] rounded-2xl overflow-hidden select-none bg-slate-950 font-sans shadow-xl">
+    <div className="relative w-full h-[620px] select-none bg-slate-950 font-sans">
       {/* 3D WebGL Canvas */}
       <div ref={mountRef} className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm text-white">
-          <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-          <span className="text-sm font-medium tracking-wide">กำลังโหลดแผนที่ภูมิประเทศและโมเดล 3D สกลนคร…</span>
+        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-md text-white">
+          <div className="w-11 h-11 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-3 shadow-lg shadow-amber-500/20"></div>
+          <span className="text-sm font-medium tracking-wide">กำลังโหลดโมเดล 3D และภูมิประเทศสกลนคร…</span>
         </div>
       )}
 
@@ -710,32 +717,49 @@ export default function Sakon3DMapCanvas() {
       <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
         {projectedPins.map((pin) => {
           if (!pin.visible) return null;
-          const isSelected = selectedLandmark?.id === pin.item.id;
+          const isSelected = selectedId === pin.item.id;
+          const anchor = pin.item.pinAnchor || "center";
+          const transformTranslate =
+            anchor === "left"
+              ? "translate(-18%, -100%)"
+              : anchor === "right"
+              ? "translate(-82%, -100%)"
+              : "translate(-50%, -100%)";
+          const alignClass =
+            anchor === "left"
+              ? "items-start pl-2"
+              : anchor === "right"
+              ? "items-end pr-2"
+              : "items-center";
+
           return (
             <div
               key={pin.item.id}
-              className="absolute pointer-events-auto cursor-pointer transition-transform duration-200"
+              className="absolute pointer-events-auto cursor-pointer transition-all duration-300"
               style={{
                 left: `${pin.x}px`,
                 top: `${pin.y}px`,
-                transform: `translate(-50%, -100%) scale(${isSelected ? 1.08 : 1.0})`,
+                transform: `${transformTranslate} scale(${isSelected ? 1.12 : 1.0})`,
                 zIndex: isSelected ? 200 : pin.zIndex,
               }}
-              onClick={() => handleSelectLandmark(pin.item)}
+              onClick={() => handleSelect(pin.item)}
             >
               <div
-                className={`group flex flex-col items-center ${
+                className={`group flex flex-col ${alignClass} ${
                   isSelected ? "scale-105" : "hover:scale-105"
                 } transition-all duration-200`}
               >
                 <div
-                  className={`px-3 py-1.5 rounded-full shadow-lg border backdrop-blur-md flex items-center gap-1.5 transition-all ${
+                  className={`px-3 py-1.5 rounded-full shadow-xl border backdrop-blur-md flex items-center gap-1.5 transition-all ${
                     isSelected
-                      ? "bg-white text-slate-900 border-amber-500 ring-2 ring-amber-500 shadow-amber-500/30"
+                      ? "bg-white text-slate-900 border-brand ring-2 ring-brand shadow-orange-500/40"
                       : "bg-white/95 text-slate-800 border-slate-200 hover:border-amber-400"
                   }`}
                 >
-                  <span className="text-sm">{pin.item.badgeIcon}</span>
+                  <span className="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] font-bold">
+                    {pin.item.number}
+                  </span>
+                  <span className="text-xs">{pin.item.badgeIcon}</span>
                   <span className="text-xs font-bold whitespace-nowrap">{pin.item.shortName}</span>
                 </div>
                 <div className="w-2.5 h-2.5 bg-slate-900 rotate-45 -mt-1 shadow-md"></div>
@@ -749,7 +773,7 @@ export default function Sakon3DMapCanvas() {
       {/* Top Floating Controls */}
       <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-2 pointer-events-none">
         {/* Compass Widget */}
-        <div className="pointer-events-auto bg-slate-900/85 backdrop-blur-md border border-slate-700/80 rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2.5 text-white">
+        <div className="pointer-events-auto bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl px-3 py-1.5 shadow-lg flex items-center gap-2.5 text-white">
           <div
             className="w-6 h-6 flex items-center justify-center transition-transform duration-200"
             style={{ transform: `rotate(${compassHeading}deg)` }}
@@ -775,7 +799,7 @@ export default function Sakon3DMapCanvas() {
             }`}
           >
             <i className="fa-solid fa-route"></i>
-            <span className="hidden sm:inline">โครงข่ายทางหลวง</span>
+            <span className="hidden sm:inline">ทางหลวง</span>
           </button>
 
           {/* Texture Switcher */}
@@ -785,7 +809,7 @@ export default function Sakon3DMapCanvas() {
             className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-slate-900/80 text-slate-300 border border-slate-700 hover:bg-slate-800 shadow-md transition flex items-center gap-1.5"
           >
             <i className="fa-solid fa-layer-group text-sky-400"></i>
-            <span className="hidden sm:inline">{texMode === "cartoon" ? "การ์ตูน 3D" : "ภาพถ่ายดาวเทียม"}</span>
+            <span className="hidden sm:inline">{texMode === "cartoon" ? "การ์ตูน 3D" : "ดาวเทียม"}</span>
           </button>
 
           {/* Reset Camera */}
@@ -796,111 +820,7 @@ export default function Sakon3DMapCanvas() {
             className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-slate-900/80 text-slate-300 border border-slate-700 hover:bg-slate-800 shadow-md transition flex items-center gap-1.5"
           >
             <i className="fa-solid fa-rotate-left"></i>
-            <span className="hidden sm:inline">มุมมองภาพรวม</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Selected Landmark Info Card Overlay (Fly-in from Top-Right on Desktop, Bottom on Mobile) */}
-      {selectedLandmark && (
-        <div className="absolute top-14 right-3 z-30 w-80 max-w-[calc(100%-24px)] bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-slate-200/90 text-slate-800 animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xl p-1.5 bg-amber-50 rounded-xl border border-amber-200">
-                {selectedLandmark.badgeIcon}
-              </span>
-              <div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${selectedLandmark.categoryClass}`}>
-                  {selectedLandmark.category}
-                </span>
-                <h4 className="text-sm font-bold text-slate-900 leading-tight mt-0.5">{selectedLandmark.name}</h4>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSelectedLandmark(null)}
-              className="text-slate-400 hover:text-slate-600 p-1"
-            >
-              <i className="fa-solid fa-xmark text-sm"></i>
-            </button>
-          </div>
-
-          <p className="text-xs text-slate-600 line-clamp-3 mb-3">{selectedLandmark.desc}</p>
-
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-            <a
-              href={selectedLandmark.gmapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1"
-            >
-              <i className="fa-solid fa-location-arrow text-[10px]"></i> แผนที่จริง
-            </a>
-            <Link
-              href={`/c/${selectedLandmark.slug}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-semibold shadow hover:bg-brand-dark transition"
-            >
-              <span>ชมวัตถุ 3D ชุมชน</span>
-              <i className="fa-solid fa-arrow-right text-[10px]"></i>
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {/* Bottom Horizontal Scrollable Landmark Carousel */}
-      <div className="absolute bottom-3 left-3 right-3 z-30 pointer-events-auto">
-        <div className="bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-2xl p-2 shadow-2xl flex items-center gap-1.5">
-          {/* Scroll Left Button */}
-          <button
-            type="button"
-            onClick={() => {
-              if (trackRef.current) trackRef.current.scrollBy({ left: -160, behavior: "smooth" });
-            }}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition shrink-0"
-          >
-            <i className="fa-solid fa-chevron-left text-xs"></i>
-          </button>
-
-          {/* Cards Track */}
-          <div
-            ref={trackRef}
-            className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1 flex-1"
-            style={{ scrollbarWidth: "none" }}
-          >
-            {SAKON_LANDMARKS_3D.map((lm) => {
-              const isSelected = selectedLandmark?.id === lm.id;
-              return (
-                <button
-                  key={lm.id}
-                  type="button"
-                  onClick={() => handleSelectLandmark(lm)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-left transition shrink-0 border ${
-                    isSelected
-                      ? "bg-amber-500/20 border-amber-400 text-white shadow-md ring-1 ring-amber-400"
-                      : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:text-white"
-                  }`}
-                >
-                  <span className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-amber-400 shrink-0">
-                    {lm.number}
-                  </span>
-                  <div className="leading-tight">
-                    <span className="text-xs font-semibold block whitespace-nowrap">{lm.shortName}</span>
-                    <span className="text-[10px] text-slate-400 block whitespace-nowrap">{lm.category}</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Scroll Right Button */}
-          <button
-            type="button"
-            onClick={() => {
-              if (trackRef.current) trackRef.current.scrollBy({ left: 160, behavior: "smooth" });
-            }}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition shrink-0"
-          >
-            <i className="fa-solid fa-chevron-right text-xs"></i>
+            <span className="hidden sm:inline">รีเซ็ตมุมมอง</span>
           </button>
         </div>
       </div>

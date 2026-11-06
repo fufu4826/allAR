@@ -1,7 +1,7 @@
 # D1 — Port the front-end team's design into the app, data from the DB (Codex · gpt-6.1-terra · effort medium · sandbox workspace-write)
 
 ## Role
-Senior Next.js engineer on "AllAR". The front-end team built a polished **static HTML prototype** ("AR.HERITAGE — 5 แหล่งอัตลักษณ์สำคัญ"). Your job: make the real app look and behave like that prototype, while keeping every real feature (DB content, 3D/AR viewer, audio, search, admin, uploads, Docker build). The prototype is the visual spec; the database is the content source.
+Senior Next.js engineer on "AllAR". The front-end team built a polished **static HTML prototype** ("AR.HERITAGE — 5 แหล่งเรียนรู้สำคัญ"). Your job: make the real app look and behave like that prototype, while keeping every real feature (DB content, 3D/AR viewer, audio, search, admin, uploads, Docker build). The prototype is the visual spec; the database is the content source.
 
 ## Context (read first)
 - Repo root = cwd. App in `web/` (Next.js 16.4 App Router, React 19.3, Tailwind v4, Drizzle + MariaDB). **Read `web/AGENTS.md` and the relevant guides in `web/node_modules/next/dist/docs/` before writing code** — this Next.js differs from your training data (`cacheComponents`, `'use cache'` + `cacheTag('content')`, request data inside `<Suspense>`, `await connection()` before DB reads so `next build` needs no DB, `generateStaticParams` must return ≥1 param).

@@ -35,7 +35,7 @@ export default function AboutPage() {
           เพื่อให้ทุกคนสามารถเข้าชมได้ผ่านเว็บเบราว์เซอร์ และวางจำลองโมเดลในพื้นที่จริงผ่านสมาร์ตโฟน (WebAR)
         </p>
         <p style={{ fontSize: "1.05rem", marginBottom: "24px" }}>
-          ดำเนินการโดย <strong>{siteContact.organization}</strong> ร่วมกับภาคีเครือข่ายปราชญ์ชุมชน และคณาจารย์นักวิจัย
+          ดำเนินการโดย <strong>{siteContact.organization}</strong>
         </p>
 
         <h2 style={{ fontSize: "1.3rem", fontWeight: 700, margin: "32px 0 16px", color: "var(--slate-900)" }}>
@@ -57,7 +57,7 @@ export default function AboutPage() {
           <Link href="/c/watnuea" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-monument" style={{ color: "#765a8c", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>3. วัดมหาพรหมโพธิราช</strong> — โบราณสถานและใบเสมาศิลาแลงยุคทวารวดี
+              <strong>3. วัดมหาพรหมโพธิราช</strong> — พระพุทธรูป ชิ้นส่วนสถาปัตยกรรมและใบเสมา
             </div>
           </Link>
           <Link href="/c/nonhom" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>

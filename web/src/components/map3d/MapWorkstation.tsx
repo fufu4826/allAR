@@ -193,7 +193,7 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
                         : "text-slate-300 hover:text-white hover:bg-slate-800"
                     }`}
                   >
-                    <span>{lm.badgeIcon}</span>
+                    <i className={`${lm.faIcon} text-amber-400 text-xs`}></i>
                     <span>{lm.number}. {lm.name.split(" ")[0]}</span>
                   </button>
                 ))}
@@ -207,7 +207,9 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
                       <span className="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center text-xs font-bold shadow-md shadow-brand/40">
                         {selectedItem.number}
                       </span>
-                      <span className="text-xl">{selectedItem.badgeIcon}</span>
+                      <span className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 text-sm shadow-sm">
+                        <i className={selectedItem.faIcon}></i>
+                      </span>
                       <div>
                         <h3 className="text-sm font-bold leading-tight" style={{ color: "#ffffff" }}>
                           {selectedItem.name}
@@ -368,8 +370,8 @@ export default function MapWorkstation({ pins }: MapWorkstationProps) {
                         </span>
                       </div>
 
-                      <span className="text-lg p-2 rounded-xl bg-slate-800/80 text-slate-200 shrink-0">
-                        {item.badgeIcon}
+                      <span className="w-9 h-9 rounded-xl bg-slate-800/90 border border-slate-700/80 flex items-center justify-center text-amber-400 text-sm shrink-0 group-hover:border-amber-500/50 transition">
+                        <i className={item.faIcon}></i>
                       </span>
                     </div>
 

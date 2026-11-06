@@ -104,8 +104,8 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       isAnimatingRef.current = true;
       return;
     }
-    const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON;
-    const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT;
+    const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.modelConfig.offset?.x || 0);
+    const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
     const elev = getTerrainElev(x, z);
 
     cameraTargetRef.current.set(x, elev.y + 0.3, z);
@@ -515,17 +515,17 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
     SECONDARY_HIGHWAYS.forEach((r) => roadGroup.add(createRoadRibbon(r)));
     provinceGroup.add(roadGroup);
 
-    // 9. Load 5 GLB Models with Authentic Placement at Real GPS Locations
+    // 9. Load 5 GLB Models with Authentic Placement
     const gltfLoader = new GLTFLoader();
     let loadedCount = 0;
 
     SAKON_LANDMARKS_3D.forEach((landmark) => {
-      const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON;
-      const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT;
+      const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.modelConfig.offset?.x || 0);
+      const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
       const elev = getTerrainElev(x, z);
 
       const landmarkGroup = new THREE.Group();
-      landmarkGroup.position.set(x, elev.y, z);
+      landmarkGroup.position.set(x, elev.y + (landmark.modelConfig.offset?.y || 0.05), z);
 
       gltfLoader.load(
         landmark.modelUrl,
@@ -534,13 +534,6 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
           const s = landmark.modelConfig.scale || 2.0;
           model.scale.set(s, s, s);
           if (landmark.modelConfig.rotationY) model.rotation.y = landmark.modelConfig.rotationY;
-          if (landmark.modelConfig.offset) {
-            model.position.set(
-              landmark.modelConfig.offset.x || 0,
-              landmark.modelConfig.offset.y || 0,
-              landmark.modelConfig.offset.z || 0
-            );
-          }
 
           model.traverse((child) => {
             if ((child as THREE.Mesh).isMesh) {
@@ -636,8 +629,8 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
       const currentHeight = container.clientHeight || 580;
 
       const updatedPins: ProjectedPin[] = SAKON_LANDMARKS_3D.map((lm) => {
-        const px = (lm.lon - SAKON_CENTER_LON) * SCALE_LON;
-        const pz = -(lm.lat - SAKON_CENTER_LAT) * SCALE_LAT;
+        const px = (lm.lon - SAKON_CENTER_LON) * SCALE_LON + (lm.modelConfig.offset?.x || 0);
+        const pz = -(lm.lat - SAKON_CENTER_LAT) * SCALE_LAT + (lm.modelConfig.offset?.z || 0);
         const elev = getTerrainElev(px, pz);
 
         tempV.set(px, elev.y + 2.15, pz);
@@ -810,7 +803,7 @@ export default function Sakon3DMapCanvas({ selectedId, onSelectLandmark, classNa
                   <span className="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] font-bold">
                     {pin.item.number}
                   </span>
-                  <span className="text-xs">{pin.item.badgeIcon}</span>
+                  <i className={`${pin.item.faIcon} text-xs text-amber-500`}></i>
                   <span className="text-xs font-bold whitespace-nowrap">{pin.item.shortName}</span>
                 </div>
                 <div className="w-2.5 h-2.5 bg-slate-900 rotate-45 -mt-1 shadow-md"></div>

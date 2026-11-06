@@ -35,7 +35,7 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     name: "ชุมชนท่าแร่ (บ้านท่าแร่)",
     englishName: "Baan Tha Rae Community",
     shortName: "ท่าแร่ (โบสถ์เรือสำเภา & ดาวคริสต์มาส)",
-    badgeIcon: "⛪",
+    badgeIcon: "fa-solid fa-church",
     faIcon: "fa-solid fa-church",
     category: "ชุมชน",
     categoryClass: "bg-sky-100 text-sky-800 border-sky-300",
@@ -63,7 +63,7 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     name: "ท่าวัด (วัดกลางศรีเชียงใหม่)",
     englishName: "Wat Klang Si Chiang Mai",
     shortName: "วัดกลางศรีเชียงใหม่ (เสมา 8 ทิศ)",
-    badgeIcon: "🛕",
+    badgeIcon: "fa-solid fa-place-of-worship",
     faIcon: "fa-solid fa-place-of-worship",
     category: "วัด",
     categoryClass: "bg-amber-100 text-amber-800 border-amber-300",
@@ -77,11 +77,11 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     location: "บ้านท่าวัด ต.เหล่าปอแดง อ.เมืองสกลนคร (ฝั่งตะวันออกของหนองหาร)",
     modelUrl: "/map3d/models/watklang.glb",
     modelConfig: {
-      scale: 2.3,
+      scale: 2.1,
       rotationY: Math.PI * 0.35,
-      offset: { x: 0, y: 0.05, z: 0 },
+      offset: { x: 1.25, y: 0.05, z: 1.05 }, // Placed gracefully to the Southeast of Thawat village
     },
-    labelOffset2D: { x: 62, y: 12 }, // Real GPS location, label shifted East
+    labelOffset2D: { x: 65, y: 15 }, // Floating label shifted East
     pinAnchor: "left",
   },
   {
@@ -91,8 +91,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     name: "ท่าวัด (วัดมหาพรหมโพธิราช)",
     englishName: "Wat Maha Phrom Phothirat",
     shortName: "วัดมหาพรหม (พระศิลา & แพ)",
-    badgeIcon: "☸️",
-    faIcon: "fa-solid fa-monument",
+    badgeIcon: "fa-solid fa-dharmachakra",
+    faIcon: "fa-solid fa-dharmachakra",
     category: "วัด",
     categoryClass: "bg-indigo-100 text-indigo-800 border-indigo-300",
     sub: "ภูมิสัณฐานมิตรเอิร์ธ: ตะพักศิลาแลงริมขอบหนองหาร • 161 ม. รทก.",
@@ -105,11 +105,11 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     location: "บ้านท่าวัดเหนือ ต.เหล่าปอแดง อ.เมืองสกลนคร (ริมฝั่งหนองหาร)",
     modelUrl: "/map3d/models/watnuea.glb",
     modelConfig: {
-      scale: 1.85,
+      scale: 1.7,
       rotationY: Math.PI * 0.25,
-      offset: { x: 0, y: 0.05, z: 0 },
+      offset: { x: -1.25, y: 0.05, z: -1.05 }, // Placed gracefully to the Northwest of Thawat village
     },
-    labelOffset2D: { x: -62, y: -12 }, // Real GPS location, label shifted West
+    labelOffset2D: { x: -65, y: -15 }, // Floating label shifted West
     pinAnchor: "right",
   },
   {
@@ -119,8 +119,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     name: "ชุมชนโนนหอม (บ้านโนนหอม)",
     englishName: "Baan Non Hom Community",
     shortName: "ชุมชนโนนหอม (เรือนผู้ไท & ผ้าย้อมคราม)",
-    badgeIcon: "🏡",
-    faIcon: "fa-solid fa-shirt",
+    badgeIcon: "fa-solid fa-house-chimney-window",
+    faIcon: "fa-solid fa-house-chimney-window",
     category: "ชุมชน",
     categoryClass: "bg-teal-100 text-teal-800 border-teal-300",
     sub: "ภูมิสัณฐานมิตรเอิร์ธ: เนินดอนลอนลูกคลื่นหินทราย • 172 ม. รทก.",
@@ -147,8 +147,8 @@ export const SAKON_LANDMARKS_3D: Landmark3DItem[] = [
     name: "ศูนย์ศึกษาการพัฒนาภูพานฯ",
     englishName: "Phu Phan Royal Study Centre",
     shortName: "ศูนย์ฯ ภูพาน (สัตว์ 3 ดำ & เห็ดไค)",
-    badgeIcon: "🐂",
-    faIcon: "fa-solid fa-cow",
+    badgeIcon: "fa-solid fa-mountain-sun",
+    faIcon: "fa-solid fa-mountain-sun",
     category: "หน่วยงาน",
     categoryClass: "bg-emerald-100 text-emerald-800 border-emerald-300",
     sub: "ภูมิสัณฐานมิตรเอิร์ธ: ลาดตะพักเชิงเขาปะทะภูพาน • 215 ม. รทก.",

@@ -125,6 +125,7 @@ cp .env.example .env
 | `APP_VERSION` | `latest` | แท็กเวอร์ชันของ Image |
 | `WEB_BIND` | `127.0.0.1` | ไอพีที่เปิดรับการเชื่อมต่อของเว็บ (127.0.0.1 สำหรับ reverse proxy) |
 | `WEB_PORT` | `3000` | พอร์ตของเว็บแอปพลิเคชัน |
+| `SITE_URL` | (ว่าง) | ที่อยู่เว็บจริงแบบเต็ม เช่น `https://lac.snru.ac.th` ใช้ทำลิงก์ใน `/sitemap.xml` และ `/robots.txt` · เว้นว่างได้ เว็บจะใช้โดเมนจาก Host / X-Forwarded-Host ที่ reverse proxy ส่งมา |
 | `TRUST_PROXY` | `true` | `true` เมื่อมี reverse proxy อยู่ข้างหน้า (อ่าน Client IP จาก `X-Forwarded-For`) · ตั้ง `false` ถ้าเปิดเว็บตรงโดยไม่มี proxy |
 | `BACKUP_TIME` | `02:00` | เวลาสำรองข้อมูลประจำวัน (เขตเวลา Asia/Bangkok) |
 | `BACKUP_KEEP_DAYS` | `30` | จำนวนวันที่เก็บรักษาไฟล์สำรองข้อมูล |

@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  /* config options here */
+  // Do not advertise the framework in an X-Powered-By header.
+  poweredByHeader: false,
   async headers() {
     return [
       { source: "/:path*", headers: [

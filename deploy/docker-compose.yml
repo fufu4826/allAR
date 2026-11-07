@@ -30,6 +30,7 @@ services:
       DATABASE_URL: mysql://${DB_USER:?Set DB_USER}:${DB_PASSWORD:?Set DB_PASSWORD}@mariadb:3306/${DB_NAME:?Set DB_NAME}
       UPLOAD_DIR: /app/uploads
       TRUST_PROXY: ${TRUST_PROXY:-true}
+      SITE_URL: ${SITE_URL:-}
     volumes:
       - uploads:/app/uploads
     ports:

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import CommunityCollectionTabs from "@/components/CommunityCollectionTabs";
-import { PhuphanCentre, PhuphanHowTo } from "@/components/phuphan/PhuphanSections";
+import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
 import { getCommunityWithContent, getPublishedNews } from "@/lib/queries";
 
 const communityIcons: Record<string, string> = {
@@ -132,9 +132,8 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
       </>
       )}
 
-      {isPhuphan && <PhuphanHowTo community={community} />}
-
-      {/* Section 03: News */}
+      {/* Section 03: News (not on Phu Phan) */}
+      {!isPhuphan && (
       <section id="news" className="community-section">
         <div className="community-container">
           <div className="section-top">
@@ -175,6 +174,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
           )}
         </div>
       </section>
+      )}
 
       {/* Section 04: 3D & AR Collection */}
       <section id="models" className="community-section model-section">

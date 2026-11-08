@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import CommunityCollectionTabs from "@/components/CommunityCollectionTabs";
+import { PhuphanCentre, PhuphanHowTo } from "@/components/phuphan/PhuphanSections";
 import { getCommunityWithContent, getPublishedNews } from "@/lib/queries";
 
 const communityIcons: Record<string, string> = {
@@ -35,6 +36,8 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
   const communityNews = community.id ? await getPublishedNews(community.id) : [];
   const theme = community.theme || community.slug || "default";
   const icon = communityIcons[community.slug] || "fa-solid fa-location-dot";
+  // Phu Phan uses the sections and look of the original Phu Phan AR site (phuphan-theme.css).
+  const isPhuphan = community.slug === "phuphan";
 
   return (
     <div className={`theme-${theme}`} data-community={theme} data-theme={theme}>
@@ -74,6 +77,10 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
         </div>
       </section>
 
+      {isPhuphan ? (
+        <PhuphanCentre community={community} />
+      ) : (
+      <>
       {/* Section 01: Our Story */}
       <section id="about" className="community-section">
         <div className="community-container intro-grid">
@@ -122,6 +129,10 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
           </a>
         </div>
       </section>
+      </>
+      )}
+
+      {isPhuphan && <PhuphanHowTo community={community} />}
 
       {/* Section 03: News */}
       <section id="news" className="community-section">

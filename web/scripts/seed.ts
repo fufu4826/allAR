@@ -9,7 +9,10 @@ const pool = mysql.createPool({ uri: process.env.DATABASE_URL, connectionLimit: 
 const db = drizzle(pool, { schema, mode: "default" });
 
 async function seed() {
+  // SEED_ONLY=tharae (comma-separated slugs) seeds just those sites, leaving admin edits on the others alone.
+  const only = (process.env.SEED_ONLY ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   for (const [i, community] of source.entries()) {
+    if (only.length && !only.includes(community.slug)) continue;
     const id = community.id || community.slug;
     const values = {
       id,

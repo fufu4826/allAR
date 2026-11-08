@@ -2,27 +2,30 @@ import phuphan from "./phuphan.json";
 import watklang from "./watklang.json";
 import watnuea from "./watnuea.json";
 import nonhom from "./nonhom.json";
+import tharae from "./tharae.json";
 import type { Community } from "@/lib/types";
 
 export const communities: Community[] = [
   {
     id: "community-2",
     slug: "tharae",
-    name: "พิพิธภัณฑ์อัครเทวดามีคาแอล ชุมชนบ้านท่าแร่",
-    shortName: "พิพิธภัณฑ์อัครเทวดามีคาแอล",
+    // Names follow the other sites' pattern, with the team's own word อาสนวิหาร (form of 9 Nov 2026).
+    name: "อาสนวิหารอัครเทวดามีคาแอล ชุมชนบ้านท่าแร่",
+    shortName: "อาสนวิหารอัครเทวดามีคาแอล",
     englishName: "THA RAE COMMUNITY",
-    tagline: "สัมผัสเรื่องราวชุมชนท่าแร่ ผ่านสถาปัตยกรรมเก่าแก่และวัฒนธรรมแห่งศรัทธา",
-    tags: "สถาปัตยกรรม • ศรัทธา • ประเพณี",
+    // tagline from the team's community description; tags are its three categories
+    tagline: "ศูนย์รวมจิตใจของชาวคริสตชน ชุมชนท่าแร่",
+    tags: "บุคคลสำคัญ • เครื่องแต่งกาย • วัตถุสำคัญ",
     theme: "tharae",
-    location: "ตำบลท่าแร่ อำเภอเมืองสกลนคร จังหวัดสกลนคร",
-    description: "ท่าแร่เป็นชุมชนคาทอลิกริมหนองหารที่มีเอกลักษณ์ด้านสถาปัตยกรรมเก่าแก่แบบโคโลเนียล และเป็นที่รู้จักจากประเพณีแห่ดาวคริสต์มาส",
-    // approximate — verify with the community
-    position: [17.254194, 104.184000],
+    location: tharae.community.location,
+    description: tharae.community.description,
+    // from the Tha Rae field team's form (9 Nov 2026)
+    position: [tharae.community.lat, tharae.community.lng],
     color: "#a45247",
-    cover: null,
-    collections: [],
-    items: [],
-    recommended: [],
+    cover: tharae.settings.cover,
+    collections: tharae.collections,
+    items: tharae.items,
+    recommended: tharae.settings.recommended,
     placeholder: false,
   },
   {

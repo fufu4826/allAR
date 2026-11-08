@@ -80,6 +80,38 @@
 .theme-tharae .community-category, [data-theme="tharae"] .community-category, [data-community="tharae"] .community-category { border-color: #e4d1cb; }
 .theme-tharae .community-footer, [data-theme="tharae"] .community-footer, [data-community="tharae"] .community-footer { border-top: 8px solid #c97e74; }
 
+/* Tha Rae hero with the cathedral cover photo: the photo fills the right of the hero and fades
+   into deep maroon on the left, so the text never covers the cathedral or its cross. */
+[data-theme="tharae"] .community-hero[data-has-cover] { background: #2a1420; }
+[data-theme="tharae"] .community-hero[data-has-cover]::before {
+  content: ""; position: absolute; inset: 0 0 0 auto; width: 68%;
+  background: var(--hero-cover) center 35% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+}
+[data-theme="tharae"] .community-hero[data-has-cover] .hero-layout {
+  min-height: 560px; grid-template-columns: minmax(0, 620px) 1fr;
+  background: linear-gradient(90deg, #2a1420f2 0%, #2a1420c7 34%, #2a142000 58%);
+}
+[data-theme="tharae"] .community-hero[data-has-cover] .hero-copy { padding: 64px 0 72px; text-shadow: 0 2px 14px #1a0b1299; }
+[data-theme="tharae"] .community-hero[data-has-cover] h1 { font-size: clamp(1.75rem, 2.9vw, 2.75rem); line-height: 1.3; }
+[data-theme="tharae"] .community-hero[data-has-cover] .hero-lead { max-width: 30em; color: #fff5ef; }
+[data-theme="tharae"] .community-hero[data-has-cover] .hero-tags { background: #2a142066; backdrop-filter: blur(4px); }
+[data-theme="tharae"] .community-hero[data-has-cover] .button-ghost { background: #2a142055; backdrop-filter: blur(4px); }
+[data-theme="tharae"] .community-hero[data-has-cover] .hero-art { display: none; }
+@media (max-width: 850px) {
+  [data-theme="tharae"] .community-hero[data-has-cover]::before {
+    inset: 0 0 auto 0; width: 100%; height: min(80vw, 440px);
+    background-position: center 30%;
+    -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
+  }
+  [data-theme="tharae"] .community-hero[data-has-cover] .hero-layout {
+    min-height: 0; grid-template-columns: 1fr; background: none;
+  }
+  [data-theme="tharae"] .community-hero[data-has-cover] .hero-copy { padding: calc(min(80vw, 440px) - 44px) 0 52px; }
+}
+
 /* Wat Klang Theme */
 .theme-watklang, [data-theme="watklang"], [data-community="watklang"] {
   --ink: #493522;

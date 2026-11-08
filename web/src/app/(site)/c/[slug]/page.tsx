@@ -41,8 +41,12 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
 
   return (
     <div className={`theme-${theme}`} data-community={theme} data-theme={theme}>
-      {/* Community Hero */}
-      <section className="community-hero">
+      {/* Community Hero. A theme can show the site's cover photo through --hero-cover (see community.css). */}
+      <section
+        className="community-hero"
+        data-has-cover={community.cover ? "" : undefined}
+        style={community.cover ? ({ "--hero-cover": `url("${community.cover}")` } as React.CSSProperties) : undefined}
+      >
         <div className="community-container hero-layout">
           <div className="hero-copy">
             <Link href="/#ar-showcase" className="breadcrumb">

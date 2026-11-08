@@ -6,6 +6,7 @@ import Link from "next/link";
 import Sakon3DMap from "@/components/map3d/Sakon3DMap";
 import CommunityMap from "@/components/CommunityMap";
 import type { MapLandmark } from "@/components/map3d/data/landmarksData";
+import SiteName from "@/components/SiteName";
 
 interface MapWorkstationProps {
   landmarks: MapLandmark[];
@@ -119,7 +120,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
                   <i className={selectedItem.faIcon}></i>
                 </span>
                 <div style={{ minWidth: 0 }}>
-                  <h3 className="mw-hud-title">{selectedItem.name}</h3>
+                  <h3 className="mw-hud-title"><SiteName name={selectedItem.name} /></h3>
                 </div>
               </div>
               <button
@@ -185,7 +186,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
                   </span>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 className="mw-card-title">{item.name}</h3>
+                    <h3 className="mw-card-title"><SiteName name={item.name} /></h3>
                   </div>
                 </div>
 

@@ -6,6 +6,7 @@ import PageSkeleton from "@/components/PageSkeleton";
 import CollectionBrowser from "@/components/CollectionBrowser";
 import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
 import { getCommunityWithContent, getPublishedNews } from "@/lib/queries";
+import SiteName from "@/components/SiteName";
 
 const communityIcons: Record<string, string> = {
   tharae: "fa-solid fa-church",
@@ -48,7 +49,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
             <Link href="/#ar-showcase" className="breadcrumb">
               <i className="fa-solid fa-arrow-left"></i> 5 แหล่งเรียนรู้
             </Link>
-            <h1>{community.name}</h1>
+            <h1><SiteName name={community.name} /></h1>
             {community.tagline && <p className="hero-lead">{community.tagline}</p>}
             {community.tags && <div className="hero-tags">{community.tags}</div>}
             <div className="hero-actions">

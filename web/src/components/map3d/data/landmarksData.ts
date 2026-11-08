@@ -70,7 +70,9 @@ export const LANDMARK_3D_CONFIG: Record<string, Landmark3DConfig> = {
   phuphan: {
     faIcon: "fa-solid fa-mountain-sun",
     modelUrl: "/map3d/models/phuphan.glb",
-    modelConfig: { scale: 2.5, rotationY: Math.PI * 0.1, offset: { x: 0, y: 0.05, z: 0 } },
+    // The centre's coordinates fall just outside the อำเภอเมือง boundary used for the raised
+    // plateau, so the model is nudged north-west onto it.
+    modelConfig: { scale: 2.5, rotationY: Math.PI * 0.1, offset: { x: -0.55, y: 0.05, z: -0.95 } },
     labelOffset2D: { x: -24, y: -8 },
     pinAnchor: "right",
   },

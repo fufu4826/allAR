@@ -23,7 +23,7 @@ export default function SiteFooter() {
               <img src="/brand/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม มหาวิทยาลัยราชภัฏสกลนคร" className="institution-logo language-logo" />
             </span>
             <div className="logo-text">
-              <span className="brand-title">แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง</span>
+              <span className="brand-title">แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่น<br />จังหวัดสกลนครเสมือนจริง</span>
               <span className="brand-sub">Sakon Nakhon Virtual Learning Sites and Local Museums</span>
             </div>
           </div>

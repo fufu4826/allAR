@@ -98,11 +98,12 @@ function disposeObject(root: THREE.Object3D) {
 }
 
 // The map turns around สี่แยกบ้านธาตุ (แยกบ้านธาตุนาเวง, Highway 22 x 241, 17.19184 N 104.09542 E):
-// visitors can only turn it left/right; the camera stays tilted 65 degrees above the ground
-// (25 degrees from straight down) and cannot be panned away.
+// visitors can only turn it left/right and cannot pan it away. The tilt is locked: 55 degrees above
+// the ground in the overview, 20 degrees when zoomed in on a learning site.
 const PIVOT_LON = 104.09542;
 const PIVOT_LAT = 17.19184;
-const CAMERA_POLAR = THREE.MathUtils.degToRad(25);
+const OVERVIEW_POLAR = THREE.MathUtils.degToRad(90 - 55);
+const SITE_POLAR = THREE.MathUtils.degToRad(90 - 20);
 const OVERVIEW_DISTANCE = 96;
 
 function pivotTarget(): THREE.Vector3 {
@@ -112,8 +113,8 @@ function pivotTarget(): THREE.Vector3 {
 }
 
 /** Camera position at the locked tilt, `distance` away from `target`, facing `azimuth`. */
-function cameraAt(target: THREE.Vector3, distance: number, azimuth = 0): THREE.Vector3 {
-  return target.clone().add(new THREE.Vector3().setFromSphericalCoords(distance, CAMERA_POLAR, azimuth));
+function cameraAt(target: THREE.Vector3, distance: number, azimuth = 0, polar = OVERVIEW_POLAR): THREE.Vector3 {
+  return target.clone().add(new THREE.Vector3().setFromSphericalCoords(distance, polar, azimuth));
 }
 
 /** Overview camera for a viewport aspect ratio. On portrait screens (phones) the horizontal field
@@ -136,6 +137,8 @@ interface CameraAnimState {
   targetPos: THREE.Vector3;
   startTarget: THREE.Vector3;
   targetLookAt: THREE.Vector3;
+  /** Tilt (polar angle) to lock once the flight ends. */
+  polar: number;
 }
 
 export interface Sakon3DMapCanvasProps {
@@ -198,10 +201,15 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
       const elev = getTerrainElev(x, z);
 
       targetLookAt = new THREE.Vector3(x, elev.y + 0.6, z);
-      targetPos = cameraAt(targetLookAt, 11, azimuth);
+      targetPos = cameraAt(targetLookAt, 11, azimuth, SITE_POLAR);
     }
 
+    const polar = landmark ? SITE_POLAR : OVERVIEW_POLAR;
+    // Free the tilt for the flight; it is locked again (to `polar`) when the flight ends.
+    controls.minPolarAngle = Math.min(polar, controls.getPolarAngle());
+    controls.maxPolarAngle = Math.max(polar, controls.getPolarAngle());
     animStateRef.current = {
+      polar,
       startTime: performance.now(),
       duration: 650,
       startPos: camera.position.clone(),
@@ -314,13 +322,19 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     controls.minDistance = 2.0;
     controls.maxDistance = 180.0;
     // Turn left/right only: the tilt is locked and the map cannot be dragged away from the pivot.
-    controls.minPolarAngle = CAMERA_POLAR;
-    controls.maxPolarAngle = CAMERA_POLAR;
+    controls.minPolarAngle = OVERVIEW_POLAR;
+    controls.maxPolarAngle = OVERVIEW_POLAR;
     controls.enablePan = false;
     controlsRef.current = controls;
 
     // Immediately stop auto-animation on user touch/scroll/drag so user has 100% free control!
+    const lockTilt = (polar: number) => {
+      controls.minPolarAngle = polar;
+      controls.maxPolarAngle = polar;
+    };
     const cancelAnim = () => {
+      // Stopped mid-flight: keep the tilt the flight was heading for.
+      if (animStateRef.current) lockTilt(animStateRef.current.polar);
       animStateRef.current = null;
     };
     controls.addEventListener("start", cancelAnim);
@@ -907,6 +921,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         controls.target.lerpVectors(anim.startTarget, anim.targetLookAt, ease);
 
         if (progress >= 1.0) {
+          lockTilt(anim.polar);
           animStateRef.current = null;
         }
       }

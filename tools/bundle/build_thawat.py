@@ -16,6 +16,9 @@ from PIL import Image, ImageOps
 ROOT = os.getcwd()
 EXTRACT = os.path.join(ROOT, "data-bundle", "incoming", "extract")
 UPLOADS = os.path.join(ROOT, "data-bundle", "uploads")
+# /uploads is served immutable for 30 days, so changed pictures need a new file name.
+# watnuea -v2: the photos were sideways (Word rotation not applied by docx_items.py before 2026-11-09).
+IMAGE_VERSION = {"watnuea": "-v2"}
 DATA = os.path.join(ROOT, "web", "src", "data")
 
 # Obvious typos in the source documents (spelling only, meaning unchanged).
@@ -98,7 +101,7 @@ for slug, cols in COLLECTIONS.items():
             regs = [s.get("reg") for s, n in zip(source, names) if n == name]
             unique_reg = it.get("reg") and slug == "watnuea" and regs.count(it["reg"]) == 1
             name = f"{name} (เลขที่ {it['reg']})" if unique_reg else f"{name} (ลำดับที่ {it['no']})"
-        photo = save_image(os.path.join(EXTRACT, slug, it["images"][0]), f"thawat/{slug}/{item_id}.webp") if it["images"] else None
+        photo = save_image(os.path.join(EXTRACT, slug, it["images"][0]), f"thawat/{slug}/{item_id}{IMAGE_VERSION.get(slug, '')}.webp") if it["images"] else None
         items.append({
             "id": item_id,
             "collectionId": col_id[collection_key(slug, it)],

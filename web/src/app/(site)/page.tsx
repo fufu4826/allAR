@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import FeaturedViewer from "@/components/FeaturedViewer";
 import GallerySection from "@/components/GallerySection";
-import { getCommunities, getFeaturedItems, getPublishedNews, getPublishedGallery } from "@/lib/queries";
+import { getCommunities, getFeaturedItems, getPublishedGallery } from "@/lib/queries";
 import { supportingOrganizations } from "@/content/site";
 
 const communityIcons: Record<string, string> = {
@@ -25,15 +25,11 @@ export default function Home() {
 
 async function HomeContent() {
   await connection();
-  const [communities, featured, latestNews, galleryImages] = await Promise.all([
+  const [communities, featured, galleryImages] = await Promise.all([
     getCommunities(),
     getFeaturedItems(12),
-    getPublishedNews(),
     getPublishedGallery(),
   ]);
-
-
-  const topNews = latestNews.slice(0, 3);
 
   return (
     <>
@@ -79,63 +75,6 @@ async function HomeContent() {
             </div>
           </div>
 
-          {/* Latest news aside */}
-          <aside className="hero-visual hero-news" aria-labelledby="hero-news-title">
-            <div className="visual-card">
-              <div className="hero-news-header">
-                <div>
-                  <span className="hero-news-label">
-                    <i className="fa-regular fa-newspaper"></i> NEWS &amp; ARTICLES
-                  </span>
-                  <h2 id="hero-news-title">ข่าวสารและความเคลื่อนไหว</h2>
-                  <p>เรื่องราวจาก 5 แหล่งเรียนรู้สำคัญ</p>
-                </div>
-                <span className="hero-news-header-icon" aria-hidden="true">
-                  <i className="fa-solid fa-newspaper"></i>
-                </span>
-              </div>
-
-              {topNews.length > 0 ? (
-                <div className="hero-news-list">
-                  {topNews.map((item, idx) => (
-                    <Link key={item.id} className="hero-news-item" href={`/news/${item.id}`}>
-                      <span className="hero-news-number" aria-hidden="true">
-                        {String(idx + 1).padStart(2, "0")}
-                      </span>
-                      <span className="hero-news-body">
-                        <span className="hero-news-meta">
-                          {item.category}{" "}
-                          {item.publishedAt && (
-                            <>
-                              <span aria-hidden="true">•</span>{" "}
-                              {new Date(item.publishedAt).toLocaleDateString("th-TH", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })}
-                            </>
-                          )}
-                        </span>
-                        <span className="hero-news-title">{item.title}</span>
-                      </span>
-                      <i className="fa-solid fa-arrow-right hero-news-arrow" aria-hidden="true"></i>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="hero-news-list" style={{ padding: "24px 16px", textAlign: "center", color: "var(--slate-500)" }}>
-                  <p>ยังไม่มีข่าวสารที่เผยแพร่</p>
-                </div>
-              )}
-
-              <div className="hero-news-footer">
-                <span>ติดตามเรื่องราวและองค์ความรู้จากชุมชน</span>
-                <Link href="/news">
-                  ดูข่าวทั้งหมด <i className="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </Link>
-              </div>
-            </div>
-          </aside>
         </div>
       </section>
 
@@ -172,70 +111,6 @@ async function HomeContent() {
 
           {/* Featured 3D Viewer */}
           <FeaturedViewer items={featured} />
-        </div>
-      </section>
-
-      {/* Section: News & Community Updates */}
-      <section id="news" className="section news">
-        <div className="container">
-          <div className="section-header">
-            <span className="section-badge">
-              <i className="fa-solid fa-newspaper"></i> News &amp; Articles
-            </span>
-            <h2 className="section-title">ข่าวสารและองค์ความรู้ 5 แหล่งเรียนรู้</h2>
-            <p className="section-subtitle">ติดตามความเคลื่อนไหว กิจกรรมการลงพื้นที่ และการถ่ายทอดเทคโนโลยีสู่ชุมชน</p>
-          </div>
-
-          {topNews.length > 0 ? (
-            <div className="news-grid">
-              {topNews.map((item, idx) => (
-                <article key={item.id} className="news-card">
-                  <div className={`news-image news-bg-${(idx % 3) + 1}`}>
-                    <span className="news-cat">{item.category}</span>
-                  </div>
-                  <div className="news-content">
-                    <div className="news-meta">
-                      {item.publishedAt && (
-                        <span>
-                          <i className="fa-regular fa-calendar"></i>{" "}
-                          {new Date(item.publishedAt).toLocaleDateString("th-TH", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="news-title">{item.title}</h3>
-                    <p className="news-excerpt">{item.summary}</p>
-                    <Link href={`/news/${item.id}`} className="read-more">
-                      อ่านบทความฉบับเต็ม <i className="fa-solid fa-arrow-right"></i>
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div
-              style={{
-                padding: "48px 24px",
-                textAlign: "center",
-                background: "var(--white)",
-                borderRadius: "var(--radius-lg)",
-                border: "1px dashed var(--slate-300)",
-                color: "var(--slate-500)",
-              }}
-            >
-              <i className="fa-regular fa-newspaper" style={{ fontSize: "2rem", marginBottom: "12px", display: "block" }}></i>
-              <p>ยังไม่มีข่าวสารที่เผยแพร่</p>
-            </div>
-          )}
-
-          <div style={{ textAlign: "center", marginTop: "2rem" }}>
-            <Link href="/news" className="btn btn-outline">
-              ดูข่าวสารทั้งหมด <i className="fa-solid fa-arrow-right"></i>
-            </Link>
-          </div>
         </div>
       </section>
 

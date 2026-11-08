@@ -22,7 +22,7 @@ export default function WelcomeCover() {
             <img src="/brand/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม" />
           </div>
           <div className="welcome-brand-text">
-            <strong>แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่น<br />จังหวัดสกลนครเสมือนจริง</strong>
+            <strong><span className="brand-line">แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่น</span><span className="brand-line">จังหวัดสกลนครเสมือนจริง</span></strong>
             <span>Sakon Nakhon Virtual Learning Sites and Local Museums</span>
           </div>
         </div>

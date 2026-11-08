@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
-import { getCommunities, getPublishedNews } from "@/lib/queries";
+import { getCommunities } from "@/lib/queries";
 import { resolveSiteUrl } from "@/lib/siteUrl";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -10,9 +10,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     forwardedHost: h.get("x-forwarded-host"),
     forwardedProto: h.get("x-forwarded-proto"),
   });
-  const [communities, news] = await Promise.all([getCommunities(), getPublishedNews()]);
+  const communities = await getCommunities();
 
-  const pages: MetadataRoute.Sitemap = ["/", "/map", "/about", "/news", "/search"].map((path) => ({
+  const pages: MetadataRoute.Sitemap = ["/", "/map", "/about", "/search"].map((path) => ({
     url: `${base}${path === "/" ? "" : path}`,
   }));
   // Published communities and their published items (getCommunities already drops unpublished items).
@@ -24,9 +24,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${base}/c/${encodeURIComponent(community.slug)}/${encodeURIComponent(item.id)}`,
       })),
     ]);
-  const articles = news.map((article) => ({
-    url: `${base}/news/${encodeURIComponent(article.id)}`,
-    lastModified: article.publishedAt ?? undefined,
-  }));
-  return [...pages, ...content, ...articles];
+  return [...pages, ...content];
 }

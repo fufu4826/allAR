@@ -320,9 +320,11 @@ ul {
   font-weight: 600;
 }
 
-/* The site name is long: in the navbar it wraps onto two lines so the menu keeps its room. */
-.navbar .logo-text {
-  max-width: 300px;
+/* The site name is set on two fixed lines (แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่น / จังหวัดสกลนครเสมือนจริง),
+   never broken inside a word. */
+.brand-line {
+  display: block;
+  white-space: nowrap;
 }
 .navbar .brand-title {
   font-size: 1rem;
@@ -2106,4 +2108,39 @@ model-viewer {
     font-size: 0.58rem;
     line-height: 1.25;
   }
+}
+
+/* Footer: logos above the site name so its two lines fit the column; site list with icons. */
+.footer-logo {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.footer-logo .brand-title {
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+.footer-sites li a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.footer-sites li a i {
+  width: 16px;
+  text-align: center;
+  color: var(--orange-400);
+}
+.contact-links a {
+  color: inherit;
+}
+.contact-links a:hover {
+  color: var(--orange-400);
+}
+
+/* Very narrow phones (360px): keep both lines of the site name clear of the menu button. */
+@media (max-width: 400px) {
+  .navbar .brand-title { font-size: 0.7rem; }
+  .navbar .brand-sub { font-size: 0.52rem; }
+  .navbar .institution-logo { height: 34px; }
+  .navbar .language-logo { width: 36px; }
 }

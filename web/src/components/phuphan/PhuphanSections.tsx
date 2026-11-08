@@ -1,8 +1,8 @@
-import { phuphanCentre, phuphanContact, phuphanSteps } from "@/content/phuphan";
+import { phuphanCentre, phuphanContact } from "@/content/phuphan";
 import type { Community } from "@/lib/types";
 
 // Sections carried over from the original Phu Phan AR site: centre information with the
-// contact card, and the stats + "3 steps" guide. Styled by phuphan-theme.css.
+// contact card. Styled by phuphan-theme.css.
 
 export function PhuphanCentre({ community }: { community: Community }) {
   const [lat, lng] = community.position;
@@ -99,43 +99,6 @@ export function PhuphanCentre({ community }: { community: Community }) {
             </div>
           </aside>
         </div>
-      </div>
-    </section>
-  );
-}
-
-export function PhuphanHowTo({ community }: { community: Community }) {
-  const modelCount = community.items.filter((item) => item.model).length;
-
-  return (
-    <section className="community-section pp-howto" aria-labelledby="pp-howto-title">
-      <div className="community-container">
-        <div className="pp-stats">
-          <div className="pp-stat">
-            <strong>{community.collections.length}</strong>
-            <span>แหล่งเรียนรู้</span>
-          </div>
-          <div className="pp-stat">
-            <strong>{modelCount}</strong>
-            <span>โมเดล</span>
-          </div>
-        </div>
-
-        <div className="pp-howto-head">
-          <h2 id="pp-howto-title">{phuphanSteps.title}</h2>
-          <p>{phuphanSteps.lead}</p>
-        </div>
-        <ol className="pp-steps">
-          {phuphanSteps.steps.map((step, i) => (
-            <li key={step.title} className="pp-step">
-              <span className="pp-step-number" aria-hidden="true">
-                {i + 1}
-              </span>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-            </li>
-          ))}
-        </ol>
       </div>
     </section>
   );

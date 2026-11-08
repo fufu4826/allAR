@@ -45,9 +45,7 @@
 [data-theme='phuphan'] h1,
 [data-theme='phuphan'] h2,
 [data-theme='phuphan'] h3,
-[data-theme='phuphan'] .button,
-[data-theme='phuphan'] .pp-stat strong,
-[data-theme='phuphan'] .pp-step-number {
+[data-theme='phuphan'] .button {
   font-family: var(--font-kanit), var(--font-prompt), sans-serif;
 }
 [data-theme='phuphan'] h2,
@@ -315,80 +313,7 @@
   background: var(--indigo-50);
 }
 
-/* ---------- Stats + 3 steps ---------- */
-[data-theme='phuphan'] .pp-howto {
-  padding-top: 0;
-}
-[data-theme='phuphan'] .pp-stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 56px;
-}
-[data-theme='phuphan'] .pp-stat {
-  background: var(--pp-paper-2);
-  border: 1px solid var(--pp-line);
-  border-radius: 12px;
-  box-shadow: var(--pp-shadow);
-  padding: 20px 24px;
-}
-[data-theme='phuphan'] .pp-stat strong {
-  display: block;
-  font-size: 2.2rem;
-  line-height: 1.1;
-  color: var(--indigo-900);
-}
-[data-theme='phuphan'] .pp-stat span {
-  color: var(--pp-muted);
-}
-[data-theme='phuphan'] .pp-howto-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-[data-theme='phuphan'] .pp-howto-head p {
-  margin: 0;
-  color: var(--pp-muted);
-}
-[data-theme='phuphan'] .pp-steps {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-[data-theme='phuphan'] .pp-step {
-  background: var(--pp-paper-2);
-  border: 1px solid var(--pp-line);
-  border-radius: 12px;
-  box-shadow: var(--pp-shadow);
-  padding: 22px;
-}
-[data-theme='phuphan'] .pp-step h3 {
-  margin: 14px 0 6px;
-  font-size: 1.05rem;
-}
-[data-theme='phuphan'] .pp-step p {
-  margin: 0;
-  color: var(--pp-muted);
-  line-height: 1.7;
-}
-[data-theme='phuphan'] .pp-step-number {
-  display: inline-grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: var(--indigo-900);
-  color: #f3d58d;
-  font-weight: 600;
-}
-
-/* ---------- News, models, cards ---------- */
+/* ---------- Models, cards ---------- */
 [data-theme='phuphan'] .model-section {
   background: var(--pp-paper-2);
   border-top: 1px solid var(--pp-line);
@@ -448,16 +373,10 @@
     grid-template-columns: 1fr;
     gap: 28px;
   }
-  [data-theme='phuphan'] .pp-steps {
-    grid-template-columns: 1fr;
-  }
 }
 @media (max-width: 500px) {
   [data-theme='phuphan'] .pp-facts > div {
     grid-template-columns: 1fr;
     gap: 2px;
-  }
-  [data-theme='phuphan'] .pp-stats {
-    margin-bottom: 36px;
   }
 }

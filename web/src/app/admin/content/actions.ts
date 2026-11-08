@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { revalidateTag, updateTag } from "next/cache";
 import { db } from "@/db";
-import { news, galleryImages } from "@/db/schema";
+import { galleryImages } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { saveUpload, deleteUpload } from "@/lib/uploads";
@@ -16,7 +16,7 @@ export async function saveContent(form: FormData) {
   const sortOrder = Number(form.get("sortOrder") || 0);
   const isPublished = form.get("isPublished") === "on";
 
-  if (!/^[a-z0-9-]{1,32}$/.test(id) || !Number.isInteger(sortOrder) || sortOrder < 0 || !["news", "gallery"].includes(kind)) {
+  if (!/^[a-z0-9-]{1,32}$/.test(id) || !Number.isInteger(sortOrder) || sortOrder < 0 || kind !== "gallery") {
     throw new Error("ข้อมูลไม่ถูกต้อง");
   }
 
@@ -24,66 +24,33 @@ export async function saveContent(form: FormData) {
   const uploaded = file instanceof File && file.size ? await saveUpload(file, "image") : null;
 
   try {
-    if (kind === "news") {
-      const title = String(form.get("title") || "").trim();
-      const summary = String(form.get("summary") || "").trim();
-      const body = String(form.get("body") || "").trim();
-      const category = String(form.get("category") || "").trim();
+    const caption = String(form.get("caption") || "").trim();
+    const category = String(form.get("category") || "");
 
-      if (!title || title.length > 255 || !summary || !body || !category || category.length > 64) {
-        throw new Error("กรุณากรอกข้อมูลข่าวสารให้ครบถ้วนและถูกต้อง");
-      }
+    const [existing] = await db.select().from(galleryImages).where(eq(galleryImages.id, id));
+    const imagePath = uploaded || existing?.imagePath;
 
-      const [existing] = await db.select().from(news).where(eq(news.id, id));
-      const values = {
-        communityId,
-        title,
-        summary,
-        body,
-        category,
-        sortOrder,
-        isPublished,
-        coverPath: uploaded || existing?.coverPath || null,
-        publishedAt: isPublished ? existing?.publishedAt || new Date() : null,
-      };
-
-      if (existing) {
-        await db.update(news).set(values).where(eq(news.id, id));
-      } else {
-        await db.insert(news).values({ id, ...values });
-      }
-
-      if (uploaded && existing?.coverPath) await deleteUpload(existing.coverPath).catch(() => {});
-      await audit(admin.id, existing ? "update" : "create", "news", id, { title });
-    } else {
-      const caption = String(form.get("caption") || "").trim();
-      const category = String(form.get("category") || "");
-
-      const [existing] = await db.select().from(galleryImages).where(eq(galleryImages.id, id));
-      const imagePath = uploaded || existing?.imagePath;
-
-      if (!caption || !imagePath || !["fieldwork", "modeling", "testing"].includes(category)) {
-        throw new Error("กรุณากรอกข้อมูลภาพแกลเลอรีให้ครบถ้วน");
-      }
-
-      const values = {
-        communityId,
-        caption,
-        category,
-        imagePath,
-        sortOrder,
-        isPublished,
-      };
-
-      if (existing) {
-        await db.update(galleryImages).set(values).where(eq(galleryImages.id, id));
-      } else {
-        await db.insert(galleryImages).values({ id, ...values });
-      }
-
-      if (uploaded && existing?.imagePath) await deleteUpload(existing.imagePath).catch(() => {});
-      await audit(admin.id, existing ? "update" : "create", "gallery", id, { caption });
+    if (!caption || !imagePath || !["fieldwork", "modeling", "testing"].includes(category)) {
+      throw new Error("กรุณากรอกข้อมูลภาพแกลเลอรีให้ครบถ้วน");
     }
+
+    const values = {
+      communityId,
+      caption,
+      category,
+      imagePath,
+      sortOrder,
+      isPublished,
+    };
+
+    if (existing) {
+      await db.update(galleryImages).set(values).where(eq(galleryImages.id, id));
+    } else {
+      await db.insert(galleryImages).values({ id, ...values });
+    }
+
+    if (uploaded && existing?.imagePath) await deleteUpload(existing.imagePath).catch(() => {});
+    await audit(admin.id, existing ? "update" : "create", "gallery", id, { caption });
   } catch (error) {
     if (uploaded) await deleteUpload(uploaded).catch(() => {});
     throw error;
@@ -98,11 +65,7 @@ export async function deleteContent(form: FormData) {
   const id = String(form.get("id") || "");
   const kind = String(form.get("kind") || "");
 
-  if (kind === "news") {
-    const [row] = await db.select().from(news).where(eq(news.id, id));
-    await db.delete(news).where(eq(news.id, id));
-    if (row?.coverPath) await deleteUpload(row.coverPath).catch(() => {});
-  } else if (kind === "gallery") {
+  if (kind === "gallery") {
     const [row] = await db.select().from(galleryImages).where(eq(galleryImages.id, id));
     await db.delete(galleryImages).where(eq(galleryImages.id, id));
     if (row?.imagePath) await deleteUpload(row.imagePath).catch(() => {});

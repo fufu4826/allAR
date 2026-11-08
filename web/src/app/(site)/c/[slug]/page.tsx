@@ -5,7 +5,7 @@ import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import CollectionBrowser from "@/components/CollectionBrowser";
 import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
-import { getCommunityWithContent, getPublishedNews } from "@/lib/queries";
+import { getCommunityWithContent } from "@/lib/queries";
 import SiteName from "@/components/SiteName";
 
 const communityIcons: Record<string, string> = {
@@ -34,7 +34,6 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
   const community = await getCommunityWithContent(slug);
   if (!community) notFound();
 
-  const communityNews = community.id ? await getPublishedNews(community.id) : [];
   const theme = community.theme || community.slug || "default";
   const icon = communityIcons[community.slug] || "fa-solid fa-location-dot";
   // Phu Phan uses the sections and look of the original Phu Phan AR site (phuphan-theme.css).
@@ -130,50 +129,6 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
         </div>
       </section>
       </>
-      )}
-
-      {/* Section 03: News (not on Phu Phan) */}
-      {!isPhuphan && (
-      <section id="news" className="community-section">
-        <div className="community-container">
-          <div className="section-top">
-            <div>
-              <p className="eyebrow">03 / NEWS &amp; STORIES</p>
-              <h2>ข่าวสารและเรื่องราว</h2>
-            </div>
-            <Link href="/news" className="text-link">
-              ข่าวสารทั้งหมด <i className="fa-solid fa-arrow-right"></i>
-            </Link>
-          </div>
-
-          {communityNews.length > 0 ? (
-            <div style={{ display: "grid", gap: "16px" }}>
-              {communityNews.map((article) => (
-                <Link key={article.id} className="story-card" href={`/news/${article.id}`}>
-                  <span className="story-icon">
-                    <i className="fa-regular fa-newspaper"></i>
-                  </span>
-                  <span>
-                    <small>{article.category}</small>
-                    <strong>{article.title}</strong>
-                    <span className="text-link">
-                      ดูข่าวสาร <i className="fa-solid fa-arrow-right"></i>
-                    </span>
-                  </span>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <i className="fa-regular fa-newspaper"></i>
-              <div>
-                <strong>ยังไม่มีข่าวสารสำหรับชุมชนนี้</strong>
-                <p>ติดตามข่าวสารของโครงการได้จากหน้าข่าวสารหลัก</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
       )}
 
       {/* Section 04: 3D & AR Collection */}

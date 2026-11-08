@@ -15,7 +15,7 @@ html:has(.welcome-cover), body:has(.welcome-cover) { overscroll-behavior:none; }
 .welcome-emblems img { width:41px; height:50px; object-fit:contain; }
 .welcome-emblems img+img { width:50px; }
 .welcome-brand-text strong,.welcome-brand-text span { display:block; }
-.welcome-brand-text strong { font-family:var(--font-tech); font-size:1.25rem; letter-spacing:.08em; line-height:1.2; }
+.welcome-brand-text strong { font-family:var(--font-tech); font-size:1.25rem; letter-spacing:.02em; line-height:1.3; }
 .welcome-brand-text span { color:#f4d4bd; font-size:.72rem; margin-top:4px; }
 .welcome-content { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; max-width:680px; padding:45px 0 64px; }
 .welcome-eyebrow { display:inline-flex; align-items:center; gap:10px; color:#f5d4b6; font-family:var(--font-tech); font-size:.75rem; font-weight:700; letter-spacing:.18em; }

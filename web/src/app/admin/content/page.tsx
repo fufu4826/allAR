@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { db } from "@/db";
-import { communities, news, galleryImages } from "@/db/schema";
+import { communities, galleryImages } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
 import { saveContent, deleteContent } from "./actions";
 
@@ -16,41 +16,16 @@ export default function ContentAdmin() {
 
 async function Content() {
   await requireAdmin();
-  const [places, articles, images] = await Promise.all([
-    db.select().from(communities),
-    db.select().from(news),
-    db.select().from(galleryImages),
-  ]);
+  const [places, images] = await Promise.all([db.select().from(communities), db.select().from(galleryImages)]);
 
-  function editor(kind: "news" | "gallery", item?: typeof articles[number] | typeof images[number]) {
-    const article = item && "title" in item ? item : undefined;
-    const picture = item && "caption" in item ? item : undefined;
+  function editor(item?: typeof images[number]) {
+    const picture = item;
 
     return (
       <form action={saveContent} className="space-y-3 rounded-2xl border border-line bg-white p-5">
-        <input type="hidden" name="kind" value={kind} />
+        <input type="hidden" name="kind" value="gallery" />
         <input type="hidden" name="id" value={item?.id || ""} />
 
-        {kind === "news" ? (
-          <>
-            <div>
-              <label className="block text-xs font-medium text-slate-700">หัวข้อข่าว *</label>
-              <input className={field} name="title" placeholder="หัวข้อข่าว" required maxLength={255} defaultValue={article?.title} />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-700">หมวดหมู่ *</label>
-              <input className={field} name="category" placeholder="เช่น เทคโนโลยีชุมชน, ศิลปวัฒนธรรม" required maxLength={64} defaultValue={article?.category} />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-700">สรุปย่อ *</label>
-              <textarea className={field} rows={2} name="summary" placeholder="สรุปสั้น ๆ ของข่าวสาร" required defaultValue={article?.summary} />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-700">เนื้อหาข่าว *</label>
-              <textarea className={field} rows={5} name="body" placeholder="เนื้อหาข่าวฉบับเต็ม" required defaultValue={article?.body} />
-            </div>
-          </>
-        ) : (
           <>
             <div>
               <label className="block text-xs font-medium text-slate-700">คำอธิบายภาพ *</label>
@@ -65,7 +40,6 @@ async function Content() {
               </select>
             </div>
           </>
-        )}
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
@@ -87,14 +61,14 @@ async function Content() {
 
         <div>
           <label className="block text-xs font-medium text-slate-700">
-            {kind === "news" ? "ภาพหน้าปกข่าว (ไม่บังคับ)" : "ไฟล์รูปภาพ *"}
+            ไฟล์รูปภาพ *
           </label>
           <input
             type="file"
             name="image"
             accept="image/jpeg,image/png,image/webp"
             className="mt-1 block text-sm"
-            required={kind === "gallery" && !item}
+            required={!item}
           />
         </div>
 
@@ -118,46 +92,13 @@ async function Content() {
     <div className="space-y-12">
       <section>
         <div className="mb-4">
-          <h1 className="text-2xl font-bold">จัดการข่าวสาร</h1>
-          <p className="text-sm text-muted">เพิ่มและแก้ไขข่าวสารหรือเรื่องราวประชาสัมพันธ์ของ 5 แหล่งเรียนรู้</p>
-        </div>
-        <div className="mb-6">
-          <details className="rounded-2xl border border-line bg-white p-4">
-            <summary className="cursor-pointer font-semibold text-brand-dark">+ เพิ่มข่าวสารใหม่</summary>
-            <div className="mt-4">{editor("news")}</div>
-          </details>
-        </div>
-        <div className="space-y-3">
-          {articles.map((article) => (
-            <details key={article.id} className="rounded-2xl border border-line bg-white p-4">
-              <summary className="cursor-pointer font-medium">
-                {article.title} <span className="text-xs text-muted">({article.category} • {article.isPublished ? "เผยแพร่แล้ว" : "ฉบับร่าง"})</span>
-              </summary>
-              <div className="mt-4">
-                {editor("news", article)}
-                <form action={deleteContent} className="mt-3">
-                  <input type="hidden" name="id" value={article.id} />
-                  <input type="hidden" name="kind" value="news" />
-                  <button type="submit" className="text-sm font-medium text-red-600 hover:underline">
-                    ลบข่าวสารนี้
-                  </button>
-                </form>
-              </div>
-            </details>
-          ))}
-          {articles.length === 0 && <p className="text-sm text-muted">ยังไม่มีข่าวสารในระบบ</p>}
-        </div>
-      </section>
-
-      <section>
-        <div className="mb-4">
-          <h2 className="text-2xl font-bold">จัดการแกลเลอรี</h2>
+          <h1 className="text-2xl font-bold">จัดการแกลเลอรี</h1>
           <p className="text-sm text-muted">เพิ่มและจัดการภาพถ่ายกิจกรรม การลงพื้นที่ และการสแกน 3D</p>
         </div>
         <div className="mb-6">
           <details className="rounded-2xl border border-line bg-white p-4">
             <summary className="cursor-pointer font-semibold text-brand-dark">+ เพิ่มภาพแกลเลอรีใหม่</summary>
-            <div className="mt-4">{editor("gallery")}</div>
+            <div className="mt-4">{editor()}</div>
           </details>
         </div>
         <div className="space-y-3">
@@ -167,7 +108,7 @@ async function Content() {
                 {image.caption} <span className="text-xs text-muted">({image.category} • {image.isPublished ? "เผยแพร่แล้ว" : "ฉบับร่าง"})</span>
               </summary>
               <div className="mt-4">
-                {editor("gallery", image)}
+                {editor(image)}
                 <form action={deleteContent} className="mt-3">
                   <input type="hidden" name="id" value={image.id} />
                   <input type="hidden" name="kind" value="gallery" />

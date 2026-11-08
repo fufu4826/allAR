@@ -81,6 +81,19 @@ function disposeObject(root: THREE.Object3D) {
 const DEFAULT_TARGET = new THREE.Vector3(12.5, 0.1, 5.0);
 const DEFAULT_CAM_POS = new THREE.Vector3(12.5, 76.0, 38.0);
 
+/** Overview camera for a viewport aspect ratio. On portrait screens (phones) the horizontal field
+ *  of view is narrow, so aim nearer the province centre (x ≈ 0) and pull back far enough for the
+ *  province width (about ±25 units, plus a margin) to fit across the screen. */
+const PORTRAIT_TARGET = new THREE.Vector3(4.0, 0.1, 3.0);
+function overviewView(aspect: number): { target: THREE.Vector3; position: THREE.Vector3 } {
+  if (aspect >= 1) return { target: DEFAULT_TARGET.clone(), position: DEFAULT_CAM_POS.clone() };
+  const offset = DEFAULT_CAM_POS.clone().sub(DEFAULT_TARGET);
+  const halfH = Math.atan(Math.tan(THREE.MathUtils.degToRad(38 / 2)) * aspect);
+  const needed = 29 / Math.tan(halfH);
+  const factor = Math.min(2.2, Math.max(1, needed / offset.length()));
+  return { target: PORTRAIT_TARGET.clone(), position: PORTRAIT_TARGET.clone().add(offset.multiplyScalar(factor)) };
+}
+
 interface CameraAnimState {
   startTime: number;
   duration: number;
@@ -140,8 +153,9 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     let targetPos: THREE.Vector3;
 
     if (!landmark) {
-      targetLookAt = DEFAULT_TARGET.clone();
-      targetPos = DEFAULT_CAM_POS.clone();
+      const view = overviewView(camera.aspect);
+      targetLookAt = view.target;
+      targetPos = view.position;
     } else {
       const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.modelConfig.offset?.x || 0);
       const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
@@ -234,7 +248,8 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
-    camera.position.copy(DEFAULT_CAM_POS);
+    const initialView = overviewView(width / height);
+    camera.position.copy(initialView.position);
     cameraRef.current = camera;
 
     // Phones and tablets: no shadows, no MSAA, lower pixel ratio, to keep mid-range devices smooth.
@@ -259,7 +274,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
-    controls.target.copy(DEFAULT_TARGET);
+    controls.target.copy(initialView.target);
     controls.minDistance = 2.0;
     controls.maxDistance = 180.0;
     controls.maxPolarAngle = Math.PI / 2 - 0.08;
@@ -694,6 +709,9 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     let reqId = 0;
     const tempV = new THREE.Vector3();
     const labelWidths: Record<string, number> = {};
+    const labelHeights: Record<string, number> = {};
+    type LabelRect = { id: string; left: number; top: number; w: number; h: number; z: number; selected: boolean };
+    const labelRects: LabelRect[] = [];
     const camDir = new THREE.Vector3();
 
     // Stop rendering while the tab is hidden or the map is scrolled off-screen (saves battery on phones).
@@ -774,13 +792,18 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
               labelWidth = badgeEl.offsetWidth;
               if (labelWidth) labelWidths[lm.id] = labelWidth;
             }
+            let labelHeight = labelHeights[lm.id];
+            if (!labelHeight) {
+              labelHeight = badgeEl.offsetHeight;
+              if (labelHeight) labelHeights[lm.id] = labelHeight;
+            }
             const margin = 6;
             const left = Math.min(
               Math.max(screenX - labelWidth * anchorFrac, margin),
               Math.max(margin, currentWidth - labelWidth - margin),
             );
-            badgeEl.style.transform = `translate3d(${left}px, ${screenY}px, 0) translate(0, -100%) scale(${isSelected ? 1.10 : 1.0})`;
-            badgeEl.style.zIndex = `${isSelected ? 200 : zIndex}`;
+            // Placed after the loop, once every label's position is known (collision avoidance).
+            labelRects.push({ id: lm.id, left, top: screenY - labelHeight, w: labelWidth, h: labelHeight, z: zIndex, selected: isSelected });
           }
         }
 
@@ -795,6 +818,36 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
           }
         }
       }
+
+      // 2b. Keep labels from covering each other (matters on phones, where the sites sit close
+      // together on screen). Selected and nearer labels keep their spot; others move up or down
+      // in steps until they are clear. The ground dot always stays at the real GPS position.
+      labelRects.sort((a, b) => Number(b.selected) - Number(a.selected) || b.z - a.z);
+      const placedRects: LabelRect[] = [];
+      for (const r of labelRects) {
+        const step = r.h + 4;
+        const tries = [0, -step, step, -2 * step, 2 * step, -3 * step, 3 * step];
+        let top = r.top;
+        for (const dy of tries) {
+          const t = r.top + dy;
+          // Stay clear of the top buttons (3D/2D switch, fullscreen) and the bottom layer bar.
+          if (t < 52 || t + r.h > currentHeight - 58) continue;
+          const hit = placedRects.some(
+            (p) => r.left < p.left + p.w + 4 && r.left + r.w + 4 > p.left && t < p.top + p.h + 2 && t + r.h + 2 > p.top,
+          );
+          if (!hit) {
+            top = t;
+            break;
+          }
+        }
+        placedRects.push({ ...r, top });
+        const el = badgeRefs.current[r.id];
+        if (el) {
+          el.style.transform = `translate3d(${r.left}px, ${top + r.h}px, 0) translate(0, -100%) scale(${r.selected ? 1.1 : 1.0})`;
+          el.style.zIndex = `${r.selected ? 200 : r.z}`;
+        }
+      }
+      labelRects.length = 0;
 
       // 3. Update Compass Heading with 0 delay (via direct DOM)
       camera.getWorldDirection(camDir);

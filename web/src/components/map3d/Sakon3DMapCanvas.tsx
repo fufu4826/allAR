@@ -710,6 +710,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     const tempV = new THREE.Vector3();
     const labelWidths: Record<string, number> = {};
     const labelHeights: Record<string, number> = {};
+    const compactWidths: Record<string, number> = {};
     type LabelRect = { id: string; left: number; top: number; w: number; h: number; z: number; selected: boolean };
     const labelRects: LabelRect[] = [];
     const camDir = new THREE.Vector3();
@@ -788,7 +789,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
             const anchorFrac = anchor === "left" ? 0.12 : anchor === "right" ? 0.88 : 0.5;
             // Keep the label inside the canvas on narrow screens. Width is measured once (text never changes).
             let labelWidth = labelWidths[lm.id];
-            if (!labelWidth) {
+            if (!labelWidth && badgeEl.dataset.compact !== "1") {
               labelWidth = badgeEl.offsetWidth;
               if (labelWidth) labelWidths[lm.id] = labelWidth;
             }
@@ -798,6 +799,20 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
               if (labelHeight) labelHeights[lm.id] = labelHeight;
             }
             const margin = 6;
+            // A label whose full name would run past the left/right edge shrinks to its icon only
+            // (the selected one always keeps its name). data-compact is not React-managed, so a
+            // re-render never resets it.
+            const fullLeft = screenX - labelWidth * anchorFrac;
+            const compact = !isSelected && (fullLeft < margin || fullLeft + labelWidth > currentWidth - margin);
+            if ((badgeEl.dataset.compact === "1") !== compact) badgeEl.dataset.compact = compact ? "1" : "";
+            if (compact) {
+              let iconWidth = compactWidths[lm.id];
+              if (!iconWidth) {
+                iconWidth = badgeEl.offsetWidth;
+                if (iconWidth) compactWidths[lm.id] = iconWidth;
+              }
+              labelWidth = iconWidth || labelWidth;
+            }
             const left = Math.min(
               Math.max(screenX - labelWidth * anchorFrac, margin),
               Math.max(margin, currentWidth - labelWidth - margin),
@@ -907,6 +922,10 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
       camera.aspect = nw / nh;
       camera.updateProjectionMatrix();
       renderer.setSize(nw, nh);
+      // Label sizes depend on the screen width (smaller pills on phones): measure them again.
+      for (const cache of [labelWidths, labelHeights, compactWidths]) {
+        for (const key of Object.keys(cache)) delete cache[key];
+      }
     };
 
     window.addEventListener("resize", handleResize);

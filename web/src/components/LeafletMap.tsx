@@ -46,7 +46,8 @@ function createLandmarkDivIcon(lm: MapLandmark, isSelected: boolean) {
 }
 
 /** After every zoom/pan, keep the 2D labels inside the map and off each other: a label that runs
- *  past the left/right edge flips to the other side of its pin, and overlapping labels are nudged
+ *  past the left/right edge flips to the other side of its pin, or shrinks to its icon if it still
+ *  does not fit, and overlapping labels are nudged
  *  up or down. Matters on phones, where the sites sit close together. */
 function LabelFitter({ selectedId }: { selectedId?: string | null }) {
   const map = useMap();
@@ -63,12 +64,19 @@ function LabelFitter({ selectedId }: { selectedId?: string | null }) {
         const anchor = el.dataset.anchor || "center";
         el.style.marginTop = "0px";
         el.style.transform = pillTransform(anchor);
+        delete el.dataset.compact;
         let r = el.getBoundingClientRect();
         if (r.left < box.left + 4 && anchor !== "left") {
           el.style.transform = pillTransform("left");
           r = el.getBoundingClientRect();
         } else if (r.right > box.right - 4 && anchor !== "right") {
           el.style.transform = pillTransform("right");
+          r = el.getBoundingClientRect();
+        }
+        // Still past an edge on the other side too: show the icon only (the selected label keeps its name).
+        if ((r.left < box.left + 4 || r.right > box.right - 4) && !el.classList.contains("active")) {
+          el.dataset.compact = "1";
+          el.style.transform = pillTransform(anchor);
           r = el.getBoundingClientRect();
         }
         const step = r.height + 4;

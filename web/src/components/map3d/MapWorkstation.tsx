@@ -120,7 +120,6 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
                 </span>
                 <div style={{ minWidth: 0 }}>
                   <h3 className="mw-hud-title">{selectedItem.name}</h3>
-                  <span className="mw-hud-eng">{selectedItem.englishName}</span>
                 </div>
               </div>
               <button
@@ -187,7 +186,6 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <h3 className="mw-card-title">{item.name}</h3>
-                    <span className="mw-card-eng">{item.englishName}</span>
                   </div>
                 </div>
 

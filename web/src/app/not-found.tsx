@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "ไม่พบหน้านี้ | แหล่งเรียนรู้สกลนคร 3D",
+  title: "ไม่พบหน้านี้ | แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง",
   robots: { index: false },
 };
 

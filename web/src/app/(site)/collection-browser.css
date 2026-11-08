@@ -1,0 +1,236 @@
+/* Model browser on the learning-site pages (CollectionBrowser.tsx): side menu + cards.
+   Colours come from each site's theme (--ink, --accent, --accent-light); a theme can override
+   the --cb-* values (phuphan-theme.css does). */
+.cb {
+  --cb-card: #fff;
+  --cb-line: color-mix(in srgb, var(--accent) 18%, #fff);
+  --cb-muted: color-mix(in srgb, var(--ink) 72%, #fff);
+  --cb-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 10px 28px rgba(0, 0, 0, 0.07);
+  --cb-active: var(--ink);
+  --cb-highlight: var(--accent-light);
+  --cb-soft: var(--accent-light);
+}
+.cb {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.cb-menu {
+  position: sticky;
+  top: 96px;
+  background: var(--cb-card);
+  border: 1px solid var(--cb-line);
+  border-radius: 14px;
+  box-shadow: var(--cb-shadow);
+  padding: 14px 10px;
+}
+.cb-menu-title {
+  margin: 0 10px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--cb-muted);
+}
+.cb-menu-title span {
+  color: var(--cb-active);
+}
+.cb-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.cb-tab {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--cb-active);
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.cb-tab:hover {
+  background: var(--cb-soft);
+}
+.cb-tab.active {
+  background: var(--cb-active);
+  color: #fff;
+}
+.cb-tab:focus-visible,
+.cb-card:focus-visible,
+.cb-more:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.cb-tab-count {
+  min-width: 26px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--cb-soft);
+  color: var(--cb-active);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+.cb-tab.active .cb-tab-count {
+  background: var(--cb-highlight);
+  color: var(--cb-active);
+}
+.cb-head h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.cb-meta {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--cb-muted);
+}
+.cb-desc {
+  margin: 14px 0 22px;
+  max-width: 72ch;
+}
+.cb-desc p {
+  margin: 0;
+  color: var(--cb-muted);
+  line-height: 1.75;
+  white-space: pre-line;
+}
+.cb-desc p.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cb-more {
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 18px;
+}
+.cb-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--cb-card);
+  border: 1px solid var(--cb-line);
+  border-radius: 14px;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.cb-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--cb-shadow);
+}
+.cb-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  background: var(--cb-soft);
+  overflow: hidden;
+}
+.cb-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+.cb-card:hover .cb-thumb img {
+  transform: scale(1.04);
+}
+.cb-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cb-active) 86%, transparent);
+  color: var(--cb-highlight);
+  font-size: 0.7rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+.cb-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  padding: 14px 16px 16px;
+}
+.cb-body strong {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--cb-active);
+}
+.cb-body small {
+  margin-top: auto;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .cb {
+    /* minmax(0, …) so the sideways-scrolling menu row cannot widen the page */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .cb-menu {
+    position: static;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+  }
+  .cb-menu-title {
+    display: none;
+  }
+  .cb-menu ul {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+  }
+  .cb-tab {
+    white-space: nowrap;
+    border: 1px solid var(--cb-line);
+    border-radius: 999px;
+    background: var(--cb-card);
+    padding: 8px 12px;
+  }
+}
+@media (max-width: 500px) {
+  .cb-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .cb-body {
+    padding: 10px 12px 12px;
+  }
+  .cb-body strong {
+    font-size: 0.85rem;
+  }
+}

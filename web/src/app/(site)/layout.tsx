@@ -2,6 +2,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import "leaflet/dist/leaflet.css";
 import "./heritage.css";
 import "./community.css";
+import "./collection-browser.css";
 import "./phuphan-theme.css";
 import "./cover.css";
 

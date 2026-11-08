@@ -6,11 +6,14 @@ details cell ("ชื่อวัตถุ", "ขนาด", "แบบศิล
 Usage: python tools/bundle/docx_items.py <file.docx> <out-dir>
 Writes <out-dir>/items.json and the row images as <out-dir>/img_<n>.<ext>.
 """
+import io
 import json
 import os
 import re
 import sys
 import zipfile
+
+from PIL import Image
 
 src, out = sys.argv[1], sys.argv[2]
 os.makedirs(out, exist_ok=True)
@@ -19,6 +22,14 @@ doc = z.read("word/document.xml").decode("utf-8")
 rels = z.read("word/_rels/document.xml.rels").decode("utf-8")
 rel_target = dict(re.findall(r'Id="([^"]+)"[^>]*Target="([^"]+)"', rels))
 rel_target.update({k: v for v, k in re.findall(r'Target="([^"]+)"[^>]*Id="([^"]+)"', rels)})
+# Word shows some photos turned (<a:xfrm rot="…"> in 60000ths of a degree, clockwise) while the file
+# inside the .docx is not; apply the same turn on extraction (the Wat Maha Phrom photos are all rot=270).
+image_rot: dict[str, int] = {}
+for pic in re.findall(r"<pic:pic[ >].*?</pic:pic>", doc, flags=re.S):
+    embed = re.search(r'r:embed="([^"]+)"', pic)
+    rot = re.search(r'<a:xfrm[^>]* rot="(-?\d+)"', pic)
+    if embed and rot and embed.group(1) in rel_target:
+        image_rot[rel_target[embed.group(1)]] = round(int(rot.group(1)) / 60000) % 360
 
 LABELS = [
     ("name", r"ชื่อวัตถุ"),
@@ -99,8 +110,15 @@ for it in items:
         name = target.split("/")[-1]
         ext = name.rsplit(".", 1)[-1].lower()
         dest = f"img_{it['no']:02d}_{k}.{ext}"
-        with open(os.path.join(out, dest), "wb") as fh:
-            fh.write(z.read("word/" + target.lstrip("/").replace("word/", "")))
+        data_bytes = z.read("word/" + target.lstrip("/").replace("word/", ""))
+        angle = image_rot.get(target, 0)
+        if angle:
+            img = Image.open(io.BytesIO(data_bytes))
+            # PIL turns counter-clockwise; Word's rot is clockwise.
+            img.rotate(-angle, expand=True).save(os.path.join(out, dest), quality=95)
+        else:
+            with open(os.path.join(out, dest), "wb") as fh:
+                fh.write(data_bytes)
         saved.append(dest)
     it["images"] = saved
 

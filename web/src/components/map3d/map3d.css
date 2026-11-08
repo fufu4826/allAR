@@ -217,6 +217,18 @@
   color: #1c1917;
 }
 
+/* Icon-only label: set on a pin whose full name would run past the edge of the map (3D: on the
+   badge wrapper, 2D: on the pill). The selected pin never gets it. */
+[data-compact="1"] .mw-pin-pill,
+.mw-pin-pill[data-compact="1"] {
+  padding: 5px;
+  gap: 0;
+}
+[data-compact="1"] .mw-pin-text,
+.mw-pin-pill[data-compact="1"] .mw-pin-text {
+  display: none;
+}
+
 /* 2D Map (Leaflet) Custom Markers & Controls */
 /* 2D labels are flipped/nudged by LabelFitter (LeafletMap.tsx), which measures them right after
    moving them; an animated transform/margin would make it read the old position. */
@@ -661,6 +673,10 @@
   }
   .mw-pin-text {
     font-size: 11px;
+  }
+  [data-compact="1"] .mw-pin-pill,
+  .mw-pin-pill[data-compact="1"] {
+    padding: 3px;
   }
   /* The selected-site card spans the width and sits above the layer buttons instead of covering them. */
   .mw-hud-card {

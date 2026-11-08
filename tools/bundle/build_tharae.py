@@ -120,9 +120,11 @@ for c in collections:
     first = next((i for i in items if i["collectionId"] == c["id"] and i["thumbnail"]), None)
     c["image"] = first["thumbnail"] if first else None
 
-# The form names the cover cover1.png, but the file in the folder is cover.png.
-cover_file = next((f for f in (str(com[6] or "").strip(), "cover.png") if f and os.path.isfile(os.path.join(SRC, "ภาพ", f))), None)
-cover = add("photo", f"ภาพ/{cover_file}", f"{SLUG}/cover.webp") if cover_file else None
+# Cover: the colour-graded photo the project owner chose (2026-11-09), saved as ภาพ/cover-enhanced.png;
+# otherwise the team's file (the form says cover1.png, but the file in the folder is cover.png).
+# Saved as cover-v2.webp because /uploads is served immutable for 30 days, so a new photo needs a new name.
+cover_file = next((f for f in ("cover-enhanced.png", str(com[6] or "").strip(), "cover.png") if f and os.path.isfile(os.path.join(SRC, "ภาพ", f))), None)
+cover = add("photo", f"ภาพ/{cover_file}", f"{SLUG}/cover-v2.webp") if cover_file else None
 missing_featured = [n for n in FEATURED if not any(i["name"] == n for i in items)]
 assert not missing_featured, missing_featured
 out = {

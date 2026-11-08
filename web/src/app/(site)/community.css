@@ -1,6 +1,6 @@
 /* Independent community pages */
 :root { --ink:#17352b; --accent:#386c4b; --accent-light:#e6f0e6; --paper:#f7f8f1; --hero:#173e2d; --hero-end:#527a47; }
-.theme-tharae { --ink:#352638; --accent:#965245; --accent-light:#f8e9df; --paper:#faf6f1; --hero:#50314a; --hero-end:#bd8164; }
+.theme-tharae { --ink:#3b2418; --accent:#5a2e1c; --accent-light:#f6ecd9; --paper:#fffbf4; --hero:#5a2e1c; --hero-end:#8a5a33; }
 .theme-watklang { --ink:#493522; --accent:#a46430; --accent-light:#f8ecd6; --paper:#fbf8f0; --hero:#633e25; --hero-end:#c7944c; }
 .theme-watnuea { --ink:#343d3e; --accent:#a15e43; --accent-light:#f3e9df; --paper:#f8f7f2; --hero:#374c4a; --hero-end:#a4795c; }
 .theme-nonhom { --ink:#182c4d; --accent:#395e94; --accent-light:#e8eef9; --paper:#f4f6fb; --hero:#172d56; --hero-end:#4b79a1; }
@@ -57,54 +57,64 @@
 
 
 /* Tharae Theme */
+/* Tha Rae Theme: white, gold and dark brown (front-end team's design, 9 Nov 2026) */
 .theme-tharae, [data-theme="tharae"], [data-community="tharae"] {
-  --ink: #352638;
-  --accent: #a45247;
-  --accent-light: #f8e9df;
-  --paper: #faf6f1;
-  --hero: #50314a;
-  --hero-end: #bd8164;
+  --ink: #3b2418;
+  --accent: #5a2e1c;
+  --accent-light: #f6ecd9;
+  --paper: #fffbf4;
+  --hero: #5a2e1c;
+  --hero-end: #8a5a33;
+  --gold: #c9a14a;
 }
-.theme-tharae .community-header, [data-theme="tharae"] .community-header, [data-community="tharae"] .community-header { box-shadow: 0 2px 18px #35263812; }
-.theme-tharae .community-hero, [data-theme="tharae"] .community-hero, [data-community="tharae"] .community-hero { position: relative; background: linear-gradient(115deg, #3c1d2e 0%, #693540 50%, #a45247 100%); }
-.theme-tharae .community-hero::after, [data-theme="tharae"] .community-hero::after, [data-community="tharae"] .community-hero::after {
-  content: ""; position: absolute; inset: auto 0 0; height: 12px;
-  background: repeating-linear-gradient(135deg, #f0d4ab 0 4px, #a45247 4px 8px, #3c1d2e 8px 12px, #f8e9df 12px 14px);
+[data-theme="tharae"] .community-header { box-shadow: 0 2px 18px #3b241812; }
+[data-theme="tharae"] .community-hero { position: relative; color: var(--accent); background: linear-gradient(115deg, #fffdf8 0%, #fbf1df 60%, #f3dfba 100%); }
+[data-theme="tharae"] .community-hero::after {
+  content: ""; position: absolute; inset: auto 0 0; height: 6px; z-index: 2;
+  background: linear-gradient(90deg, #5a2e1c, var(--gold) 30%, #e8c97f 50%, var(--gold) 70%, #5a2e1c);
 }
-.theme-tharae .hero-layout, [data-theme="tharae"] .hero-layout, [data-community="tharae"] .hero-layout { position: relative; z-index: 1; }
-.theme-tharae .hero-kicker, [data-theme="tharae"] .hero-kicker, [data-community="tharae"] .hero-kicker { color: #f5cfc4; }
-.theme-tharae .hero-tags, [data-theme="tharae"] .hero-tags, [data-community="tharae"] .hero-tags { display: inline-flex; padding: 7px 14px; border: 1px solid #ffffff52; border-radius: 100px; background: #ffffff0c; color: #fdece7; }
-.theme-tharae .location-box, [data-theme="tharae"] .location-box, [data-community="tharae"] .location-box { border: 1px solid #ecd8d2; background: linear-gradient(115deg, #fbeee9, #fffaf8); }
-.theme-tharae .story-card, .theme-tharae .model-card, [data-theme="tharae"] .story-card, [data-theme="tharae"] .model-card, [data-community="tharae"] .story-card, [data-community="tharae"] .model-card { border-color: #eddcd6; }
-.theme-tharae .section-desc, .theme-tharae .model-status, .theme-tharae .model-source, [data-theme="tharae"] .section-desc, [data-theme="tharae"] .model-status, [data-theme="tharae"] .model-source, [data-community="tharae"] .section-desc, [data-community="tharae"] .model-status, [data-community="tharae"] .model-source { color: #75585b; }
-.theme-tharae .community-category, [data-theme="tharae"] .community-category, [data-community="tharae"] .community-category { border-color: #e4d1cb; }
-.theme-tharae .community-footer, [data-theme="tharae"] .community-footer, [data-community="tharae"] .community-footer { border-top: 8px solid #c97e74; }
+[data-theme="tharae"] .hero-layout { position: relative; z-index: 1; }
+[data-theme="tharae"] .breadcrumb { color: #5a2e1c; font-weight: 500; }
+[data-theme="tharae"] .community-hero h1 { color: #5a2e1c; font-weight: 700; }
+[data-theme="tharae"] .hero-kicker { color: #9a7330; }
+[data-theme="tharae"] .hero-lead { color: #4e2b1c; }
+[data-theme="tharae"] .hero-tags { display: inline-flex; padding: 8px 18px; border: 1px solid #a89997; border-radius: 100px; background: #ffffffb8; color: #4e2b1c; }
+[data-theme="tharae"] .community-hero .button-primary { background: #5a2e1c; color: #fff; box-shadow: 0 10px 22px #5a2e1c40; }
+[data-theme="tharae"] .community-hero .button-primary:hover { background: #6e3a24; }
+[data-theme="tharae"] .community-hero .button-ghost { background: #ffffffd9; border: 1px solid #5a2e1c99; color: #5a2e1c; }
+[data-theme="tharae"] .art-orbit { border-color: #c9a14a55; }
+[data-theme="tharae"] .art-icon { background: #ffffffb0; border-color: #c9a14a88; color: #5a2e1c; box-shadow: 0 0 0 28px #c9a14a14; }
+[data-theme="tharae"] .art-caption, [data-theme="tharae"] .art-caption b { color: #8a5a33; }
+[data-theme="tharae"] .location-box { border: 1px solid #ead9bb; background: linear-gradient(115deg, #fbf3e4, #fffdf9); }
+[data-theme="tharae"] .story-card, [data-theme="tharae"] .model-card { border-color: #eee1c8; }
+[data-theme="tharae"] .section-desc, [data-theme="tharae"] .model-status, [data-theme="tharae"] .model-source { color: #6f5444; }
+[data-theme="tharae"] .community-category { border-color: #e6d6b8; }
+[data-theme="tharae"] .community-category.active { background: #5a2e1c; border-color: #5a2e1c; color: #fff; }
+[data-theme="tharae"] .community-footer { border-top: 6px solid var(--gold); }
 
-/* Tha Rae hero with the cathedral cover photo: the photo fills the right of the hero and fades
-   into deep maroon on the left, so the text never covers the cathedral or its cross. */
-[data-theme="tharae"] .community-hero[data-has-cover] { background: #2a1420; }
+/* Tha Rae hero with the cathedral cover photo: white on the left fading into the photo on the right,
+   so the dark-brown text never covers the cathedral or its cross. */
+[data-theme="tharae"] .community-hero[data-has-cover] { background: #fff; }
 [data-theme="tharae"] .community-hero[data-has-cover]::before {
-  content: ""; position: absolute; inset: 0 0 0 auto; width: 68%;
+  content: ""; position: absolute; inset: 0 0 0 auto; width: 70%;
   background: var(--hero-cover) center 35% / cover no-repeat;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
 }
 [data-theme="tharae"] .community-hero[data-has-cover] .hero-layout {
-  min-height: 560px; grid-template-columns: minmax(0, 620px) 1fr;
-  background: linear-gradient(90deg, #2a1420f2 0%, #2a1420c7 34%, #2a142000 58%);
+  min-height: 560px; grid-template-columns: minmax(0, 640px) 1fr;
+  background: linear-gradient(90deg, #ffffff 0%, #fffffff0 30%, #ffffffa6 46%, #ffffff00 62%);
 }
-[data-theme="tharae"] .community-hero[data-has-cover] .hero-copy { padding: 64px 0 72px; text-shadow: 0 2px 14px #1a0b1299; }
+[data-theme="tharae"] .community-hero[data-has-cover] .hero-copy { padding: 64px 0 72px; }
 [data-theme="tharae"] .community-hero[data-has-cover] h1 { font-size: clamp(1.75rem, 2.9vw, 2.75rem); line-height: 1.3; }
-[data-theme="tharae"] .community-hero[data-has-cover] .hero-lead { max-width: 30em; color: #fff5ef; }
-[data-theme="tharae"] .community-hero[data-has-cover] .hero-tags { background: #2a142066; backdrop-filter: blur(4px); }
-[data-theme="tharae"] .community-hero[data-has-cover] .button-ghost { background: #2a142055; backdrop-filter: blur(4px); }
+[data-theme="tharae"] .community-hero[data-has-cover] .hero-lead { max-width: 30em; }
 [data-theme="tharae"] .community-hero[data-has-cover] .hero-art { display: none; }
 @media (max-width: 850px) {
   [data-theme="tharae"] .community-hero[data-has-cover]::before {
     inset: 0 0 auto 0; width: 100%; height: min(80vw, 440px);
     background-position: center 30%;
-    -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
-    mask-image: linear-gradient(180deg, #000 62%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
   }
   [data-theme="tharae"] .community-hero[data-has-cover] .hero-layout {
     min-height: 0; grid-template-columns: 1fr; background: none;

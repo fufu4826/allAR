@@ -2,7 +2,7 @@ import Link from "next/link";
 import { siteContact as siteContactExport } from "@/content/site";
 
 export const metadata = {
-  title: "เกี่ยวกับโครงการ | แหล่งเรียนรู้สกลนคร 3D",
+  title: "เกี่ยวกับโครงการ | แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง",
   description: "เกี่ยวกับโครงการเพิ่มศักยภาพแหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครในรูปแบบออนไลน์เสมือนจริง มหาวิทยาลัยราชภัฏสกลนคร",
 };
 
@@ -45,31 +45,31 @@ export default function AboutPage() {
           <Link href="/c/tharae" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-church" style={{ color: "#a45247", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>1. ชุมชนท่าแร่</strong> — สถาปัตยกรรมตึกโคโลเนียลและประเพณีแห่ดาวคริสต์มาส
+              <strong>1. พิพิธภัณฑ์อัครเทวดามีคาแอล ชุมชนบ้านท่าแร่</strong> — สถาปัตยกรรมตึกโคโลเนียลและประเพณีแห่ดาวคริสต์มาส
             </div>
           </Link>
           <Link href="/c/watklang" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-place-of-worship" style={{ color: "#b47a32", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>2. วัดกลางศรีเชียงใหม่</strong> — ภาชนะดินเผาก่อนประวัติศาสตร์ ไหและเครื่องถ้วยเคลือบ พระพุทธรูป ศิลาจารึก
+              <strong>2. พิพิธภัณฑ์วัดกลางศรีเชียงใหม่ ชุมชนบ้านท่าวัดใต้</strong> — ภาชนะดินเผาก่อนประวัติศาสตร์ ไหและเครื่องถ้วยเคลือบ พระพุทธรูป ศิลาจารึก
             </div>
           </Link>
           <Link href="/c/watnuea" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-monument" style={{ color: "#765a8c", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>3. วัดมหาพรหมโพธิราช</strong> — พระพุทธรูป ชิ้นส่วนสถาปัตยกรรมและใบเสมา
+              <strong>3. พิพิธภัณฑ์วัดมหาพรหมโพธิราช ชุมชนบ้านท่าวัดเหนือ</strong> — พระพุทธรูป ชิ้นส่วนสถาปัตยกรรมและใบเสมา
             </div>
           </Link>
           <Link href="/c/nonhom" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-shirt" style={{ color: "#8d252d", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>4. ชุมชนโนนหอม</strong> — ชุมชนผู้ไทกะต๊ะ เครื่องแต่งกาย งานหัตถกรรม พิธีกรรม และวิถีชีวิต
+              <strong>4. แหล่งเรียนรู้ชุมชนบ้านโนนหอม</strong> — ชุมชนผู้ไทกะต๊ะ เครื่องแต่งกาย งานหัตถกรรม พิธีกรรม และวิถีชีวิต
             </div>
           </Link>
           <Link href="/c/phuphan" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "var(--slate-50)", borderRadius: "12px", border: "1px solid var(--slate-200)" }}>
             <i className="fa-solid fa-seedling" style={{ color: "#e9773e", width: "24px", textAlign: "center" }}></i>
             <div>
-              <strong>5. ศูนย์ศึกษาการพัฒนาภูพานฯ</strong> — แหล่งเรียนรู้งานหม่อนไหม ข้าว ประมง ปศุสัตว์ พืชสวน และสมุนไพร
+              <strong>5. ศูนย์ศึกษาการพัฒนาภูพานอันเนื่องมาจากพระราชดำริ จังหวัดสกลนคร ชุมชนบ้านห้วยยาง</strong> — แหล่งเรียนรู้งานหม่อนไหม ข้าว ประมง ปศุสัตว์ พืชสวน และสมุนไพร
             </div>
           </Link>
         </div>

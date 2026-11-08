@@ -318,6 +318,13 @@
   background: var(--pp-paper-2);
   border-top: 1px solid var(--pp-line);
 }
+/* Less empty space between the centre/contact section and the model browser. */
+[data-theme='phuphan'] .community-section.pp-centre {
+  padding-bottom: 40px;
+}
+[data-theme='phuphan'] .community-section.model-section {
+  padding-top: 44px;
+}
 [data-theme='phuphan'] .section-desc,
 [data-theme='phuphan'] .model-status,
 [data-theme='phuphan'] .model-source {
@@ -379,4 +386,20 @@
     grid-template-columns: 1fr;
     gap: 2px;
   }
+}
+
+/* Model browser (collection-browser.css) in indigo and gold. */
+[data-theme='phuphan'] .cb {
+  --cb-card: var(--pp-paper-2);
+  --cb-line: var(--pp-line);
+  --cb-muted: var(--pp-muted);
+  --cb-shadow: var(--pp-shadow);
+  --cb-active: var(--indigo-900);
+  --cb-highlight: #f3d58d;
+  --cb-soft: var(--indigo-50);
+}
+[data-theme='phuphan'] .cb-tab:focus-visible,
+[data-theme='phuphan'] .cb-card:focus-visible,
+[data-theme='phuphan'] .cb-more:focus-visible {
+  outline-color: #f3d58d;
 }

@@ -89,13 +89,6 @@ export function PhuphanCentre({ community }: { community: Community }) {
                   <i className="fa-solid fa-phone" aria-hidden="true"></i> โทรหาศูนย์
                 </a>
               </div>
-              <p className="pp-source">
-                ที่มา:{" "}
-                <a href={phuphanContact.source.href} target="_blank" rel="noopener noreferrer">
-                  {phuphanContact.source.label}
-                </a>{" "}
-                · {phuphanContact.source.note}
-              </p>
             </div>
           </aside>
         </div>

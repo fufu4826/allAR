@@ -320,6 +320,23 @@ ul {
   font-weight: 600;
 }
 
+/* The site name is long: in the navbar it wraps onto two lines so the menu keeps its room. */
+.navbar .logo-text {
+  max-width: 300px;
+}
+.navbar .brand-title {
+  font-size: 1rem;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+.navbar .brand-sub {
+  font-size: 0.62rem;
+  line-height: 1.3;
+}
+.nav-link {
+  white-space: nowrap;
+}
+
 .nav-menu {
   display: flex;
   align-items: center;
@@ -1752,7 +1769,7 @@ model-viewer {
   }
 }
 
-@media (min-width: 769px) and (max-width: 1200px) {
+@media (min-width: 769px) and (max-width: 1279px) {
   .nav-toggle { display: block; }
   .nav-menu {
     position: absolute;
@@ -2079,17 +2096,14 @@ model-viewer {
   .logo-text {
     min-width: 0;
   }
+  /* The site name is long: let it wrap instead of pushing the page wider than the phone. */
   .brand-title {
-    font-size: 0.95rem;
+    font-size: 0.82rem;
     letter-spacing: 0;
-    line-height: 1.25;
-    white-space: nowrap;
+    line-height: 1.3;
   }
   .brand-sub {
-    font-size: 0.6rem;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.58rem;
+    line-height: 1.25;
   }
 }

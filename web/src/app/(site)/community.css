@@ -140,3 +140,6 @@
 @media(max-width:850px) {
   [data-theme='phuphan'] .hero-art { background-size:auto, 200px auto; }
 }
+
+/* Space that the English kicker used to give between the breadcrumb and the site name. */
+.hero-copy .breadcrumb + h1 { margin-top: 32px; }

@@ -4,7 +4,7 @@ import SearchResults from "./SearchResults";
 import { getSearchIndex } from "@/lib/queries";
 
 export const metadata = {
-  title: "ค้นหาชิ้นงาน 3D & AR | แหล่งเรียนรู้สกลนคร 3D",
+  title: "ค้นหาชิ้นงาน 3D & AR | แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง",
   description: "ค้นหาผลิตภัณฑ์ วัตถุ และมรดกทางวัฒนธรรม 5 แหล่งเรียนรู้สำคัญ จังหวัดสกลนคร",
 };
 

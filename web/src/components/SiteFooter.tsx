@@ -23,8 +23,8 @@ export default function SiteFooter() {
               <img src="/brand/language-institute-logo.jpg" alt="ตราสถาบันภาษา ศิลปะและวัฒนธรรม มหาวิทยาลัยราชภัฏสกลนคร" className="institution-logo language-logo" />
             </span>
             <div className="logo-text">
-              <span className="brand-title">แหล่งเรียนรู้สกลนคร 3D</span>
-              <span className="brand-sub">Sakon Nakhon Learning Sites 3D</span>
+              <span className="brand-title">แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง</span>
+              <span className="brand-sub">Sakon Nakhon Virtual Learning Sites and Local Museums</span>
             </div>
           </div>
           <p className="footer-desc">
@@ -35,10 +35,10 @@ export default function SiteFooter() {
         <div className="footer-col">
           <h4>5 แหล่งเรียนรู้</h4>
           <ul>
-            <li><Link href="/c/tharae">1. ชุมชนท่าแร่</Link></li>
-            <li><Link href="/c/watklang">2. ท่าวัด (วัดกลางศรีเชียงใหม่)</Link></li>
-            <li><Link href="/c/watnuea">3. ท่าวัด (วัดมหาพรหมโพธิราช)</Link></li>
-            <li><Link href="/c/nonhom">4. ชุมชนโนนหอม</Link></li>
+            <li><Link href="/c/tharae">1. พิพิธภัณฑ์อัครเทวดามีคาแอล</Link></li>
+            <li><Link href="/c/watklang">2. พิพิธภัณฑ์วัดกลางศรีเชียงใหม่</Link></li>
+            <li><Link href="/c/watnuea">3. พิพิธภัณฑ์วัดมหาพรหมโพธิราช</Link></li>
+            <li><Link href="/c/nonhom">4. แหล่งเรียนรู้ชุมชนบ้านโนนหอม</Link></li>
             <li><Link href="/c/phuphan">5. ศูนย์ศึกษาการพัฒนาภูพานฯ</Link></li>
           </ul>
         </div>

@@ -8,8 +8,8 @@ export const communities: Community[] = [
   {
     id: "community-2",
     slug: "tharae",
-    name: "ชุมชนท่าแร่",
-    shortName: "ชุมชนท่าแร่",
+    name: "พิพิธภัณฑ์อัครเทวดามีคาแอล ชุมชนบ้านท่าแร่",
+    shortName: "พิพิธภัณฑ์อัครเทวดามีคาแอล",
     englishName: "THA RAE COMMUNITY",
     tagline: "สัมผัสเรื่องราวชุมชนท่าแร่ ผ่านสถาปัตยกรรมเก่าแก่และวัฒนธรรมแห่งศรัทธา",
     tags: "สถาปัตยกรรม • ศรัทธา • ประเพณี",
@@ -28,8 +28,8 @@ export const communities: Community[] = [
   {
     id: "community-3",
     slug: "watklang",
-    name: "วัดกลางศรีเชียงใหม่",
-    shortName: "วัดกลางศรีเชียงใหม่",
+    name: "พิพิธภัณฑ์วัดกลางศรีเชียงใหม่ ชุมชนบ้านท่าวัดใต้",
+    shortName: "พิพิธภัณฑ์วัดกลางศรีเชียงใหม่",
     englishName: "WAT KLANG SI CHIANG MAI",
     tagline: "สำรวจมรดกศิลปกรรมและเรื่องราวของชุมชนท่าวัดริมหนองหาร",
     tags: "ศิลปกรรม • สถาปัตยกรรม • ชุมชน",
@@ -48,8 +48,8 @@ export const communities: Community[] = [
   {
     id: "community-4",
     slug: "watnuea",
-    name: "วัดมหาพรหมโพธิราช",
-    shortName: "วัดมหาพรหมโพธิราช",
+    name: "พิพิธภัณฑ์วัดมหาพรหมโพธิราช ชุมชนบ้านท่าวัดเหนือ",
+    shortName: "พิพิธภัณฑ์วัดมหาพรหมโพธิราช",
     englishName: "WAT MAHA PHROM PHOTHIRAT",
     tagline: "เรียนรู้เรื่องราวทางประวัติศาสตร์และพุทธศิลป์ของชุมชนท่าวัด",
     tags: "โบราณสถาน • พุทธศิลป์ • ประวัติศาสตร์",
@@ -68,8 +68,8 @@ export const communities: Community[] = [
   {
     id: "community-5",
     slug: "nonhom",
-    name: "ชุมชนโนนหอม",
-    shortName: "ชุมชนโนนหอม",
+    name: "แหล่งเรียนรู้ชุมชนบ้านโนนหอม",
+    shortName: "ชุมชนบ้านโนนหอม",
     englishName: "NON HOM COMMUNITY",
     // tagline/tags drafted from the Non Hom field team's own description (nonhom.json)
     tagline: "ชุมชนผู้ไทกะต๊ะ ที่ยังคงสืบทอดภูมิปัญญา เครื่องแต่งกาย งานหัตถกรรม พิธีกรรม และวิถีชีวิต",
@@ -89,7 +89,7 @@ export const communities: Community[] = [
   {
     id: "phuphan",
     slug: "phuphan",
-    name: "ศูนย์ศึกษาการพัฒนาภูพานอันเนื่องมาจากพระราชดำริ",
+    name: "ศูนย์ศึกษาการพัฒนาภูพานอันเนื่องมาจากพระราชดำริ จังหวัดสกลนคร ชุมชนบ้านห้วยยาง",
     shortName: "ศูนย์ศึกษาการพัฒนาภูพาน",
     englishName: "PHU PHAN DEVELOPMENT STUDY CENTRE",
     tagline: "เรียนรู้จากธรรมชาติ สู่การพัฒนาที่ยั่งยืน ณ ศูนย์ศึกษาการพัฒนาภูพานฯ",

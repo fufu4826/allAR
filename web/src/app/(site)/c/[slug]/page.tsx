@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
-import CommunityCollectionTabs from "@/components/CommunityCollectionTabs";
+import CollectionBrowser from "@/components/CollectionBrowser";
 import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
 import { getCommunityWithContent, getPublishedNews } from "@/lib/queries";
 
@@ -48,7 +48,6 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
             <Link href="/#ar-showcase" className="breadcrumb">
               <i className="fa-solid fa-arrow-left"></i> 5 แหล่งเรียนรู้
             </Link>
-            <p className="hero-kicker">{community.englishName || "SAKON NAKHON HERITAGE"}</p>
             <h1>{community.name}</h1>
             {community.tagline && <p className="hero-lead">{community.tagline}</p>}
             {community.tags && <div className="hero-tags">{community.tags}</div>}
@@ -187,7 +186,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
             </div>
           </div>
 
-          <CommunityCollectionTabs
+          <CollectionBrowser
             communitySlug={community.slug}
             collections={community.collections}
             items={community.items}

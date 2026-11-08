@@ -1,0 +1,463 @@
+/* =====================================================================
+   Phu Phan theme "คราม-ไหม" (Indigo & Silk), carried over from the original
+   Phu Phan AR site (github.com/fufu4826/ARModel, static/css/theme-indigo.css).
+   Indigo from Sakon Nakhon's GI indigo dye, silk gold from Phu Phan's
+   sericulture, a paper ground like mulberry paper. Text colours keep
+   WCAG 2.2 AA contrast. Everything is scoped to [data-theme='phuphan'], so
+   the other learning sites are not affected. Loaded after community.css.
+   ===================================================================== */
+
+[data-theme='phuphan'] {
+  --indigo-950: #121a35;
+  --indigo-900: #1f2f5c;
+  --indigo-800: #283c73;
+  --indigo-700: #33498a;
+  --indigo-100: #e3e8f4;
+  --indigo-50: #f0f3fa;
+  --silk-600: #8a6418; /* gold for text: 5.0:1 on paper */
+  --silk-500: #b8862b; /* decorative gold */
+  --silk-200: #ecd9a8;
+  --silk-50: #fbf4e2;
+  --pp-paper: #f7f2e7;
+  --pp-paper-2: #fffdf8;
+  --pp-line: #e2d9c6;
+  --pp-text: #1c2233;
+  --pp-muted: #535a6b;
+  --pp-shadow: 0 1px 2px rgba(18, 26, 53, 0.06), 0 10px 28px rgba(18, 26, 53, 0.08);
+  --silk-band: repeating-linear-gradient(135deg, var(--indigo-900) 0 6px, var(--silk-500) 6px 8px, var(--indigo-800) 8px 14px, var(--silk-200) 14px 15px);
+  --weave-indigo: url("/brand/nakhontham-indigo.webp");
+
+  /* Re-map the shared community tokens (also used by the item page's inline styles). */
+  --ink: var(--indigo-900);
+  --accent: var(--indigo-700);
+  --accent-light: var(--indigo-50);
+  --paper: var(--pp-paper);
+  --hero: var(--indigo-900);
+  --hero-end: var(--indigo-950);
+
+  font-family: var(--font-noto-looped), var(--font-prompt), sans-serif;
+  color: var(--pp-text);
+  background-color: var(--pp-paper);
+  background-image: radial-gradient(rgba(138, 100, 24, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+[data-theme='phuphan'] h1,
+[data-theme='phuphan'] h2,
+[data-theme='phuphan'] h3,
+[data-theme='phuphan'] .button,
+[data-theme='phuphan'] .pp-stat strong,
+[data-theme='phuphan'] .pp-step-number {
+  font-family: var(--font-kanit), var(--font-prompt), sans-serif;
+}
+[data-theme='phuphan'] h2,
+[data-theme='phuphan'] h3 {
+  color: var(--indigo-900);
+  font-weight: 600;
+  line-height: 1.3;
+}
+[data-theme='phuphan'] h2 span {
+  color: var(--indigo-700);
+}
+[data-theme='phuphan'] p,
+[data-theme='phuphan'] li,
+[data-theme='phuphan'] dd {
+  color: var(--pp-text);
+}
+[data-theme='phuphan'] a:not(.button):not(.model-card):not(.story-card):not(.breadcrumb) {
+  color: var(--indigo-700);
+}
+[data-theme='phuphan'] :focus-visible {
+  outline: 3px solid var(--silk-500);
+  outline-offset: 3px;
+}
+
+/* ---------- Eyebrow: gold silk pill ---------- */
+[data-theme='phuphan'] .eyebrow {
+  display: inline-block;
+  font-family: var(--font-noto-looped), var(--font-prompt), sans-serif;
+  letter-spacing: 0.02em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--silk-600);
+  background: var(--silk-50);
+  border: 1px solid var(--silk-200);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin: 0 0 12px;
+}
+
+/* ---------- Hero: indigo card with the Nakhon Tham weave and a silk band ---------- */
+[data-theme='phuphan'] .community-hero {
+  position: relative;
+  isolation: isolate;
+  color: #fff;
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(184, 134, 43, 0.22), transparent 55%),
+    linear-gradient(160deg, var(--indigo-900), var(--indigo-950));
+}
+[data-theme='phuphan'] .community-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--weave-indigo) repeat left bottom / 210px auto;
+  opacity: 0.2;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.4) 35%, transparent 75%);
+  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.4) 35%, transparent 75%);
+}
+[data-theme='phuphan'] .community-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 6px;
+  background: var(--silk-band);
+  opacity: 1;
+}
+[data-theme='phuphan'] .community-hero h1 {
+  color: #fff;
+}
+[data-theme='phuphan'] .community-hero .hero-lead {
+  color: #f3e6c4;
+}
+[data-theme='phuphan'] .hero-kicker {
+  display: table; /* own line, shrink to fit (the breadcrumb above is inline) */
+  color: #f3d58d;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(243, 213, 141, 0.45);
+  border-radius: 999px;
+  padding: 4px 12px;
+  letter-spacing: 0.08em;
+}
+[data-theme='phuphan'] .hero-tags {
+  display: inline-flex;
+  padding: 7px 14px;
+  border: 1px solid rgba(243, 213, 141, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f3e6c4;
+}
+[data-theme='phuphan'] .community-hero .button-primary {
+  background: #f3d58d;
+  color: var(--indigo-950);
+  border: 1px solid #f3d58d;
+}
+[data-theme='phuphan'] .community-hero .button-primary:hover {
+  background: #fff;
+  border-color: #fff;
+}
+[data-theme='phuphan'] .community-hero .button-ghost {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.75);
+}
+[data-theme='phuphan'] .community-hero .button-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+[data-theme='phuphan'] .hero-art {
+  background:
+    linear-gradient(rgba(18, 26, 53, 0.35), rgba(18, 26, 53, 0.35)),
+    var(--weave-indigo) center / 180px auto;
+  border: 1px solid rgba(243, 213, 141, 0.55);
+  box-shadow: 0 24px 50px rgba(9, 25, 48, 0.32), inset 0 0 0 8px rgba(243, 213, 141, 0.12);
+}
+[data-theme='phuphan'] .art-icon {
+  background: rgba(18, 26, 53, 0.9);
+  border: 1px solid rgba(243, 213, 141, 0.7);
+  color: #f3d58d;
+}
+[data-theme='phuphan'] .art-caption {
+  background: rgba(18, 26, 53, 0.88);
+}
+
+/* ---------- Centre information (museum wall-label layout) ---------- */
+[data-theme='phuphan'] .pp-centre h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  margin: 0 0 24px;
+}
+[data-theme='phuphan'] .pp-centre-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+[data-theme='phuphan'] .pp-aliases {
+  font-size: 0.9rem;
+  color: var(--pp-muted);
+  margin: 0 0 16px;
+}
+[data-theme='phuphan'] .pp-aliases span {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--silk-600);
+  margin-right: 6px;
+}
+[data-theme='phuphan'] .pp-intro {
+  font-size: 1.15rem;
+  line-height: 1.85;
+  max-width: 60ch;
+  margin: 0 0 28px;
+}
+[data-theme='phuphan'] .pp-story h3 {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--silk-600);
+}
+[data-theme='phuphan'] .pp-mission {
+  list-style: none;
+  counter-reset: mission;
+  padding: 0;
+  margin: 0 0 24px;
+  border-top: 1px solid var(--pp-line);
+}
+[data-theme='phuphan'] .pp-mission li {
+  counter-increment: mission;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--pp-line);
+  line-height: 1.7;
+}
+[data-theme='phuphan'] .pp-mission li::before {
+  content: counter(mission, thai);
+  font-family: var(--font-kanit), var(--font-prompt), sans-serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--indigo-700);
+}
+[data-theme='phuphan'] .pp-source {
+  font-size: 0.82rem;
+  color: var(--pp-muted);
+  margin-top: 16px;
+}
+
+[data-theme='phuphan'] .pp-contact {
+  background: var(--pp-paper-2);
+  border: 1px solid var(--pp-line);
+  border-radius: 12px;
+  box-shadow: var(--pp-shadow);
+  overflow: hidden;
+}
+[data-theme='phuphan'] .pp-map {
+  aspect-ratio: 16 / 9;
+  background: var(--indigo-50);
+  border-bottom: 4px solid transparent;
+  border-image: var(--silk-band) 1;
+}
+[data-theme='phuphan'] .pp-map iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+[data-theme='phuphan'] .pp-contact-body {
+  padding: 22px 24px 24px;
+}
+[data-theme='phuphan'] .pp-kicker {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--silk-600);
+}
+[data-theme='phuphan'] .pp-contact-body h3 {
+  margin: 0 0 14px;
+  font-size: 1.15rem;
+}
+[data-theme='phuphan'] .pp-facts {
+  margin: 0 0 18px;
+  display: grid;
+  gap: 12px;
+}
+[data-theme='phuphan'] .pp-facts > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 10px;
+}
+[data-theme='phuphan'] .pp-facts dt {
+  font-weight: 600;
+  color: var(--indigo-900);
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+[data-theme='phuphan'] .pp-facts dt i {
+  color: var(--silk-500);
+  width: 16px;
+}
+[data-theme='phuphan'] .pp-facts dd {
+  margin: 0;
+}
+[data-theme='phuphan'] .pp-facts address {
+  font-style: normal;
+}
+[data-theme='phuphan'] .pp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+[data-theme='phuphan'] .pp-button {
+  background: var(--indigo-900);
+  color: #fff;
+  border: 1px solid var(--indigo-900);
+}
+[data-theme='phuphan'] .pp-button:hover {
+  background: var(--indigo-950);
+}
+[data-theme='phuphan'] .pp-button-secondary {
+  background: transparent;
+  color: var(--indigo-900);
+  border: 1px solid var(--indigo-900);
+}
+[data-theme='phuphan'] .pp-button-secondary:hover {
+  background: var(--indigo-50);
+}
+
+/* ---------- Stats + 3 steps ---------- */
+[data-theme='phuphan'] .pp-howto {
+  padding-top: 0;
+}
+[data-theme='phuphan'] .pp-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 56px;
+}
+[data-theme='phuphan'] .pp-stat {
+  background: var(--pp-paper-2);
+  border: 1px solid var(--pp-line);
+  border-radius: 12px;
+  box-shadow: var(--pp-shadow);
+  padding: 20px 24px;
+}
+[data-theme='phuphan'] .pp-stat strong {
+  display: block;
+  font-size: 2.2rem;
+  line-height: 1.1;
+  color: var(--indigo-900);
+}
+[data-theme='phuphan'] .pp-stat span {
+  color: var(--pp-muted);
+}
+[data-theme='phuphan'] .pp-howto-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+[data-theme='phuphan'] .pp-howto-head p {
+  margin: 0;
+  color: var(--pp-muted);
+}
+[data-theme='phuphan'] .pp-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+[data-theme='phuphan'] .pp-step {
+  background: var(--pp-paper-2);
+  border: 1px solid var(--pp-line);
+  border-radius: 12px;
+  box-shadow: var(--pp-shadow);
+  padding: 22px;
+}
+[data-theme='phuphan'] .pp-step h3 {
+  margin: 14px 0 6px;
+  font-size: 1.05rem;
+}
+[data-theme='phuphan'] .pp-step p {
+  margin: 0;
+  color: var(--pp-muted);
+  line-height: 1.7;
+}
+[data-theme='phuphan'] .pp-step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--indigo-900);
+  color: #f3d58d;
+  font-weight: 600;
+}
+
+/* ---------- News, models, cards ---------- */
+[data-theme='phuphan'] .model-section {
+  background: var(--pp-paper-2);
+  border-top: 1px solid var(--pp-line);
+}
+[data-theme='phuphan'] .section-desc,
+[data-theme='phuphan'] .model-status,
+[data-theme='phuphan'] .model-source {
+  color: var(--pp-muted);
+}
+[data-theme='phuphan'] .community-category {
+  background: var(--pp-paper-2);
+  border-color: var(--pp-line);
+  color: var(--indigo-900);
+}
+[data-theme='phuphan'] .community-category:not(.active):hover {
+  border-color: var(--silk-500);
+  background: var(--silk-50);
+}
+[data-theme='phuphan'] .community-category.active {
+  background: var(--indigo-900);
+  border-color: var(--indigo-900);
+  color: #fff;
+}
+[data-theme='phuphan'] .model-card,
+[data-theme='phuphan'] .story-card,
+[data-theme='phuphan'] .empty-state {
+  background: var(--pp-paper-2);
+  border-color: var(--pp-line);
+  border-radius: 12px;
+}
+[data-theme='phuphan'] .model-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+[data-theme='phuphan'] .model-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--silk-200);
+  box-shadow: 0 16px 34px rgba(18, 26, 53, 0.14);
+}
+[data-theme='phuphan'] .model-card strong {
+  color: var(--indigo-900);
+}
+[data-theme='phuphan'] .model-card small {
+  color: var(--silk-600);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='phuphan'] .model-card {
+    transition: none;
+  }
+  [data-theme='phuphan'] .model-card:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 850px) {
+  [data-theme='phuphan'] .pp-centre-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  [data-theme='phuphan'] .pp-steps {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 500px) {
+  [data-theme='phuphan'] .pp-facts > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  [data-theme='phuphan'] .pp-stats {
+    margin-bottom: 36px;
+  }
+}

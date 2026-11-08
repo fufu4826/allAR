@@ -1,4 +1,12 @@
 /* Welcome cover */
+/* The home page is the cover alone (decided 2026-11-08): while the cover is on the page, hide
+   everything else so nothing can be scrolled to and nothing behind it loads (e.g. the featured
+   3D model). Pure CSS, so it applies from the first paint without JavaScript. */
+body:has(.welcome-cover) .top-announcement,
+body:has(.welcome-cover) .navbar,
+body:has(.welcome-cover) .site-main,
+body:has(.welcome-cover) .footer { display:none; }
+html:has(.welcome-cover), body:has(.welcome-cover) { overscroll-behavior:none; }
 .welcome-cover { position:relative; min-height:100vh; min-height:100svh; color:#fff; background:#322421 url('/brand/heritage-cover.webp') center center / cover no-repeat; overflow:hidden; }
 .welcome-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(34,12,20,.91) 0%,rgba(42,17,24,.78) 35%,rgba(40,20,24,.38) 68%,rgba(40,20,24,.17) 100%),linear-gradient(0deg,rgba(32,13,17,.57),transparent 35%); }
 .welcome-inner { width:min(1320px,calc(100% - 64px)); min-height:100vh; min-height:100svh; margin:auto; position:relative; display:flex; flex-direction:column; }

@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-/** Full-screen welcome cover from the front-end team's prototype; shown on the home page only. */
+/**
+ * Full-screen welcome cover from the front-end team's prototype; shown on the home page only.
+ * The home page is the cover alone: cover.css hides the rest of the page while it is present,
+ * so the only way in is the "เข้าสู่เว็บไซต์" button, which opens the map.
+ */
 export default function WelcomeCover() {
   if (usePathname() !== "/") return null;
   return (
@@ -40,9 +44,6 @@ export default function WelcomeCover() {
         </div>
         <div className="welcome-bottom">
           <span>มรดกวัฒนธรรม · เรื่องราวชุมชน · 3D AR</span>
-          <a href="#home">
-            เลื่อนเพื่อสำรวจ <i className="fa-solid fa-arrow-down" aria-hidden="true"></i>
-          </a>
         </div>
       </div>
     </section>

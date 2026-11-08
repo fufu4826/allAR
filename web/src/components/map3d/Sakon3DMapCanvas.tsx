@@ -97,21 +97,36 @@ function disposeObject(root: THREE.Object3D) {
   });
 }
 
-// Sakon Nakhon 5 Landmarks Overview Pivot
-const DEFAULT_TARGET = new THREE.Vector3(12.5, 0.1, 5.0);
-const DEFAULT_CAM_POS = new THREE.Vector3(12.5, 76.0, 38.0);
+// The map turns around สี่แยกบ้านธาตุ (แยกบ้านธาตุนาเวง, Highway 22 x 241, 17.19184 N 104.09542 E):
+// visitors can only turn it left/right; the camera stays tilted 65 degrees above the ground
+// (25 degrees from straight down) and cannot be panned away.
+const PIVOT_LON = 104.09542;
+const PIVOT_LAT = 17.19184;
+const CAMERA_POLAR = THREE.MathUtils.degToRad(25);
+const OVERVIEW_DISTANCE = 96;
+
+function pivotTarget(): THREE.Vector3 {
+  const x = (PIVOT_LON - SAKON_CENTER_LON) * SCALE_LON;
+  const z = -(PIVOT_LAT - SAKON_CENTER_LAT) * SCALE_LAT;
+  return new THREE.Vector3(x, getTerrainElev(x, z).y, z);
+}
+
+/** Camera position at the locked tilt, `distance` away from `target`, facing `azimuth`. */
+function cameraAt(target: THREE.Vector3, distance: number, azimuth = 0): THREE.Vector3 {
+  return target.clone().add(new THREE.Vector3().setFromSphericalCoords(distance, CAMERA_POLAR, azimuth));
+}
 
 /** Overview camera for a viewport aspect ratio. On portrait screens (phones) the horizontal field
- *  of view is narrow, so aim nearer the province centre (x ≈ 0) and pull back far enough for the
- *  province width (about ±25 units, plus a margin) to fit across the screen. */
-const PORTRAIT_TARGET = new THREE.Vector3(4.0, 0.1, 3.0);
-function overviewView(aspect: number): { target: THREE.Vector3; position: THREE.Vector3 } {
-  if (aspect >= 1) return { target: DEFAULT_TARGET.clone(), position: DEFAULT_CAM_POS.clone() };
-  const offset = DEFAULT_CAM_POS.clone().sub(DEFAULT_TARGET);
-  const halfH = Math.atan(Math.tan(THREE.MathUtils.degToRad(38 / 2)) * aspect);
-  const needed = 29 / Math.tan(halfH);
-  const factor = Math.min(2.2, Math.max(1, needed / offset.length()));
-  return { target: PORTRAIT_TARGET.clone(), position: PORTRAIT_TARGET.clone().add(offset.multiplyScalar(factor)) };
+ *  of view is narrow, so pull back far enough that the province still fits: the pivot is east of
+ *  the centre, so the west edge is about 37 units away from it. */
+function overviewView(aspect: number, azimuth = 0): { target: THREE.Vector3; position: THREE.Vector3 } {
+  const target = pivotTarget();
+  let distance = OVERVIEW_DISTANCE;
+  if (aspect < 1) {
+    const halfH = Math.atan(Math.tan(THREE.MathUtils.degToRad(38 / 2)) * aspect);
+    distance = Math.min(OVERVIEW_DISTANCE * 2.6, Math.max(OVERVIEW_DISTANCE, 40 / Math.tan(halfH)));
+  }
+  return { target, position: cameraAt(target, distance, azimuth) };
 }
 
 interface CameraAnimState {
@@ -172,8 +187,9 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     let targetLookAt: THREE.Vector3;
     let targetPos: THREE.Vector3;
 
+    const azimuth = controls.getAzimuthalAngle();
     if (!landmark) {
-      const view = overviewView(camera.aspect);
+      const view = overviewView(camera.aspect, azimuth);
       targetLookAt = view.target;
       targetPos = view.position;
     } else {
@@ -182,7 +198,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
       const elev = getTerrainElev(x, z);
 
       targetLookAt = new THREE.Vector3(x, elev.y + 0.6, z);
-      targetPos = new THREE.Vector3(x, elev.y + 6.0, z + 7.5);
+      targetPos = cameraAt(targetLookAt, 11, azimuth);
     }
 
     animStateRef.current = {
@@ -297,7 +313,10 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     controls.target.copy(initialView.target);
     controls.minDistance = 2.0;
     controls.maxDistance = 180.0;
-    controls.maxPolarAngle = Math.PI / 2 - 0.08;
+    // Turn left/right only: the tilt is locked and the map cannot be dragged away from the pivot.
+    controls.minPolarAngle = CAMERA_POLAR;
+    controls.maxPolarAngle = CAMERA_POLAR;
+    controls.enablePan = false;
     controlsRef.current = controls;
 
     // Immediately stop auto-animation on user touch/scroll/drag so user has 100% free control!

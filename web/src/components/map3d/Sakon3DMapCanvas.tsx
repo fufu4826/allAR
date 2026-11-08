@@ -7,6 +7,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { SAKON_DEM } from "./data/sakonDem";
 import { SAKON_BOUNDARY_GEO } from "./data/sakonBoundary";
+import { MUANG_BOUNDARY_GEO } from "./data/muangBoundary";
 import type { MapLandmark } from "./data/landmarksData";
 import { MAJOR_HIGHWAYS, SECONDARY_HIGHWAYS, type RoadDefinition } from "./data/roadsData";
 
@@ -35,7 +36,34 @@ const MERC_MAX = latToMercator(TEX_LAT_MAX);
 const ELEV_BASE = 145.0;
 const ELEV_SCALE = 0.0045;
 
-function getTerrainElev(x: number, z: number): { meters: number; y: number } {
+// อำเภอเมืองสกลนคร stands on a raised plateau this much above the rest of the province.
+const MUANG_LIFT = 0.9;
+
+function insidePolygon(poly: [number, number][], px: number, pz: number): boolean {
+  const py = -pz;
+  let inside = false;
+  const n = poly.length;
+  for (let i = 0, j = n - 1; i < n; j = i++) {
+    const xi = poly[i][0];
+    const yi = poly[i][1];
+    const xj = poly[j][0];
+    const yj = poly[j][1];
+    const intersect = yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function isInsideBoundary(px: number, pz: number): boolean {
+  return insidePolygon(SAKON_BOUNDARY_GEO, px, pz);
+}
+
+function isInsideMuang(px: number, pz: number): boolean {
+  return insidePolygon(MUANG_BOUNDARY_GEO, px, pz);
+}
+
+/** Ground height from the DEM alone, without the Muang plateau. */
+function getBaseElev(x: number, z: number): { meters: number; y: number } {
   const lon = x / SCALE_LON + SAKON_CENTER_LON;
   const lat = -z / SCALE_LAT + SAKON_CENTER_LAT;
   const rawElev = SAKON_DEM.getElevationAtLonLat(lon, lat);
@@ -46,19 +74,11 @@ function getTerrainElev(x: number, z: number): { meters: number; y: number } {
   };
 }
 
-function isInsideBoundary(px: number, pz: number): boolean {
-  const py = -pz;
-  let inside = false;
-  const n = SAKON_BOUNDARY_GEO.length;
-  for (let i = 0, j = n - 1; i < n; j = i++) {
-    const xi = SAKON_BOUNDARY_GEO[i][0];
-    const yi = SAKON_BOUNDARY_GEO[i][1];
-    const xj = SAKON_BOUNDARY_GEO[j][0];
-    const yj = SAKON_BOUNDARY_GEO[j][1];
-    const intersect = yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi;
-    if (intersect) inside = !inside;
-  }
-  return inside;
+/** Ground height as shown: inside อำเภอเมือง it includes the plateau lift, so roads, models and
+ *  pins there sit on top of it. */
+function getTerrainElev(x: number, z: number): { meters: number; y: number } {
+  const base = getBaseElev(x, z);
+  return isInsideMuang(x, z) ? { meters: base.meters, y: base.y + MUANG_LIFT } : base;
 }
 
 /** Dispose every geometry, material and texture under an object. */
@@ -379,7 +399,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         const x = gridMinX + ix * stepX;
         const inside = isInsideBoundary(x, z);
         if (inside) {
-          const elev = getTerrainElev(x, z);
+          const elev = getBaseElev(x, z);
           terrainPositions.push(x, elev.y, z);
           const [u, v] = getUV(x, z);
           terrainUvs.push(u, v);
@@ -435,8 +455,8 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
       const x2 = SAKON_BOUNDARY_GEO[nextIdx][0];
       const z2 = -SAKON_BOUNDARY_GEO[nextIdx][1];
 
-      const y1 = getTerrainElev(x1, z1).y;
-      const y2 = getTerrainElev(x2, z2).y;
+      const y1 = getBaseElev(x1, z1).y;
+      const y2 = getBaseElev(x2, z2).y;
       const yBottom = -TOTAL_HEIGHT;
 
       skirtPositions.push(x1, y1, z1, x1, yBottom, z1, x2, y2, z2, x2, yBottom, z2);
@@ -460,6 +480,135 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     skirtMesh.receiveShadow = true;
     skirtMesh.castShadow = true;
     provinceGroup.add(skirtMesh);
+
+    // 5b. อำเภอเมืองสกลนคร plateau: its own terrain surface lifted by MUANG_LIFT, walls down to the
+    // ground around it and an orange outline on top. The grid points inside the district are added
+    // to the triangulation (as one-point holes) so the top keeps the DEM relief.
+    {
+      const ring = MUANG_BOUNDARY_GEO.map(([x, y]) => new THREE.Vector2(x, -y));
+      if (THREE.ShapeUtils.isClockWise(ring)) ring.reverse();
+      // Top surface on the same grid as the terrain: whole cells inside the district become two
+      // triangles; cells the boundary crosses are clipped to the district (Sutherland-Hodgman) and
+      // triangulated, so the plateau edge follows the real boundary without stretched slivers.
+      let mMinX = Infinity, mMaxX = -Infinity, mMinZ = Infinity, mMaxZ = -Infinity;
+      for (const p of ring) {
+        mMinX = Math.min(mMinX, p.x); mMaxX = Math.max(mMaxX, p.x);
+        mMinZ = Math.min(mMinZ, p.y); mMaxZ = Math.max(mMaxZ, p.y);
+      }
+      const topPos: number[] = [];
+      const topUv: number[] = [];
+      const topIdx: number[] = [];
+      const gridVert = new Map<string, number>();
+      const addVert = (x: number, z: number): number => {
+        topPos.push(x, getBaseElev(x, z).y + MUANG_LIFT, z);
+        const [u, v] = getUV(x, z);
+        topUv.push(u, v);
+        return topPos.length / 3 - 1;
+      };
+      const gridIndex = (ix: number, iz: number): number => {
+        const key = `${ix},${iz}`;
+        let idx = gridVert.get(key);
+        if (idx === undefined) {
+          idx = addVert(gridMinX + ix * stepX, gridMinZ + iz * stepZ);
+          gridVert.set(key, idx);
+        }
+        return idx;
+      };
+      const clip = (poly: THREE.Vector2[], inside: (p: THREE.Vector2) => boolean, cut: (a: THREE.Vector2, b: THREE.Vector2) => THREE.Vector2) => {
+        const out: THREE.Vector2[] = [];
+        for (let i = 0; i < poly.length; i++) {
+          const cur = poly[i];
+          const prev = poly[(i + poly.length - 1) % poly.length];
+          const curIn = inside(cur);
+          const prevIn = inside(prev);
+          if (curIn) {
+            if (!prevIn) out.push(cut(prev, cur));
+            out.push(cur);
+          } else if (prevIn) {
+            out.push(cut(prev, cur));
+          }
+        }
+        return out;
+      };
+      const atX = (x: number) => (a: THREE.Vector2, b: THREE.Vector2) =>
+        new THREE.Vector2(x, a.y + ((b.y - a.y) * (x - a.x)) / (b.x - a.x));
+      const atZ = (z: number) => (a: THREE.Vector2, b: THREE.Vector2) =>
+        new THREE.Vector2(a.x + ((b.x - a.x) * (z - a.y)) / (b.y - a.y), z);
+      const ix0 = Math.max(0, Math.floor((mMinX - gridMinX) / stepX));
+      const ix1 = Math.min(GRID_NX - 1, Math.ceil((mMaxX - gridMinX) / stepX));
+      const iz0 = Math.max(0, Math.floor((mMinZ - gridMinZ) / stepZ));
+      const iz1 = Math.min(GRID_NZ - 1, Math.ceil((mMaxZ - gridMinZ) / stepZ));
+      for (let iz = iz0; iz <= iz1; iz++) {
+        const z0 = gridMinZ + iz * stepZ;
+        const z1 = z0 + stepZ;
+        for (let ix = ix0; ix <= ix1; ix++) {
+          const x0 = gridMinX + ix * stepX;
+          const x1 = x0 + stepX;
+          const corners = [isInsideMuang(x0, z0), isInsideMuang(x1, z0), isInsideMuang(x0, z1), isInsideMuang(x1, z1)];
+          const crossed = ring.some((p, i) => {
+            const q = ring[(i + 1) % ring.length];
+            return Math.max(p.x, q.x) >= x0 && Math.min(p.x, q.x) <= x1 && Math.max(p.y, q.y) >= z0 && Math.min(p.y, q.y) <= z1;
+          });
+          if (!crossed) {
+            if (corners.every(Boolean)) {
+              const i00 = gridIndex(ix, iz), i10 = gridIndex(ix + 1, iz), i01 = gridIndex(ix, iz + 1), i11 = gridIndex(ix + 1, iz + 1);
+              topIdx.push(i00, i01, i10, i10, i01, i11);
+            }
+            continue;
+          }
+          let poly = ring;
+          poly = clip(poly, (p) => p.x >= x0, atX(x0));
+          if (poly.length) poly = clip(poly, (p) => p.x <= x1, atX(x1));
+          if (poly.length) poly = clip(poly, (p) => p.y >= z0, atZ(z0));
+          if (poly.length) poly = clip(poly, (p) => p.y <= z1, atZ(z1));
+          if (poly.length < 3) continue;
+          const tris = THREE.ShapeUtils.triangulateShape(poly, []);
+          const base = poly.map((p) => addVert(p.x, p.y));
+          for (const t of tris) topIdx.push(base[t[0]], base[t[2]], base[t[1]]);
+        }
+      }
+      const topGeo = new THREE.BufferGeometry();
+      topGeo.setAttribute("position", new THREE.Float32BufferAttribute(topPos, 3));
+      topGeo.setAttribute("uv", new THREE.Float32BufferAttribute(topUv, 2));
+      topGeo.setIndex(topIdx);
+      topGeo.computeVertexNormals();
+      const topMesh = new THREE.Mesh(topGeo, satMaterial);
+      topMesh.receiveShadow = true;
+      topMesh.castShadow = true;
+      provinceGroup.add(topMesh);
+
+      const wallPos: number[] = [];
+      const wallIdx: number[] = [];
+      for (let i = 0; i < ring.length; i++) {
+        const a = ring[i];
+        const b = ring[(i + 1) % ring.length];
+        const ya = getBaseElev(a.x, a.y).y;
+        const yb = getBaseElev(b.x, b.y).y;
+        const k = wallPos.length / 3;
+        wallPos.push(a.x, ya + MUANG_LIFT, a.y, a.x, ya - 0.05, a.y, b.x, yb + MUANG_LIFT, b.y, b.x, yb - 0.05, b.y);
+        wallIdx.push(k, k + 1, k + 2, k + 2, k + 1, k + 3);
+      }
+      const wallGeo = new THREE.BufferGeometry();
+      wallGeo.setAttribute("position", new THREE.Float32BufferAttribute(wallPos, 3));
+      wallGeo.setIndex(wallIdx);
+      wallGeo.computeVertexNormals();
+      const wallMesh = new THREE.Mesh(
+        wallGeo,
+        new THREE.MeshStandardMaterial({ color: 0xc2410c, roughness: 0.8, side: THREE.DoubleSide })
+      );
+      wallMesh.castShadow = true;
+      wallMesh.receiveShadow = true;
+      provinceGroup.add(wallMesh);
+
+      // A tube rather than a line: WebGL draws lines 1px wide, too thin to see from the overview.
+      const edge = ring.map((p) => new THREE.Vector3(p.x, getBaseElev(p.x, p.y).y + MUANG_LIFT + 0.03, p.y));
+      const edgeCurve = new THREE.CatmullRomCurve3(edge, true, "centripetal");
+      const edgeMesh = new THREE.Mesh(
+        new THREE.TubeGeometry(edgeCurve, edge.length * 2, 0.11, 6, true),
+        new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 0.6, roughness: 0.5 })
+      );
+      provinceGroup.add(edgeMesh);
+    }
 
     // 6. Pedestal
     const sakonShape2D = new THREE.Shape();

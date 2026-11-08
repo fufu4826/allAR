@@ -63,7 +63,7 @@ export const LANDMARK_3D_CONFIG: Record<string, Landmark3DConfig> = {
   nonhom: {
     faIcon: "fa-solid fa-house-chimney-window",
     modelUrl: "/map3d/models/nonhom.glb",
-    modelConfig: { scale: 2.0, rotationY: Math.PI * 0.15, offset: { x: 0, y: 0.05, z: 0 } },
+    modelConfig: { scale: 1.25, rotationY: Math.PI * 0.15, offset: { x: 0, y: 0.05, z: 0 } },
     labelOffset2D: { x: 24, y: 12 },
     pinAnchor: "left",
   },

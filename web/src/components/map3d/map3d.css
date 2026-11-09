@@ -914,3 +914,26 @@
   .mw-hud-card.mw-hud-card--anchored { animation: none; }
 }
 
+
+/* Phones and small tablets: the map fills the screen edge to edge, from under the 75px menu bar
+   to the bottom of the screen (dvh follows the browser bar as it shows/hides). The site list
+   starts below it and keeps its own side margins. */
+@media (max-width: 768px) {
+  .mw-shell {
+    padding: 0 0 20px;
+    gap: 18px;
+    min-height: 0;
+  }
+  .mw-viewport {
+    height: calc(100vh - 75px);
+    height: calc(100dvh - 75px);
+    min-height: 420px;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  .mw-sidebar {
+    width: auto;
+    margin: 0 14px;
+  }
+}

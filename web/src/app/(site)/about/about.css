@@ -1,0 +1,154 @@
+/* About page. Plain CSS: heritage.css has an unlayered reset (* { margin: 0; padding: 0 })
+   that would override Tailwind utilities. */
+
+.about-page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 24px 88px;
+  color: #3f3a37;
+}
+
+.about-hero {
+  max-width: none;
+  margin: 0 0 36px;
+  padding: 0 4px;
+}
+.about-hero .section-title {
+  margin-top: 10px;
+}
+.about-project-name {
+  margin-top: 14px;
+  font-size: 1.12rem;
+  line-height: 1.7;
+  font-weight: 600;
+  color: #6b4a3a;
+}
+
+.about-section {
+  position: relative;
+  margin-bottom: 22px;
+  padding: 30px 32px 30px 32px;
+  border: 1px solid #ece4dc;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(60, 35, 20, 0.05);
+}
+.about-section-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.about-section-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #e9773e, #8d252d);
+  color: #fff;
+  font-size: 18px;
+  box-shadow: 0 6px 14px rgba(201, 95, 42, 0.28);
+}
+.about-section-kicker {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #c95f2a;
+}
+.about-section h2 {
+  margin: 2px 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #3b2418;
+}
+.about-section p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 2;
+  text-align: justify;
+  text-justify: inter-character;
+}
+.about-section p + p {
+  margin-top: 14px;
+}
+.about-em {
+  font-weight: 700;
+  color: #5a2e1c;
+}
+.about-goal {
+  font-weight: 700;
+  color: #5a2e1c;
+  background: linear-gradient(transparent 58%, #fbe0c8 58%);
+  padding: 0 2px;
+}
+
+.about-sites {
+  display: grid;
+  gap: 12px;
+}
+.about-site {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 1px solid #ece4dc;
+  border-radius: 14px;
+  background: #faf7f3;
+  color: inherit;
+  line-height: 1.7;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.about-site:hover {
+  border-color: #e9b38d;
+  transform: translateY(-1px);
+}
+.about-site :is(i, .site-icon) {
+  flex: none;
+  width: 24px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+.about-site strong {
+  color: #3b2418;
+}
+
+.about-contact {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+.about-contact dt {
+  font-weight: 700;
+  color: #3b2418;
+}
+.about-contact dd {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .about-page {
+    padding: 32px 14px 64px;
+  }
+  .about-section {
+    padding: 22px 18px;
+    border-radius: 18px;
+  }
+  .about-section p {
+    font-size: 1rem;
+    line-height: 1.9;
+    text-align: left;
+  }
+  .about-contact {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .about-contact dd {
+    margin-bottom: 8px;
+  }
+}

@@ -1,10 +1,10 @@
-export const siteTitle = "แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง | Sakon Nakhon Virtual Learning Sites and Local Museums";
+export const siteTitle = "แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง";
 export const siteDescription =
   "การประยุกต์ใช้โมเดล 3 มิติและเทคโนโลยี WebAR เชื่อมโยงมรดกทางวัฒนธรรม ประวัติศาสตร์ สถาปัตยกรรม และภูมิปัญญาท้องถิ่น 5 แหล่งเรียนรู้สำคัญ จังหวัดสกลนคร";
 export const siteOpenGraph = {
   type: "website",
   locale: "th_TH",
-  siteName: "แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง · Sakon Nakhon Virtual Learning Sites and Local Museums",
+  siteName: "แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง",
   title: siteTitle,
   description: siteDescription,
 } as const;

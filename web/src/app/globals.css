@@ -24,3 +24,12 @@ model-viewer {
 .leaflet-container {
   font-family: var(--font-prompt);
 }
+
+/* Learning-site icons drawn for this project (components/SiteIcon.tsx): sized like a Font Awesome glyph. */
+.site-icon {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: -0.2em;
+  flex: none;
+}

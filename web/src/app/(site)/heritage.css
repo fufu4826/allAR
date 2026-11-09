@@ -510,7 +510,7 @@ ul {
   transition: var(--transition);
 }
 
-.strip-tag i {
+.strip-tag :is(i, .site-icon) {
   color: var(--orange-600);
 }
 
@@ -2125,7 +2125,7 @@ model-viewer {
   align-items: baseline;
   gap: 10px;
 }
-.footer-sites li a i {
+.footer-sites li a :is(i, .site-icon) {
   width: 16px;
   text-align: center;
   color: var(--orange-400);

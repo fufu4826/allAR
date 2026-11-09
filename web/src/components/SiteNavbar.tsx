@@ -43,7 +43,6 @@ export default function SiteNavbar() {
             </span>
             <div className="logo-text">
               <span className="brand-title"><span className="brand-line">แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่น</span><span className="brand-line">จังหวัดสกลนครเสมือนจริง</span></span>
-              <span className="brand-sub">Sakon Nakhon Virtual Learning Sites and Local Museums</span>
             </div>
           </Link>
 
@@ -66,21 +65,6 @@ export default function SiteNavbar() {
               <li>
                 <Link href="/map" className="nav-link font-semibold text-brand" onClick={closeMenu}>
                   <i className="fa-solid fa-cubes text-xs"></i> แผนที่ 3 มิติ 5 แหล่งสำคัญ
-                </Link>
-              </li>
-              <li>
-                <Link href="/#ar-showcase" className="nav-link" onClick={closeMenu}>
-                  โมเดล 3D AR 5 ชุมชน
-                </Link>
-              </li>
-              <li>
-                <Link href="/#gallery" className="nav-link" onClick={closeMenu}>
-                  แกลเลอรี
-                </Link>
-              </li>
-              <li>
-                <Link href="/#organization" className="nav-link" onClick={closeMenu}>
-                  หน่วยงาน
                 </Link>
               </li>
             </ul>

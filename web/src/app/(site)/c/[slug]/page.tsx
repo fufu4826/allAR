@@ -7,14 +7,7 @@ import CollectionBrowser from "@/components/CollectionBrowser";
 import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
 import { getCommunityWithContent } from "@/lib/queries";
 import SiteName from "@/components/SiteName";
-
-const communityIcons: Record<string, string> = {
-  tharae: "fa-solid fa-church",
-  watklang: "fa-solid fa-place-of-worship",
-  watnuea: "fa-solid fa-monument",
-  nonhom: "fa-solid fa-shirt",
-  phuphan: "fa-solid fa-seedling",
-};
+import SiteIcon from "@/components/SiteIcon";
 
 export function generateStaticParams() {
   return [{ slug: "__placeholder__" }];
@@ -35,9 +28,10 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
   if (!community) notFound();
 
   const theme = community.theme || community.slug || "default";
-  const icon = communityIcons[community.slug] || "fa-solid fa-location-dot";
   // Phu Phan uses the sections and look of the original Phu Phan AR site (phuphan-theme.css).
   const isPhuphan = community.slug === "phuphan";
+  // A one-sentence story (Tha Rae) reads as a lead paragraph under the heading rather than a lone line in a second column.
+  const isShortStory = (community.description ?? "").length < 140;
 
   return (
     <div className={`theme-${theme}`} data-community={theme} data-theme={theme}>
@@ -49,7 +43,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
       >
         <div className="community-container hero-layout">
           <div className="hero-copy">
-            <Link href="/#ar-showcase" className="breadcrumb">
+            <Link href="/map" className="breadcrumb">
               <i className="fa-solid fa-arrow-left"></i> 5 แหล่งเรียนรู้
             </Link>
             <h1><SiteName name={community.name} /></h1>
@@ -69,7 +63,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
             <div className="art-orbit orbit-one"></div>
             <div className="art-orbit orbit-two"></div>
             <div className="art-icon">
-              <i className={icon}></i>
+              <SiteIcon slug={community.slug} />
             </div>
             <span className="art-caption">
               SAKON NAKHON
@@ -86,7 +80,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
       <>
       {/* Section 01: Our Story */}
       <section id="about" className="community-section">
-        <div className="community-container intro-grid">
+        <div className={`community-container intro-grid${isShortStory ? " intro-grid--short" : ""}`}>
           <div>
             <p className="eyebrow">01 / OUR STORY</p>
             <h2>

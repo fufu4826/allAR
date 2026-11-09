@@ -185,3 +185,10 @@
 
 /* Space that the English kicker used to give between the breadcrumb and the site name. */
 .hero-copy .breadcrumb + h1 { margin-top: 32px; }
+
+/* Short story: heading and text in one column, the text as a lead paragraph with an accent rule,
+   and less space before the location box. */
+.intro-grid.intro-grid--short { grid-template-columns: 1fr; gap: 22px; }
+.intro-grid--short .intro-text { max-width: 44em; padding-left: 20px; border-left: 3px solid var(--accent); font-size: 1.2rem; line-height: 1.85; }
+.community-section:has(.intro-grid--short) { padding-bottom: 44px; }
+@media (max-width: 500px) { .intro-grid--short .intro-text { font-size: 1.05rem; padding-left: 14px; } }

@@ -10,25 +10,33 @@ export async function getCommunities(): Promise<Community[]> {
   "use cache";
   cacheTag("content");
   cacheLife("hours");
-  const [communityRows, collectionRows, itemRows] = await Promise.all([
-    db.select().from(communities).orderBy(asc(communities.sortOrder), asc(communities.name)),
-    db.select().from(collections).orderBy(asc(collections.sortOrder), asc(collections.name)),
-    db.select().from(items).where(eq(items.isPublished, true)).orderBy(asc(items.sortOrder), asc(items.name)),
-  ]);
-  return communityRows.map((community) => {
-    const cols = community.isPublished ? collectionRows.filter((col) => col.communityId === community.id) : [];
-    const content = itemRows.filter((item) => cols.some((col) => col.id === item.collectionId));
-    return {
-      id: community.id, englishName: community.englishName, tagline: community.tagline, tags: community.tags, theme: community.theme,
-      slug: community.slug, name: community.name, shortName: community.shortName,
-      location: community.location, description: community.description,
-      position: [Number(community.lat), Number(community.lng)], color: community.color,
-      cover: community.coverPath, placeholder: !community.isPublished,
-      collections: cols.map((col) => ({ id: col.id, name: col.name, description: col.description, image: col.imagePath })),
-      items: content.map((item) => ({ id: item.id, collectionId: item.collectionId, name: item.name, description: item.description, model: item.modelPath, thumbnail: item.thumbnailPath, audio: item.audioPath })),
-      recommended: content.filter((item) => item.isFeatured).map((item) => item.id),
-    };
-  });
+  try {
+    const [communityRows, collectionRows, itemRows] = await Promise.all([
+      db.select().from(communities).orderBy(asc(communities.sortOrder), asc(communities.name)),
+      db.select().from(collections).orderBy(asc(collections.sortOrder), asc(collections.name)),
+      db.select().from(items).where(eq(items.isPublished, true)).orderBy(asc(items.sortOrder), asc(items.name)),
+    ]);
+    return communityRows.map((community) => {
+      const cols = community.isPublished ? collectionRows.filter((col) => col.communityId === community.id) : [];
+      const content = itemRows.filter((item) => cols.some((col) => col.id === item.collectionId));
+      return {
+        id: community.id, englishName: community.englishName, tagline: community.tagline, tags: community.tags, theme: community.theme,
+        slug: community.slug, name: community.name, shortName: community.shortName,
+        location: community.location, description: community.description,
+        position: [Number(community.lat), Number(community.lng)], color: community.color,
+        cover: community.coverPath, placeholder: !community.isPublished,
+        collections: cols.map((col) => ({ id: col.id, name: col.name, description: col.description, image: col.imagePath })),
+        items: content.map((item) => ({ id: item.id, collectionId: item.collectionId, name: item.name, description: item.description, model: item.modelPath, thumbnail: item.thumbnailPath, audio: item.audioPath })),
+        recommended: content.filter((item) => item.isFeatured).map((item) => item.id),
+      };
+    });
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      const { communities: source } = await import("@/data/communities");
+      return source;
+    }
+    throw err;
+  }
 }
 
 export async function getCommunity(slug: string): Promise<Community | undefined> {
@@ -71,5 +79,10 @@ export async function getPublishedGallery() {
   "use cache";
   cacheTag("content");
   cacheLife("hours");
-  return db.select().from(galleryImages).where(eq(galleryImages.isPublished, true)).orderBy(asc(galleryImages.sortOrder));
+  try {
+    return await db.select().from(galleryImages).where(eq(galleryImages.isPublished, true)).orderBy(asc(galleryImages.sortOrder));
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") return [];
+    throw err;
+  }
 }

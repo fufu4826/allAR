@@ -146,29 +146,249 @@
 .theme-watklang .community-category, [data-theme="watklang"] .community-category, [data-community="watklang"] .community-category { border-color: #e6d3be; }
 .theme-watklang .community-footer, [data-theme="watklang"] .community-footer, [data-community="watklang"] .community-footer { border-top: 8px solid #cfa369; }
 
-/* Wat Nuea Theme */
+/* Wat Nuea Theme: Phra That Maha Phrom (Red, Gold, White - White Page Background) */
 .theme-watnuea, [data-theme="watnuea"], [data-community="watnuea"] {
-  --ink: #343d3e;
-  --accent: #765a8c;
-  --accent-light: #f3e9df;
-  --paper: #f8f7f2;
-  --hero: #374c4a;
-  --hero-end: #765a8c;
+  --ink: #221819;
+  --accent: #b3262e;
+  --accent-gold: #c99226;
+  --accent-light: #fef5ea;
+  --paper: #ffffff;
+  --hero: #2a1618;
+  --hero-end: #b3262e;
 }
-.theme-watnuea .community-header, [data-theme="watnuea"] .community-header, [data-community="watnuea"] .community-header { box-shadow: 0 2px 18px #343d3e12; }
-.theme-watnuea .community-hero, [data-theme="watnuea"] .community-hero, [data-community="watnuea"] .community-hero { position: relative; background: linear-gradient(115deg, #2e283b 0%, #4e3d64 50%, #765a8c 100%); }
-.theme-watnuea .community-hero::after, [data-theme="watnuea"] .community-hero::after, [data-community="watnuea"] .community-hero::after {
-  content: ""; position: absolute; inset: auto 0 0; height: 12px;
-  background: repeating-linear-gradient(135deg, #e9dff0 0 4px, #765a8c 4px 8px, #2e283b 8px 12px, #b39ec4 12px 14px);
+.theme-watnuea .community-header, [data-theme="watnuea"] .community-header, [data-community="watnuea"] .community-header {
+  box-shadow: 0 2px 18px rgba(179, 38, 46, 0.08);
+  border-bottom: 2px solid #b3262e15;
 }
-.theme-watnuea .hero-layout, [data-theme="watnuea"] .hero-layout, [data-community="watnuea"] .hero-layout { position: relative; z-index: 1; }
-.theme-watnuea .hero-kicker, [data-theme="watnuea"] .hero-kicker, [data-community="watnuea"] .hero-kicker { color: #ded0ea; }
-.theme-watnuea .hero-tags, [data-theme="watnuea"] .hero-tags, [data-community="watnuea"] .hero-tags { display: inline-flex; padding: 7px 14px; border: 1px solid #ffffff52; border-radius: 100px; background: #ffffff0c; color: #f6f1fa; }
-.theme-watnuea .location-box, [data-theme="watnuea"] .location-box, [data-community="watnuea"] .location-box { border: 1px solid #ddd2e6; background: linear-gradient(115deg, #f4eef9, #fdfbff); }
-.theme-watnuea .story-card, .theme-watnuea .model-card, [data-theme="watnuea"] .story-card, [data-theme="watnuea"] .model-card, [data-community="watnuea"] .story-card, [data-community="watnuea"] .model-card { border-color: #ded4e6; }
-.theme-watnuea .section-desc, .theme-watnuea .model-status, .theme-watnuea .model-source, [data-theme="watnuea"] .section-desc, [data-theme="watnuea"] .model-status, [data-theme="watnuea"] .model-source, [data-community="watnuea"] .section-desc, [data-community="watnuea"] .model-status, [data-community="watnuea"] .model-source { color: #6a5c77; }
-.theme-watnuea .community-category, [data-theme="watnuea"] .community-category, [data-community="watnuea"] .community-category { border-color: #dcd1e4; }
-.theme-watnuea .community-footer, [data-theme="watnuea"] .community-footer, [data-community="watnuea"] .community-footer { border-top: 8px solid #9e84b3; }
+
+/* Full-width Scenic Hero Cover in Home Page Direction */
+.theme-watnuea .community-hero,
+[data-theme='watnuea'] .community-hero,
+[data-community='watnuea'] .community-hero {
+  position: relative;
+  min-height: 520px;
+  color: #ffffff;
+  background: #2a1618 url('/brand/watnuea-real-banner.webp') center center / cover no-repeat;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.theme-watnuea .community-hero::before,
+[data-theme='watnuea'] .community-hero::before,
+[data-community='watnuea'] .community-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(28, 10, 16, 0.92) 0%, rgba(28, 10, 16, 0.82) 36%, rgba(28, 10, 16, 0.35) 68%, rgba(28, 10, 16, 0.12) 100%),
+    linear-gradient(0deg, rgba(26, 8, 14, 0.5), transparent 40%);
+  z-index: 1;
+}
+.theme-watnuea .community-hero::after,
+[data-theme='watnuea'] .community-hero::after,
+[data-community='watnuea'] .community-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 14px;
+  background: url('/brand/watnuea-border.svg') repeat-x left center / auto 14px;
+  opacity: 1;
+  z-index: 2;
+}
+.theme-watnuea .hero-layout,
+[data-theme='watnuea'] .hero-layout,
+[data-community='watnuea'] .hero-layout {
+  min-height: 520px;
+  position: relative;
+  z-index: 2;
+}
+.theme-watnuea .hero-copy,
+[data-theme='watnuea'] .hero-copy,
+[data-community='watnuea'] .hero-copy {
+  max-width: 600px;
+  position: relative;
+  z-index: 2;
+}
+.theme-watnuea .breadcrumb,
+[data-theme='watnuea'] .breadcrumb,
+[data-community='watnuea'] .breadcrumb {
+  color: #dfb248;
+  font-weight: 500;
+}
+.theme-watnuea .breadcrumb:hover,
+[data-theme='watnuea'] .breadcrumb:hover,
+[data-community='watnuea'] .breadcrumb:hover {
+  color: #ffffff;
+}
+.theme-watnuea .hero-kicker,
+[data-theme='watnuea'] .hero-kicker,
+[data-community='watnuea'] .hero-kicker {
+  color: #f7d27e;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.theme-watnuea .community-hero h1,
+[data-theme='watnuea'] .community-hero h1,
+[data-community='watnuea'] .community-hero h1 {
+  color: #ffffff;
+  text-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
+}
+.theme-watnuea .hero-lead,
+[data-theme='watnuea'] .hero-lead,
+[data-community='watnuea'] .hero-lead {
+  color: #fbeee6;
+}
+.theme-watnuea .hero-tags,
+[data-theme='watnuea'] .hero-tags,
+[data-community='watnuea'] .hero-tags {
+  display: inline-flex;
+  padding: 7px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fef5ee;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+.theme-watnuea .button-primary,
+[data-theme='watnuea'] .button-primary,
+[data-community='watnuea'] .button-primary {
+  background: #b3262e;
+  color: #ffffff;
+  border: 1px solid #dfb248;
+  box-shadow: 0 4px 20px rgba(179, 38, 46, 0.5);
+}
+.theme-watnuea .button-primary:hover,
+[data-theme='watnuea'] .button-primary:hover,
+[data-community='watnuea'] .button-primary:hover {
+  background: #c99226;
+  color: #ffffff;
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+.theme-watnuea .button-ghost,
+[data-theme='watnuea'] .button-ghost,
+[data-community='watnuea'] .button-ghost {
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+}
+.theme-watnuea .button-ghost:hover,
+[data-theme='watnuea'] .button-ghost:hover,
+[data-community='watnuea'] .button-ghost:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+.theme-watnuea .hero-art,
+[data-theme='watnuea'] .hero-art,
+[data-community='watnuea'] .hero-art {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: 380px;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+.theme-watnuea .art-orbit,
+[data-theme='watnuea'] .art-orbit,
+[data-community='watnuea'] .art-orbit,
+.theme-watnuea .art-icon,
+[data-theme='watnuea'] .art-icon,
+[data-community='watnuea'] .art-icon {
+  display: none;
+}
+.theme-watnuea .art-caption,
+[data-theme='watnuea'] .art-caption,
+[data-community='watnuea'] .art-caption {
+  position: static;
+  margin-bottom: 24px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #ebd3a7;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  text-align: right;
+  color: #8f6412;
+}
+.theme-watnuea .art-caption b,
+[data-theme='watnuea'] .art-caption b,
+[data-community='watnuea'] .art-caption b {
+  color: #b3262e;
+}
+.theme-watnuea .location-box, [data-theme="watnuea"] .location-box, [data-community="watnuea"] .location-box {
+  border: 1px solid #edd4b8;
+  background: linear-gradient(115deg, #fffcf7, #fef6ed);
+}
+.theme-watnuea .location-icon, [data-theme="watnuea"] .location-icon, [data-community="watnuea"] .location-icon {
+  background: #b3262e;
+  color: #ffffff;
+}
+.theme-watnuea .story-card, .theme-watnuea .model-card, [data-theme="watnuea"] .story-card, [data-theme="watnuea"] .model-card, [data-community="watnuea"] .story-card, [data-community="watnuea"] .model-card {
+  border-color: #eedcc6;
+  background: #ffffff;
+}
+.theme-watnuea .story-card:hover, .theme-watnuea .model-card:hover, [data-theme="watnuea"] .story-card:hover, [data-theme="watnuea"] .model-card:hover, [data-community="watnuea"] .story-card:hover, [data-community="watnuea"] .model-card:hover {
+  border-color: #b3262e;
+  box-shadow: 0 10px 24px rgba(179, 38, 46, 0.12);
+}
+.theme-watnuea .story-icon, [data-theme="watnuea"] .story-icon, [data-community="watnuea"] .story-icon {
+  background: #fdf4eb;
+  color: #b3262e;
+}
+.theme-watnuea .section-desc, .theme-watnuea .model-status, .theme-watnuea .model-source, [data-theme="watnuea"] .section-desc, [data-theme="watnuea"] .model-status, [data-theme="watnuea"] .model-source, [data-community="watnuea"] .section-desc, [data-community="watnuea"] .model-status, [data-community="watnuea"] .model-source {
+  color: #6d5b5d;
+}
+.theme-watnuea .community-category, [data-theme="watnuea"] .community-category, [data-community="watnuea"] .community-category {
+  border-color: #e8d7c5;
+  background: #ffffff;
+  color: #221819;
+}
+.theme-watnuea .community-category.active, [data-theme="watnuea"] .community-category.active, [data-community="watnuea"] .community-category.active {
+  background: #b3262e;
+  border-color: #b3262e;
+  color: #ffffff;
+}
+.theme-watnuea .community-category:not(.active):hover, [data-theme="watnuea"] .community-category:not(.active):hover, [data-community="watnuea"] .community-category:not(.active):hover {
+  border-color: #b3262e;
+  color: #b3262e;
+  background: #fdf5eb;
+}
+.theme-watnuea .community-footer, [data-theme="watnuea"] .community-footer, [data-community="watnuea"] .community-footer {
+  border-top: 8px solid #b3262e;
+}
+@media (max-width: 850px) {
+  .theme-watnuea .community-hero,
+  [data-theme='watnuea'] .community-hero,
+  [data-community='watnuea'] .community-hero {
+    background-position: 65% center;
+    min-height: auto;
+  }
+  .theme-watnuea .community-hero::before,
+  [data-theme='watnuea'] .community-hero::before,
+  [data-community='watnuea'] .community-hero::before {
+    background:
+      linear-gradient(180deg, rgba(28, 10, 16, 0.88) 0%, rgba(28, 10, 16, 0.72) 65%, rgba(28, 10, 16, 0.4) 100%);
+  }
+  .theme-watnuea .hero-copy,
+  [data-theme='watnuea'] .hero-copy,
+  [data-community='watnuea'] .hero-copy {
+    background: transparent;
+    border: none;
+    padding: 30px 0;
+    margin: 0;
+    box-shadow: none;
+  }
+  .theme-watnuea .hero-art,
+  [data-theme='watnuea'] .hero-art,
+  [data-community='watnuea'] .hero-art {
+    display: none;
+  }
+}
 
 /* Phu Phan: woven Nakhon Tham indigo pattern and border (front-end team update 2026-11-06). */
 [data-theme='phuphan'] .hero-art {

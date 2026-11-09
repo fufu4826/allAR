@@ -118,16 +118,23 @@ function cameraAt(target: THREE.Vector3, distance: number, azimuth = 0, polar = 
   return target.clone().add(new THREE.Vector3().setFromSphericalCoords(distance, polar, azimuth));
 }
 
-/** Overview camera for a viewport aspect ratio. On portrait screens (phones) the horizontal field
- *  of view is narrow, so pull back far enough that the province still fits: the pivot is east of
- *  the centre, so the west edge is about 37 units away from it. */
+// อำเภอเมืองสกลนคร around the pivot (from muangBoundary.ts): about 7 units west, 10 east,
+// 9 north and 8 south. The start view fits this, rounded up so the site labels have room.
+const MUANG_HALF_WIDTH = 10.5;
+const MUANG_HALF_DEPTH = 9;
+
+/** Start view (also used when a site is closed or "มุมองค์รวม" is pressed): อำเภอเมือง fills the
+ *  canvas, centred on สี่แยกบ้านธาตุ. The distance is whichever of width and depth needs more room
+ *  for this viewport's aspect ratio, so phones (portrait) pull back further than desktops. */
 function overviewView(aspect: number, azimuth = 0): { target: THREE.Vector3; position: THREE.Vector3 } {
   const target = pivotTarget();
-  let distance = OVERVIEW_DISTANCE;
-  if (aspect < 1) {
-    const halfH = Math.atan(Math.tan(THREE.MathUtils.degToRad(38 / 2)) * aspect);
-    distance = Math.min(OVERVIEW_DISTANCE * 2.6, Math.max(OVERVIEW_DISTANCE, 40 / Math.tan(halfH)));
-  }
+  const tanHalfV = Math.tan(THREE.MathUtils.degToRad(38 / 2));
+  const tanHalfH = tanHalfV * aspect;
+  // Seen at 55 degrees above the ground, depth on the ground is foreshortened by sin(55).
+  const depthOnScreen = MUANG_HALF_DEPTH * Math.sin(Math.PI / 2 - OVERVIEW_POLAR);
+  // Generous: the near (south) side looks wider than the far side in perspective.
+  const margin = 1.45;
+  const distance = Math.min(OVERVIEW_DISTANCE * 2.6, margin * Math.max(MUANG_HALF_WIDTH / tanHalfH, depthOnScreen / tanHalfV));
   return { target, position: cameraAt(target, distance, azimuth) };
 }
 
@@ -997,11 +1004,17 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
               if (labelHeight) labelHeights[lm.id] = labelHeight;
             }
             const margin = 6;
-            // A label whose full name would run past the left/right edge shrinks to its icon only
-            // (the selected one always keeps its name). data-compact is not React-managed, so a
-            // re-render never resets it.
-            const fullLeft = screenX - labelWidth * anchorFrac;
-            const compact = !isSelected && (fullLeft < margin || fullLeft + labelWidth > currentWidth - margin);
+            // Near an edge the full label first slides inward. It shrinks to its icon only when the
+            // slide would leave it no longer above its own point on the map, or when it is wider than
+            // the canvas (the selected one always keeps its name). data-compact is not React-managed,
+            // so a re-render never resets it.
+            const naturalLeft = screenX - labelWidth * anchorFrac;
+            const slidLeft = Math.min(Math.max(naturalLeft, margin), Math.max(margin, currentWidth - labelWidth - margin));
+            const slid = Math.abs(slidLeft - naturalLeft) > 0.5;
+            const compact =
+              !isSelected &&
+              (labelWidth > currentWidth - margin * 2 ||
+                (slid && (screenX < slidLeft + 6 || screenX > slidLeft + labelWidth - 6)));
             if ((badgeEl.dataset.compact === "1") !== compact) badgeEl.dataset.compact = compact ? "1" : "";
             if (compact) {
               let iconWidth = compactWidths[lm.id];

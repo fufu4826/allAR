@@ -12,12 +12,18 @@ import { NodeIO } from "@gltf-transform/core";
 import { KHRONOS_EXTENSIONS, EXTMeshoptCompression } from "@gltf-transform/extensions";
 import { dedup, prune, textureCompress, meshopt } from "@gltf-transform/functions";
 import { MeshoptEncoder, MeshoptDecoder } from "meshoptimizer";
+import draco3d from "draco3dgltf";
 
 const manifest = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
 await MeshoptEncoder.ready;
 const io = new NodeIO()
   .registerExtensions([...KHRONOS_EXTENSIONS, EXTMeshoptCompression])
-  .registerDependencies({ "meshopt.encoder": MeshoptEncoder, "meshopt.decoder": MeshoptDecoder });
+  .registerDependencies({
+    "meshopt.encoder": MeshoptEncoder,
+    "meshopt.decoder": MeshoptDecoder,
+    // Some teams export Draco-compressed GLB (e.g. Wat Klang, 2026-11-09): decode it, then re-encode with meshopt.
+    "draco3d.decoder": await draco3d.createDecoderModule(),
+  });
 
 const MB = (n) => (n / 1e6).toFixed(1);
 let failed = 0;
@@ -27,6 +33,8 @@ for (const { src, dest, kind } of manifest) {
   try {
     if (kind === "model") {
       const doc = await io.read(src);
+      // Draco was only needed to read the file; the output uses meshopt.
+      doc.getRoot().listExtensionsUsed().find((e) => e.extensionName === "KHR_draco_mesh_compression")?.dispose();
       await doc.transform(
         dedup(),
         prune(),

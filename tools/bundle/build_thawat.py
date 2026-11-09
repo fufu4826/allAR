@@ -20,6 +20,11 @@ UPLOADS = os.path.join(ROOT, "data-bundle", "uploads")
 # watnuea -v2: the photos were sideways (Word rotation not applied by docx_items.py before 2026-11-09).
 IMAGE_VERSION = {"watnuea": "-v2"}
 DATA = os.path.join(ROOT, "web", "src", "data")
+# 3D models sent by the field team, named by the item number (`no`) in the inventory document.
+# Optimized by web/scripts/optimize-media.mjs into uploads/thawat/<slug>/models/<item id>.glb;
+# an item gets its model only if that file exists. Checked one by one against the item photos (2026-11-09).
+# Wat Klang: 16.glb has no item in the document and 28.1.glb is a second scan of item 28 (beads on a plate),
+# so both are held back.
 
 # Obvious typos in the source documents (spelling only, meaning unchanged).
 TYPOS = {"ปารมารวิชัย": "ปางมารวิชัย", "ทวารดี": "ทวารวดี", "ล้านข้าง": "ล้านช้าง", "ก้อนกลม": "ก้นกลม"}
@@ -86,6 +91,11 @@ def save_image(src: str, dest_rel: str) -> str:
     return "/uploads/" + dest_rel
 
 
+def model_url(slug: str, item_id: str) -> str | None:
+    rel = f"thawat/{slug}/models/{item_id}.glb"
+    return "/uploads/" + rel if os.path.isfile(os.path.join(UPLOADS, *rel.split("/"))) else None
+
+
 for slug, cols in COLLECTIONS.items():
     source = json.load(open(os.path.join(EXTRACT, slug, "items.json"), encoding="utf-8"))
     names = [fix(i["name"]) for i in source]
@@ -107,7 +117,7 @@ for slug, cols in COLLECTIONS.items():
             "collectionId": col_id[collection_key(slug, it)],
             "name": name,
             "description": describe(it),
-            "model": None,
+            "model": model_url(slug, item_id),
             "thumbnail": photo,
             "audio": None,
         })
@@ -120,4 +130,4 @@ for slug, cols in COLLECTIONS.items():
         json.dump(out, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
     per = {c["name"]: sum(1 for i in items if i["collectionId"] == c["id"]) for c in collections}
-    print(slug, len(items), "items", per, "cover", cover)
+    print(slug, len(items), "items", per, "cover", cover, "models", sum(1 for i in items if i["model"]))

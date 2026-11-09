@@ -42,7 +42,7 @@ const DEFAULT_CONFIG: Landmark3DConfig = {
 export const LANDMARK_3D_CONFIG: Record<string, Landmark3DConfig> = {
   tharae: {
     modelUrl: "/map3d/models/tharae.glb",
-    modelConfig: { scale: 2.2, rotationY: Math.PI * 0.85, offset: { x: 0, y: 0.05, z: 0 } },
+    modelConfig: { scale: 2.2, rotationY: Math.PI * 1.35, offset: { x: 1.08, y: 0.05, z: 0 } },
     pinAnchor: "center",
   },
   watklang: {

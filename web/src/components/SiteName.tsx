@@ -18,9 +18,21 @@ export default function SiteName({ name }: { name: string }) {
       {lines.map((line, i) => (
         <Fragment key={i}>
           {i > 0 && <br />}
-          {line}
+          <KeepVillage line={line} />
         </Fragment>
       ))}
+    </>
+  );
+}
+
+/** Keeps a village name ("บ้านโนนหอม") on one line: Thai line breaking would otherwise split it (โนน|หอม). */
+function KeepVillage({ line }: { line: string }) {
+  const at = line.indexOf("บ้าน");
+  if (at <= 0) return <>{line}</>;
+  return (
+    <>
+      {line.slice(0, at)}
+      <span style={{ whiteSpace: "nowrap" }}>{line.slice(at)}</span>
     </>
   );
 }

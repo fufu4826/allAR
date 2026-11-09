@@ -978,8 +978,11 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         tempV.applyMatrix4(provinceGroup.matrixWorld);
         tempV.project(camera);
 
-        const screenX = (tempV.x * 0.5 + 0.5) * currentWidth + (lm.labelOffset2D?.x || 0);
-        const screenY = (-(tempV.y * 0.5) + 0.5) * currentHeight + (lm.labelOffset2D?.y || 0);
+        // The label sits centred straight above its model at every angle. Fixed screen nudges only
+        // suit one camera angle and drift off the model when the map turns; overlaps are handled by
+        // the collision step below instead.
+        const screenX = (tempV.x * 0.5 + 0.5) * currentWidth;
+        const screenY = (-(tempV.y * 0.5) + 0.5) * currentHeight;
         const visible = tempV.z <= 1.0;
         const zIndex = Math.round((2.0 - tempV.z) * 35);
         const isSelected = selectedIdRef.current === lm.id;
@@ -990,8 +993,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
             badgeEl.style.display = "none";
           } else {
             badgeEl.style.display = "block";
-            const anchor = lm.pinAnchor || "center";
-            const anchorFrac = anchor === "left" ? 0.12 : anchor === "right" ? 0.88 : 0.5;
+            const anchorFrac = 0.5;
             // Keep the label inside the canvas on narrow screens. Width is measured once (text never changes).
             let labelWidth = labelWidths[lm.id];
             if (!labelWidth && badgeEl.dataset.compact !== "1") {
@@ -1229,13 +1231,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         {/* Floating Label Badges (Direct GPU translate3d with 0ms delay, rock-solid lock) */}
         {landmarks.map((item) => {
           const isSelected = selectedId === item.id;
-          const anchor = item.pinAnchor || "center";
-          const alignClass =
-            anchor === "left"
-              ? "items-start pl-2"
-              : anchor === "right"
-              ? "items-end pr-2"
-              : "items-center";
+          const alignClass = "items-center";
 
           return (
             <div

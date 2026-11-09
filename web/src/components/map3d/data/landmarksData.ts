@@ -11,8 +11,7 @@ export interface Landmark3DConfig {
     rotationY?: number;
     offset?: { x: number; y: number; z: number };
   };
-  labelOffset2D?: { x: number; y: number }; // screen offset so models stay at real GPS while labels don't collide
-  pinAnchor?: "center" | "left" | "right";
+  pinAnchor?: "center" | "left" | "right"; // 2D map only
 }
 
 /** One picture in a site's slideshow on the map card. */
@@ -44,25 +43,21 @@ export const LANDMARK_3D_CONFIG: Record<string, Landmark3DConfig> = {
   tharae: {
     modelUrl: "/map3d/models/tharae.glb",
     modelConfig: { scale: 2.2, rotationY: Math.PI * 0.85, offset: { x: 0, y: 0.05, z: 0 } },
-    labelOffset2D: { x: 0, y: -6 },
     pinAnchor: "center",
   },
   watklang: {
     modelUrl: "/map3d/models/watklang.glb",
     modelConfig: { scale: 1.45, rotationY: Math.PI * 0.35, offset: { x: 0.35, y: 0.05, z: 0.45 } },
-    labelOffset2D: { x: 16, y: 6 },
     pinAnchor: "left",
   },
   watnuea: {
     modelUrl: "/map3d/models/watnuea.glb",
     modelConfig: { scale: 1.25, rotationY: Math.PI * 0.25, offset: { x: -0.22, y: 0.05, z: -0.45 } },
-    labelOffset2D: { x: -16, y: -6 },
     pinAnchor: "right",
   },
   nonhom: {
     modelUrl: "/map3d/models/nonhom.glb",
     modelConfig: { scale: 1.25, rotationY: Math.PI * 0.15, offset: { x: 0, y: 0.05, z: 0 } },
-    labelOffset2D: { x: 24, y: 12 },
     pinAnchor: "left",
   },
   phuphan: {
@@ -70,7 +65,6 @@ export const LANDMARK_3D_CONFIG: Record<string, Landmark3DConfig> = {
     // The centre's coordinates fall just outside the อำเภอเมือง boundary used for the raised
     // plateau, so the model is nudged north-west onto it.
     modelConfig: { scale: 2.5, rotationY: Math.PI * 0.1, offset: { x: -0.55, y: 0.05, z: -0.95 } },
-    labelOffset2D: { x: -24, y: -8 },
     pinAnchor: "right",
   },
 };

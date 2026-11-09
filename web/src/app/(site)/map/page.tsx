@@ -35,6 +35,12 @@ async function MapPageContent() {
       position: c.position,
       itemCount: c.items.length,
       placeholder: !!c.placeholder,
+      // Slideshow on the site's map card: items with a picture, featured first, at most 12.
+      slides: [...c.items]
+        .filter((item) => item.thumbnail)
+        .sort((a, b) => Number(c.recommended.includes(b.id)) - Number(c.recommended.includes(a.id)))
+        .slice(0, 12)
+        .map((item) => ({ id: item.id, name: item.name, image: item.thumbnail!, href: `/c/${c.slug}/${item.id}` })),
     })),
   );
 

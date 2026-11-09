@@ -9,6 +9,7 @@ import { SAKON_DEM } from "./data/sakonDem";
 import { SAKON_BOUNDARY_GEO } from "./data/sakonBoundary";
 import { MUANG_BOUNDARY_GEO } from "./data/muangBoundary";
 import type { MapLandmark } from "./data/landmarksData";
+import SiteIcon from "@/components/SiteIcon";
 import { MAJOR_HIGHWAYS, SECONDARY_HIGHWAYS, type RoadDefinition } from "./data/roadsData";
 
 // Terrain textures. The satellite one is only downloaded when the visitor switches to it.
@@ -146,9 +147,12 @@ export interface Sakon3DMapCanvasProps {
   selectedId?: string | null;
   onSelectLandmark?: (id: string) => void;
   className?: string;
+  /** Holder for the selected site's card. The scene moves it every frame to the selected label,
+   *  so the card grows out of the label and follows it; the label itself is hidden meanwhile. */
+  cardAnchorRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandmark, className }: Sakon3DMapCanvasProps) {
+export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandmark, className, cardAnchorRef }: Sakon3DMapCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const landmarksRef = useRef<MapLandmark[]>(landmarks);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -181,6 +185,12 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     landmarksRef.current = landmarks;
   }, [landmarks]);
 
+  // The render loop is set up once, so it reads the card holder through a ref.
+  const cardAnchorHolder = useRef(cardAnchorRef);
+  useEffect(() => {
+    cardAnchorHolder.current = cardAnchorRef;
+  }, [cardAnchorRef]);
+
   // Smooth fly to landmark with cubic ease-out
   const flyTo = useCallback((landmark: MapLandmark | null) => {
     if (!controlsRef.current || !cameraRef.current) return;
@@ -200,8 +210,12 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
       const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
       const elev = getTerrainElev(x, z);
 
-      targetLookAt = new THREE.Vector3(x, elev.y + 0.6, z);
-      targetPos = cameraAt(targetLookAt, 11, azimuth, SITE_POLAR);
+      // Aim above the model so it sits low on the screen, leaving room for the site's card above it.
+      // Portrait screens (phones) need a bit more room, the card is taller there relative to the map.
+      const distance = 13;
+      const lift = distance * Math.tan(THREE.MathUtils.degToRad(38 / 2)) * (camera.aspect < 1 ? 0.66 : 0.6);
+      targetLookAt = new THREE.Vector3(x, elev.y + 0.6 + lift, z);
+      targetPos = cameraAt(targetLookAt, distance, azimuth, SITE_POLAR);
     }
 
     const polar = landmark ? SITE_POLAR : OVERVIEW_POLAR;
@@ -891,6 +905,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     let reqId = 0;
     const tempV = new THREE.Vector3();
     const labelWidths: Record<string, number> = {};
+    let selectedAnchor: { x: number; y: number } | null = null;
     const labelHeights: Record<string, number> = {};
     const compactWidths: Record<string, number> = {};
     type LabelRect = { id: string; left: number; top: number; w: number; h: number; z: number; selected: boolean };
@@ -1043,9 +1058,29 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         if (el) {
           el.style.transform = `translate3d(${r.left}px, ${top + r.h}px, 0) translate(0, -100%) scale(${r.selected ? 1.1 : 1.0})`;
           el.style.zIndex = `${r.selected ? 200 : r.z}`;
+          // The selected label turns into the card (see cardAnchorRef), so hide it while the card is open.
+          const hide = r.selected && !!cardAnchorHolder.current?.current?.firstElementChild;
+          if ((el.style.visibility === "hidden") !== hide) el.style.visibility = hide ? "hidden" : "";
         }
+        if (r.selected) selectedAnchor = { x: r.left + r.w / 2, y: top + r.h };
       }
       labelRects.length = 0;
+
+      // 2c. Card of the selected site: its bottom-centre sits where the label was, kept inside the map.
+      const anchorEl = cardAnchorHolder.current?.current;
+      if (anchorEl) {
+        const card = anchorEl.firstElementChild as HTMLElement | null;
+        if (!selectedAnchor || !card) {
+          if (anchorEl.style.display !== "none") anchorEl.style.display = "none";
+        } else {
+          anchorEl.style.display = "block";
+          const half = card.offsetWidth / 2;
+          const x = Math.min(Math.max(selectedAnchor.x, half + 8), Math.max(half + 8, currentWidth - half - 8));
+          const y = Math.max(selectedAnchor.y, card.offsetHeight + 58);
+          anchorEl.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        }
+      }
+      selectedAnchor = null;
 
       // 3. Update Compass Heading with 0 delay (via direct DOM)
       camera.getWorldDirection(camDir);
@@ -1206,7 +1241,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
               >
                 <div className={`mw-pin-pill ${isSelected ? "active" : ""}`}>
                   <span className="mw-pin-icon">
-                    <i className={item.faIcon}></i>
+                    <SiteIcon slug={item.slug} />
                   </span>
                   <span className="mw-pin-text">{item.shortName}</span>
                 </div>

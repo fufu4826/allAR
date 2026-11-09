@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SiteIcon from "@/components/SiteIcon";
 import { siteContact as siteContactExport } from "@/content/site";
 
 const defaultContact = {
@@ -12,11 +13,11 @@ const siteContact = siteContactExport || defaultContact;
 
 // Same icons as the learning-site pins on the 3D map.
 const footerSites = [
-  { href: "/c/tharae", icon: "fa-solid fa-church", name: "พิพิธภัณฑ์อัครเทวดามีคาแอล" },
-  { href: "/c/watklang", icon: "fa-solid fa-place-of-worship", name: "พิพิธภัณฑ์วัดกลางศรีเชียงใหม่" },
-  { href: "/c/watnuea", icon: "fa-solid fa-dharmachakra", name: "พิพิธภัณฑ์วัดมหาพรหมโพธิราช" },
-  { href: "/c/nonhom", icon: "fa-solid fa-house-chimney-window", name: "แหล่งเรียนรู้ชุมชนบ้านโนนหอม" },
-  { href: "/c/phuphan", icon: "fa-solid fa-mountain-sun", name: "ศูนย์ศึกษาการพัฒนาภูพานฯ" },
+  { href: "/c/tharae", slug: "tharae", name: "อาสนวิหารอัครเทวดามีคาแอล" },
+  { href: "/c/watklang", slug: "watklang", name: "พิพิธภัณฑ์วัดกลางศรีเชียงใหม่" },
+  { href: "/c/watnuea", slug: "watnuea", name: "พิพิธภัณฑ์วัดมหาพรหมโพธิราช" },
+  { href: "/c/nonhom", slug: "nonhom", name: "แหล่งเรียนรู้ชุมชนบ้านโนนหอม" },
+  { href: "/c/phuphan", slug: "phuphan", name: "ศูนย์ศึกษาการพัฒนาภูพานฯ" },
 ];
 
 export default function SiteFooter() {
@@ -33,7 +34,6 @@ export default function SiteFooter() {
             </span>
             <div className="logo-text">
               <span className="brand-title"><span className="brand-line">แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่น</span><span className="brand-line">จังหวัดสกลนครเสมือนจริง</span></span>
-              <span className="brand-sub">Sakon Nakhon Virtual Learning Sites and Local Museums</span>
             </div>
           </div>
           <p className="footer-desc">
@@ -47,7 +47,7 @@ export default function SiteFooter() {
             {footerSites.map((site) => (
               <li key={site.href}>
                 <Link href={site.href}>
-                  <i className={site.icon} aria-hidden="true"></i> {site.name}
+                  <SiteIcon slug={site.slug} /> {site.name}
                 </Link>
               </li>
             ))}
@@ -58,8 +58,6 @@ export default function SiteFooter() {
           <h4>เมนูลัด</h4>
           <ul>
             <li><Link href="/#home">หน้าแรก</Link></li>
-            <li><Link href="/#gallery">แกลเลอรีภาพ</Link></li>
-            <li><Link href="/#organization">หน่วยงาน</Link></li>
             <li><Link href="/search">ค้นหาชิ้นงาน</Link></li>
             <li><Link href="/about">เกี่ยวกับโครงการ</Link></li>
           </ul>

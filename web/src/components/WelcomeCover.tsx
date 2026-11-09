@@ -23,7 +23,6 @@ export default function WelcomeCover() {
           </div>
           <div className="welcome-brand-text">
             <strong><span className="brand-line">แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่น</span><span className="brand-line">จังหวัดสกลนครเสมือนจริง</span></strong>
-            <span>Sakon Nakhon Virtual Learning Sites and Local Museums</span>
           </div>
         </div>
         <div className="welcome-content">

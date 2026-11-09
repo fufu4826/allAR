@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import L from "leaflet";
 import { MapContainer, Marker, TileLayer, ZoomControl, useMap } from "react-leaflet";
 import type { MapLandmark } from "@/components/map3d/data/landmarksData";
+import { siteIconHtml } from "@/content/siteIcons";
 
 interface LeafletMapProps {
   landmarks: MapLandmark[];
@@ -37,7 +38,7 @@ function createLandmarkDivIcon(lm: MapLandmark, isSelected: boolean) {
       <div style="position:relative;width:0;height:0;">
         <div class="mw-2d-dot ${isSelected ? "active" : ""}"></div>
         <div class="mw-pin-pill mw-2d-pill ${isSelected ? "active" : ""}" data-anchor="${anchor}" style="transform:${badgeTranslate};">
-          <span class="mw-pin-icon"><i class="${escapeHtml(lm.faIcon)}"></i></span>
+          <span class="mw-pin-icon">${siteIconHtml(lm.slug)}</span>
           <span class="mw-pin-text">${escapeHtml(lm.shortName)}</span>
         </div>
       </div>

@@ -7,6 +7,8 @@ import Sakon3DMap from "@/components/map3d/Sakon3DMap";
 import CommunityMap from "@/components/CommunityMap";
 import type { MapLandmark } from "@/components/map3d/data/landmarksData";
 import SiteName from "@/components/SiteName";
+import SiteSlideshow from "@/components/map3d/SiteSlideshow";
+import SiteIcon from "@/components/SiteIcon";
 
 interface MapWorkstationProps {
   landmarks: MapLandmark[];
@@ -25,6 +27,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const workstationRef = useRef<HTMLDivElement>(null);
   const sidebarListRef = useRef<HTMLDivElement>(null);
+  const cardAnchorRef = useRef<HTMLDivElement>(null);
 
   const selectedItem: MapLandmark | undefined = useMemo(() => {
     return landmarks.find((lm) => lm.id === selectedSlug);
@@ -53,6 +56,42 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
       document.exitFullscreen().catch(() => {});
     }
   };
+
+  const renderCard = (site: MapLandmark, anchored: boolean) => (
+    <div
+      key={site.id}
+      className={`mw-hud-card ${site.slides.length ? "mw-hud-card--expanded" : "animate-fade-in"} ${anchored ? "mw-hud-card--anchored" : ""}`}
+    >
+      <SiteSlideshow slides={site.slides} siteName={site.shortName} />
+      <div className="mw-hud-header">
+        <div className="mw-card-top" style={{ minWidth: 0 }}>
+          <span className="mw-card-icon">
+            <SiteIcon slug={site.slug} />
+          </span>
+          <div style={{ minWidth: 0 }}>
+            <h3 className="mw-hud-title"><SiteName name={site.name} /></h3>
+          </div>
+        </div>
+        <button type="button" onClick={() => setSelectedSlug(null)} className="mw-hud-close" title="ปิดหน้าต่าง">
+          <i className="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p className="mw-hud-desc">{site.desc}</p>
+
+      <div className="mw-hud-footer">
+        <a href={site.gmapsUrl} target="_blank" rel="noopener noreferrer" className="mw-gps-link">
+          <i className="fa-solid fa-location-dot text-rose-500"></i>
+          <span>เปิดใน Google Maps</span>
+          <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: "9px" }}></i>
+        </a>
+        <Link href={`/c/${site.slug}`} className="mw-hud-cta">
+          <span>ชมโมเดล 3D AR</span>
+          <i className="fa-solid fa-arrow-right" style={{ fontSize: "10px" }}></i>
+        </Link>
+      </div>
+    </div>
+  );
 
   return (
     <div ref={workstationRef} className="mw-shell">
@@ -96,6 +135,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
           <div className="relative w-full h-full">
             <Sakon3DMap
               landmarks={landmarks}
+              cardAnchorRef={cardAnchorRef}
               selectedId={selectedSlug}
               onSelectLandmark={handleSelectLandmark}
               className="w-full h-full"
@@ -111,47 +151,14 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
           </div>
         )}
 
-        {/* Floating Selected Landmark Card (Bottom-Left, works in both 3D and 2D modes) */}
-        {selectedItem && (
-          <div className="mw-hud-card animate-fade-in">
-            <div className="mw-hud-header">
-              <div className="mw-card-top" style={{ minWidth: 0 }}>
-                <span className="mw-card-icon">
-                  <i className={selectedItem.faIcon}></i>
-                </span>
-                <div style={{ minWidth: 0 }}>
-                  <h3 className="mw-hud-title"><SiteName name={selectedItem.name} /></h3>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedSlug(null)}
-                className="mw-hud-close"
-                title="ปิดหน้าต่าง"
-              >
-                <i className="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-
-            <p className="mw-hud-desc">{selectedItem.desc}</p>
-
-            <div className="mw-hud-footer">
-              <a
-                href={selectedItem.gmapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mw-gps-link"
-              >
-                <i className="fa-solid fa-location-dot text-rose-500"></i>
-                <span>เปิดใน Google Maps</span>
-                <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: "9px" }}></i>
-              </a>
-              <Link href={`/c/${selectedItem.slug}`} className="mw-hud-cta">
-                <span>ชมโมเดล 3D AR</span>
-                <i className="fa-solid fa-arrow-right" style={{ fontSize: "10px" }}></i>
-              </Link>
-            </div>
+        {/* Selected site's card. In 3D it grows out of the site's label and follows it (the scene
+            positions the holder); in 2D it sits in the corner. */}
+        {mapMode === "3d" ? (
+          <div ref={cardAnchorRef} className="mw-card-anchor" style={{ display: "none" }}>
+            {selectedItem && renderCard(selectedItem, true)}
           </div>
+        ) : (
+          selectedItem && renderCard(selectedItem, false)
         )}
       </div>
 
@@ -182,7 +189,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
                 {/* Row 1: Icon, Name, English Name */}
                 <div className="mw-card-top">
                   <span className="mw-card-icon">
-                    <i className={item.faIcon}></i>
+                    <SiteIcon slug={item.slug} />
                   </span>
 
                   <div style={{ flex: 1, minWidth: 0 }}>

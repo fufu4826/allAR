@@ -3,6 +3,10 @@
 Usage (repo root): python tools/bundle/make_og_image.py
 Writes web/public/brand/og-image.jpg (Next.js serves it as og:image for every page).
 """
+import os
+import subprocess
+import tempfile
+
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1200, 630
@@ -40,8 +44,22 @@ for i, (path, w) in enumerate([("web/public/brand/snru-logo.png", 44), ("web/pub
     logo.thumbnail((w, 56))
     x = badge[0] + 8 + (0 if i == 0 else 50)
     img.paste(logo, (x, badge[1] + (70 - logo.height) // 2), logo)
-d.text((190, 52), "แหล่งเรียนรู้สกลนคร 3D", font=bold(30), fill="white")
-d.text((190, 92), "Sakon Nakhon Learning Sites 3D", font=regular(20), fill="#f4d4bd")
+# The site name is drawn by sharp (librsvg/Pango, through web/node_modules): Pillow without raqm
+# cannot stack Thai marks, so "ถิ่น" came out as "ถีน".
+SVG_JS = r"""
+import sharp from "sharp";
+const [out, line1, line2] = process.argv.slice(1);
+const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="96">
+<text x="0" y="36" font-family="Leelawadee UI" font-weight="bold" font-size="28" fill="#ffffff">${esc(line1)}</text>
+<text x="0" y="76" font-family="Leelawadee UI" font-weight="bold" font-size="28" fill="#f4d4bd">${esc(line2)}</text></svg>`;
+await sharp(Buffer.from(svg)).png().toFile(out);
+"""
+name_png = os.path.join(tempfile.gettempdir(), "og-site-name.png")
+subprocess.run(["node", "--input-type=module", "-e", SVG_JS, name_png,
+                "แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่น", "จังหวัดสกลนครเสมือนจริง"], cwd="web", check=True)
+name_img = Image.open(name_png).convert("RGBA")
+img.paste(name_img, (190, 46), name_img)
 
 d.rectangle((60, 214, 100, 216), fill="#f4a35d")
 d.text((114, 200), "SAKON NAKHON · THAILAND", font=bold(20), fill="#f5d4b6")

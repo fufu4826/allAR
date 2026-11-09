@@ -937,3 +937,14 @@
     margin: 0 14px;
   }
 }
+
+/* Line from a label to its model when the label had to move to stay clear of another one. */
+.mw-pin-leader {
+  position: absolute;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.45);
+  border-radius: 1px;
+  pointer-events: none;
+}

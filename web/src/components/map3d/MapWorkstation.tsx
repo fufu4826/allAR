@@ -25,6 +25,8 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const fullscreenSupported = useSyncExternalStore(noop, canFullscreen, () => false);
   const [mapMode, setMapMode] = useState<"3d" | "osm">("3d");
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  // Set when the device cannot draw WebGL: the 2D map takes over and the 3D button is turned off.
+  const [webglFailed, setWebglFailed] = useState(false);
   const workstationRef = useRef<HTMLDivElement>(null);
   const sidebarListRef = useRef<HTMLDivElement>(null);
   const cardAnchorRef = useRef<HTMLDivElement>(null);
@@ -104,6 +106,8 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
               type="button"
               onClick={() => setMapMode("3d")}
               className={`mw-mode-btn ${mapMode === "3d" ? "active" : ""}`}
+              disabled={webglFailed}
+              title={webglFailed ? "อุปกรณ์นี้ไม่รองรับแผนที่ 3 มิติ" : undefined}
             >
               <i className="fa-solid fa-cubes"></i>
               <span>แผนที่ 3 มิติ</span>
@@ -139,6 +143,10 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
               selectedId={selectedSlug}
               onSelectLandmark={handleSelectLandmark}
               className="w-full h-full"
+              onWebglUnavailable={() => {
+                setWebglFailed(true);
+                setMapMode("osm");
+              }}
             />
           </div>
         ) : (
@@ -148,6 +156,11 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
               selectedId={selectedSlug}
               onSelectLandmark={handleSelectLandmark}
             />
+            {webglFailed && (
+              <p className="mw-fallback-note" role="status">
+                อุปกรณ์นี้ไม่รองรับแผนที่ 3 มิติ จึงแสดงแผนที่ 2 มิติแทน
+              </p>
+            )}
           </div>
         )}
 

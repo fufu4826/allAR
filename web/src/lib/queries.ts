@@ -3,7 +3,7 @@ import "server-only";
 import { asc, eq } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
-import { communities, collections, items, galleryImages } from "@/db/schema";
+import { communities, collections, items } from "@/db/schema";
 import type { Community, Item } from "@/lib/types";
 
 export async function getCommunities(): Promise<Community[]> {
@@ -25,7 +25,7 @@ export async function getCommunities(): Promise<Community[]> {
       position: [Number(community.lat), Number(community.lng)], color: community.color,
       cover: community.coverPath, placeholder: !community.isPublished,
       collections: cols.map((col) => ({ id: col.id, name: col.name, description: col.description, image: col.imagePath })),
-      items: content.map((item) => ({ id: item.id, collectionId: item.collectionId, name: item.name, description: item.description, model: item.modelPath, thumbnail: item.thumbnailPath, audio: item.audioPath })),
+      items: content.map((item) => ({ id: item.id, collectionId: item.collectionId, name: item.name, description: item.description, model: item.modelPath, usdz: item.usdzPath, thumbnail: item.thumbnailPath, audio: item.audioPath })),
       recommended: content.filter((item) => item.isFeatured).map((item) => item.id),
     };
   });
@@ -58,18 +58,4 @@ export async function getSearchIndex() {
   cacheTag("content");
   cacheLife("hours");
   return (await getCommunities()).flatMap((community) => community.items.map((item) => ({ ...item, communitySlug: community.slug, communityName: community.shortName })));
-}
-
-export async function getFeaturedItems(limit: number) {
-  "use cache";
-  cacheTag("content");
-  cacheLife("hours");
-  return (await getCommunities()).flatMap((community) => community.items.filter((item) => community.recommended.includes(item.id)).map((item) => ({ ...item, communitySlug: community.slug, communityName: community.shortName }))).slice(0, Math.max(0, limit));
-}
-
-export async function getPublishedGallery() {
-  "use cache";
-  cacheTag("content");
-  cacheLife("hours");
-  return db.select().from(galleryImages).where(eq(galleryImages.isPublished, true)).orderBy(asc(galleryImages.sortOrder));
 }

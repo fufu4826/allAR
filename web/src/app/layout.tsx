@@ -6,13 +6,16 @@ import { siteDescription, siteOpenGraph, siteTitle } from "@/content/seo";
 const prompt = Prompt({
   variable: "--font-prompt",
   subsets: ["thai", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  // Only the weights the pages use; each one is two preloaded files (Thai + Latin).
+  weight: ["400", "500", "600", "700"],
 });
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   weight: ["500", "700"],
+  // Small English labels only: loaded when a page shows one, not preloaded on every page.
+  preload: false,
 });
 
 // Phu Phan pages use the fonts of the original Phu Phan AR site (see phuphan-theme.css).

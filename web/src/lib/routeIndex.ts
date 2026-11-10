@@ -16,7 +16,7 @@ function pool() {
   return globalForIndex.routeIndexPool;
 }
 
-type Index = { communities: Set<string>; items: Set<string>; news: Set<string>; loadedAt: number };
+type Index = { communities: Set<string>; items: Set<string>; loadedAt: number };
 
 const MAX_AGE_MS = 60_000; // admin edits show up within a minute
 const MIN_RELOAD_MS = 5_000; // a miss reloads at most this often, so new content is found quickly
@@ -27,20 +27,18 @@ let loading: Promise<Index> | null = null;
 async function loadIndex(): Promise<Index> {
   type Row = mysql.RowDataPacket & { slug: string; id: string };
   const db = pool();
-  const [[communityRows], [itemRows], [newsRows]] = await Promise.all([
+  const [[communityRows], [itemRows]] = await Promise.all([
     // Same rules as the pages: every community has a page (unpublished ones show a placeholder),
-    // items only when published and in a published community, news only when published.
+    // items only when published and in a published community.
     db.query<Row[]>("SELECT slug FROM communities"),
     db.query<Row[]>(
       "SELECT c.slug, i.id FROM items i JOIN collections col ON col.id = i.collection_id " +
         "JOIN communities c ON c.id = col.community_id WHERE i.is_published = 1 AND c.is_published = 1",
     ),
-    db.query<Row[]>("SELECT id FROM news WHERE is_published = 1"),
   ]);
   return {
     communities: new Set(communityRows.map((r) => r.slug)),
     items: new Set(itemRows.map((r) => `${r.slug}/${r.id}`)),
-    news: new Set(newsRows.map((r) => r.id)),
     loadedAt: Date.now(),
   };
 }
@@ -58,8 +56,7 @@ async function getIndex(force = false): Promise<Index> {
 
 function has(idx: Index, route: ContentRoute) {
   if (route.kind === "community") return idx.communities.has(route.slug);
-  if (route.kind === "item") return idx.items.has(`${route.slug}/${route.itemId}`);
-  return idx.news.has(route.id);
+  return idx.items.has(`${route.slug}/${route.itemId}`);
 }
 
 /** True if the content exists, false if it does not. Throws if the database cannot be read. */

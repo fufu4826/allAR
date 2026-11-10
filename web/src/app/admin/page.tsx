@@ -74,12 +74,6 @@ async function Dashboard() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
-            href="/admin/communities/new"
-            className="rounded-full bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-dark"
-          >
-            + เพิ่มชุมชน
-          </Link>
-          <Link
             href="/admin/items/new"
             className="rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm hover:border-brand hover:text-brand"
           >

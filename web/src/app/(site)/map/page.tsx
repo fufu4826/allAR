@@ -44,5 +44,10 @@ async function MapPageContent() {
     })),
   );
 
-  return <MapWorkstation landmarks={landmarks} />;
+  return (
+    <>
+      <h1 className="sr-only">แผนที่ 3 มิติ 5 แหล่งเรียนรู้สำคัญ จังหวัดสกลนคร</h1>
+      <MapWorkstation landmarks={landmarks} />
+    </>
+  );
 }

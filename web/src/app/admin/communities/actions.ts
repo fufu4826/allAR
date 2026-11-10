@@ -1,10 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { and, eq, inArray, ne } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidateTag, updateTag } from "next/cache";
 import { db } from "@/db";
-import { collections, communities, items } from "@/db/schema";
+import { communities } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { deleteUpload, saveUpload, UploadError } from "@/lib/uploads";
@@ -94,92 +94,14 @@ function validateCommunityData(formData: FormData) {
   };
 }
 
-export async function createCommunityAction(
-  _prevState: CommunityActionState,
-  formData: FormData
-): Promise<CommunityActionState> {
-  const admin = await requireAdmin();
-  const validation = validateCommunityData(formData);
-
-  if (!validation.isValid) {
-    return { fieldErrors: validation.fieldErrors, error: "กรุณาตรวจสอบข้อมูลที่กรอก" };
-  }
-
-  const { data } = validation;
-
-  // Check unique slug
-  const [existingSlug] = await db
-    .select({ id: communities.id })
-    .from(communities)
-    .where(eq(communities.slug, data.slug))
-    .limit(1);
-
-  if (existingSlug) {
-    return {
-      fieldErrors: { slug: "สลักนี้ถูกใช้งานแล้ว กรุณาใช้ชื่อสลักอื่น" },
-      error: "สลัก (Slug) ซ้ำกับชุมชนอื่น",
-    };
-  }
-
-  const coverFile = formData.get("coverImage");
-  let coverPath: string | null = null;
-
-  try {
-    if (coverFile instanceof File && coverFile.size > 0) {
-      coverPath = await saveUpload(coverFile, "image");
-    }
-
-    const id = crypto.randomUUID().replaceAll("-", "");
-
-    await db.insert(communities).values({
-      id,
-      name: data.name,
-      shortName: data.shortName,
-      englishName: data.englishName,
-      tagline: data.tagline,
-      tags: data.tags,
-      theme: data.theme,
-      slug: data.slug,
-      location: data.location,
-      description: data.description,
-      lat: data.lat,
-      lng: data.lng,
-      color: data.color,
-      coverPath,
-      sortOrder: data.sortOrder,
-      isPublished: data.isPublished,
-    });
-
-    await audit(admin.id, "create", "community", id, { name: data.name, slug: data.slug });
-    revalidateTag("content", { expire: 0 });
-    updateTag("content");
-  } catch (error) {
-    if (coverPath) {
-      await deleteUpload(coverPath).catch(() => {});
-    }
-    if (error instanceof UploadError) {
-      return { error: error.message };
-    }
-    console.error("Create community error:", error);
-    return { error: "เกิดข้อผิดพลาดในการสร้างชุมชน กรุณาลองใหม่อีกครั้ง" };
-  }
-
-  redirect("/admin/communities");
-}
-
+// The site is fixed at the five learning sites of the project: there is no action to add or
+// delete one, and a site's slug (its public URL, theme and map pin key) cannot be changed.
 export async function updateCommunityAction(
   id: string,
   _prevState: CommunityActionState,
   formData: FormData
 ): Promise<CommunityActionState> {
   const admin = await requireAdmin();
-  const validation = validateCommunityData(formData);
-
-  if (!validation.isValid) {
-    return { fieldErrors: validation.fieldErrors, error: "กรุณาตรวจสอบข้อมูลที่กรอก" };
-  }
-
-  const { data } = validation;
 
   const [existing] = await db
     .select()
@@ -191,21 +113,15 @@ export async function updateCommunityAction(
     return { error: "ไม่พบข้อมูลชุมชนที่ต้องการแก้ไข" };
   }
 
-  // Check slug uniqueness if changed
-  if (data.slug !== existing.slug) {
-    const [slugConflict] = await db
-      .select({ id: communities.id })
-      .from(communities)
-      .where(and(eq(communities.slug, data.slug), ne(communities.id, id)))
-      .limit(1);
+  // The slug is fixed: whatever the form sends, keep the stored one.
+  formData.set("slug", existing.slug);
+  const validation = validateCommunityData(formData);
 
-    if (slugConflict) {
-      return {
-        fieldErrors: { slug: "สลักนี้ถูกใช้งานแล้ว กรุณาใช้ชื่อสลักอื่น" },
-        error: "สลัก (Slug) ซ้ำกับชุมชนอื่น",
-      };
-    }
+  if (!validation.isValid) {
+    return { fieldErrors: validation.fieldErrors, error: "กรุณาตรวจสอบข้อมูลที่กรอก" };
   }
+
+  const { data } = validation;
 
   const coverFile = formData.get("coverImage");
   let coverPath = existing.coverPath;
@@ -255,73 +171,6 @@ export async function updateCommunityAction(
     }
     console.error("Update community error:", error);
     return { error: "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง" };
-  }
-
-  redirect("/admin/communities");
-}
-
-export async function deleteCommunityAction(id: string): Promise<{ error?: string }> {
-  const admin = await requireAdmin();
-
-  const [existing] = await db
-    .select()
-    .from(communities)
-    .where(eq(communities.id, id))
-    .limit(1);
-
-  if (!existing) {
-    return { error: "ไม่พบข้อมูลชุมชนที่ต้องการลบ" };
-  }
-
-  try {
-    // Find all collections
-    const colRows = await db
-      .select({ id: collections.id, imagePath: collections.imagePath })
-      .from(collections)
-      .where(eq(collections.communityId, id));
-
-    const colIds = colRows.map((c) => c.id);
-
-    // Find all items
-    const itemRows =
-      colIds.length > 0
-        ? await db
-            .select({
-              modelPath: items.modelPath,
-              usdzPath: items.usdzPath,
-              thumbnailPath: items.thumbnailPath,
-              audioPath: items.audioPath,
-            })
-            .from(items)
-            .where(inArray(items.collectionId, colIds))
-        : [];
-
-    const filesToDelete: string[] = [];
-    if (existing.coverPath) filesToDelete.push(existing.coverPath);
-    for (const c of colRows) {
-      if (c.imagePath) filesToDelete.push(c.imagePath);
-    }
-    for (const it of itemRows) {
-      if (it.modelPath) filesToDelete.push(it.modelPath);
-      if (it.usdzPath) filesToDelete.push(it.usdzPath);
-      if (it.thumbnailPath) filesToDelete.push(it.thumbnailPath);
-      if (it.audioPath) filesToDelete.push(it.audioPath);
-    }
-
-    // Delete DB row (cascades in DB to collections and items)
-    await db.delete(communities).where(eq(communities.id, id));
-
-    // Delete files after DB delete succeeds
-    for (const filePath of filesToDelete) {
-      await deleteUpload(filePath).catch(() => {});
-    }
-
-    await audit(admin.id, "delete", "community", id, { name: existing.name });
-    revalidateTag("content", { expire: 0 });
-    updateTag("content");
-  } catch (error) {
-    console.error("Delete community error:", error);
-    return { error: "เกิดข้อผิดพลาดในการลบชุมชน" };
   }
 
   redirect("/admin/communities");

@@ -2,8 +2,7 @@
 
 export type ContentRoute =
   | { kind: "community"; slug: string }
-  | { kind: "item"; slug: string; itemId: string }
-  | { kind: "news"; id: string };
+  | { kind: "item"; slug: string; itemId: string };
 
 const SEGMENT = /^[^/]+$/;
 
@@ -19,6 +18,5 @@ export function parseContentRoute(pathname: string): ContentRoute | null {
   if (parts.some((p) => !SEGMENT.test(p))) return null;
   if (parts[0] === "c" && parts.length === 2) return { kind: "community", slug: parts[1] };
   if (parts[0] === "c" && parts.length === 3) return { kind: "item", slug: parts[1], itemId: parts[2] };
-  if (parts[0] === "news" && parts.length === 2) return { kind: "news", id: parts[1] };
   return null;
 }

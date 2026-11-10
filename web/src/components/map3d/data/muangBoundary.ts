@@ -1,6 +1,5 @@
 // อำเภอเมืองสกลนคร boundary in scene units ([x, y], z = -y), same projection as sakonBoundary.ts.
-// Source: มิตรเอิร์ธ (mitrearth.org, Department of Geology, Chulalongkorn University),
-// "57 District SAKON NAKHON - mitrearth.kmz"; for education, not for commercial use.
+// District boundary from a public educational map layer (KMZ); for education, not for commercial use.
 // Simplified with Douglas-Peucker (0.012 scene units, about 30 m).
 export const MUANG_BOUNDARY_GEO: [number, number][] = [
   [9.3683, -1.9827],

@@ -4,7 +4,6 @@ import { asc } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/db";
 import { collections, communities, items } from "@/db/schema";
-import DeleteCommunityButton from "./DeleteCommunityButton";
 
 async function CommunitiesList() {
   await requireAdmin();
@@ -31,15 +30,9 @@ async function CommunitiesList() {
         <div>
           <h1 className="text-2xl font-bold text-ink sm:text-3xl">จัดการชุมชน</h1>
           <p className="text-sm text-muted">
-            ชุมชนทั้งหมด {communitiesWithCounts.length} แห่งในระบบ
+            ชุมชนทั้งหมด {communitiesWithCounts.length} แห่งในระบบ (จำนวนแหล่งเรียนรู้คงที่ตามโครงการ เพิ่มหรือลบไม่ได้)
           </p>
         </div>
-        <Link
-          href="/admin/communities/new"
-          className="inline-flex items-center justify-center rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-dark"
-        >
-          + เพิ่มชุมชนใหม่
-        </Link>
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-sm">
@@ -58,7 +51,7 @@ async function CommunitiesList() {
             {communitiesWithCounts.length === 0 ? (
               <tr>
                 <td colSpan={6} className="py-8 text-center text-muted">
-                  ยังไม่มีข้อมูลชุมชน กด &quot;+ เพิ่มชุมชนใหม่&quot; เพื่อเริ่มต้น
+                  ยังไม่มีข้อมูลชุมชน
                 </td>
               </tr>
             ) : (
@@ -130,7 +123,6 @@ async function CommunitiesList() {
                       >
                         แก้ไข
                       </Link>
-                      <DeleteCommunityButton id={comm.id} name={comm.name} />
                     </div>
                   </td>
                 </tr>

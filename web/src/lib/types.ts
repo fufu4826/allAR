@@ -4,6 +4,8 @@ export type Item = {
   name: string;
   description: string;
   model: string | null;
+  /** iPhone/iPad AR file (USDZ); optional, the GLB is converted on the device when absent. */
+  usdz?: string | null;
   thumbnail: string | null;
   audio: string | null;
 };

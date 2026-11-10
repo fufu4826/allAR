@@ -6,7 +6,6 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/db";
 import { communities } from "@/db/schema";
 import CommunityForm from "../CommunityForm";
-import DeleteCommunityButton from "../DeleteCommunityButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -45,7 +44,6 @@ async function EditCommunityContent({ params }: PageProps) {
           >
             จัดการแหล่งเรียนรู้ →
           </Link>
-          <DeleteCommunityButton id={community.id} name={community.name} />
         </div>
       </div>
 

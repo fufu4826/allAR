@@ -1,6 +1,6 @@
 import Link from "next/link";
 import SiteIcon from "@/components/SiteIcon";
-import { siteContact as siteContactExport } from "@/content/site";
+import { siteContact as siteContactExport, siteLinks } from "@/content/site";
 
 const defaultContact = {
   organization: "สถาบันภาษา ศิลปะและวัฒนธรรม มหาวิทยาลัยราชภัฏสกลนคร",
@@ -12,13 +12,7 @@ const defaultContact = {
 const siteContact = siteContactExport || defaultContact;
 
 // Same icons as the learning-site pins on the 3D map.
-const footerSites = [
-  { href: "/c/tharae", slug: "tharae", name: "อาสนวิหารอัครเทวดามีคาแอล" },
-  { href: "/c/watklang", slug: "watklang", name: "พิพิธภัณฑ์วัดกลางศรีเชียงใหม่" },
-  { href: "/c/watnuea", slug: "watnuea", name: "พิพิธภัณฑ์วัดมหาพรหมโพธิราช" },
-  { href: "/c/nonhom", slug: "nonhom", name: "แหล่งเรียนรู้ชุมชนบ้านโนนหอม" },
-  { href: "/c/phuphan", slug: "phuphan", name: "ศูนย์ศึกษาการพัฒนาภูพานฯ" },
-];
+const footerSites = siteLinks;
 
 export default function SiteFooter() {
   return (

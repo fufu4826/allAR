@@ -45,9 +45,9 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
 
   return (
     <div className={`theme-${theme}`} data-community={theme} data-theme={theme}>
-      <div className="community-container" style={{ padding: "40px 0 80px" }}>
-        {/* Breadcrumb */}
-        <p style={{ fontSize: "0.85rem", color: "var(--slate-500)", marginBottom: "24px" }}>
+      <div className="community-container item-page" style={{ padding: "40px 0 80px" }}>
+        {/* Breadcrumb: the full trail on wide screens, one back link on phones (see community.css) */}
+        <p className="item-crumb" style={{ fontSize: "0.85rem", color: "var(--slate-500)", marginBottom: "24px" }}>
           <Link href="/" style={{ color: "var(--accent)", fontWeight: 500 }}>
             หน้าแรก
           </Link>
@@ -67,6 +67,10 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
           <span>{item.name}</span>
         </p>
 
+        <Link href={`/c/${community.slug}#models`} className="item-back">
+          <i className="fa-solid fa-arrow-left" aria-hidden="true"></i> {community.shortName}
+        </Link>
+
         <div
           style={{
             display: "grid",
@@ -77,6 +81,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
         >
           {/* Model / 3D Viewer */}
           <div
+            className="item-viewer-card"
             style={{
               background: "white",
               borderRadius: "20px",
@@ -86,7 +91,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
             }}
           >
             {item.model ? (
-              <div style={{ width: "100%", height: "450px" }}>
+              <div style={{ width: "100%" }}>
                 <ModelViewer src={item.model} iosSrc={item.usdz} poster={item.thumbnail} alt={item.name} />
               </div>
             ) : item.thumbnail ? (
@@ -135,7 +140,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
                 {collection.name}
               </span>
             )}
-            <h1 style={{ fontSize: "2rem", fontWeight: 700, margin: "0 0 16px", color: "var(--ink)" }}>
+            <h1 className="item-title" style={{ fontSize: "2rem", fontWeight: 700, margin: "0 0 16px", color: "var(--ink)" }}>
               {item.name}
             </h1>
 

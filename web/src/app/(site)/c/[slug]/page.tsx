@@ -18,6 +18,8 @@ export function generateStaticParams() {
 // Tab title and share preview (LINE, Facebook) carry the site's own name and cover photo.
 export async function generateMetadata({ params }: PageProps<"/c/[slug]">): Promise<Metadata> {
   const { slug } = await params;
+  // Request time only: the image is built without a database.
+  await connection();
   const community = await getCommunityWithContent(slug);
   if (!community) return {};
   return pageMetadata(community.name, community.tagline || community.description, community.cover);

@@ -3,16 +3,17 @@ import type { NextConfig } from "next";
 // Content-Security-Policy: everything is served from this site; the only outside source is the
 // OpenStreetMap tiles of the 2D map. Next.js and model-viewer need inline scripts/styles, blob:
 // (model textures, workers) and WebAssembly (the mesh/texture decoders in /public/decoders).
+// Cloudflare Web Analytics (the beacon Cloudflare adds when the site sits behind it) is allowed too.
 // Development also needs eval and a websocket for hot reload.
 const dev = process.env.NODE_ENV !== "production";
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:${dev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://static.cloudflareinsights.com${dev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.tile.openstreetmap.org",
   "font-src 'self' data:",
   "media-src 'self' blob:",
-  `connect-src 'self' data: blob:${dev ? " ws: wss:" : ""}`,
+  `connect-src 'self' data: blob: https://cloudflareinsights.com${dev ? " ws: wss:" : ""}`,
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",

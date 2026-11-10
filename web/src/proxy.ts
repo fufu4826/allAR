@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { parseContentRoute } from "@/lib/contentRoute";
 import { contentRouteExists } from "@/lib/routeIndex";
 
-// Return a real 404 for unknown communities, items and news before the page starts streaming.
+// Return a real 404 for unknown communities and items before the page starts streaming.
 export async function proxy(request: NextRequest) {
   const route = parseContentRoute(request.nextUrl.pathname);
   if (!route) return NextResponse.next();

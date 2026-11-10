@@ -1,5 +1,25 @@
 import type { NextConfig } from "next";
 
+// Content-Security-Policy: everything is served from this site; the only outside source is the
+// OpenStreetMap tiles of the 2D map. Next.js and model-viewer need inline scripts/styles, blob:
+// (model textures, workers) and WebAssembly (the mesh/texture decoders in /public/decoders).
+// Development also needs eval and a websocket for hot reload.
+const dev = process.env.NODE_ENV !== "production";
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:${dev ? " 'unsafe-eval'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://*.tile.openstreetmap.org",
+  "font-src 'self' data:",
+  "media-src 'self' blob:",
+  `connect-src 'self' data: blob:${dev ? " ws: wss:" : ""}`,
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join("; ");
+
 const nextConfig: NextConfig = {
   output: "standalone",
   // Do not advertise the framework in an X-Powered-By header.
@@ -11,6 +31,9 @@ const nextConfig: NextConfig = {
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         { key: "X-Frame-Options", value: "DENY" },
         { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=()" },
+        { key: "Content-Security-Policy", value: csp },
+        // Browsers apply this only over HTTPS. No includeSubDomains: other services share the parent domain.
+        { key: "Strict-Transport-Security", value: "max-age=31536000" },
       ] },
       { source: "/admin/:path*", headers: [
         { key: "Cache-Control", value: "no-store" },

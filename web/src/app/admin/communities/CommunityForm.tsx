@@ -2,10 +2,10 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
-import { createCommunityAction, updateCommunityAction, CommunityActionState } from "./actions";
+import { updateCommunityAction, CommunityActionState } from "./actions";
 
 interface CommunityFormProps {
-  initialData?: {
+  initialData: {
     id: string;
     name: string;
     shortName: string;
@@ -33,10 +33,7 @@ const labelClass = "block text-sm font-medium text-ink";
 const errorClass = "mt-1 text-xs text-red-600";
 
 export default function CommunityForm({ initialData }: CommunityFormProps) {
-  const isEditing = !!initialData;
-  const boundAction = isEditing
-    ? updateCommunityAction.bind(null, initialData.id)
-    : createCommunityAction;
+  const boundAction = updateCommunityAction.bind(null, initialData.id);
 
   const [state, formAction, pending] = useActionState<CommunityActionState, FormData>(
     boundAction,
@@ -115,18 +112,18 @@ export default function CommunityForm({ initialData }: CommunityFormProps) {
         {/* Slug */}
         <div>
           <label className={labelClass}>
-            สลัก URL (Slug) <span className="text-red-500">*</span>
+            สลัก URL (Slug)
             <input
               name="slug"
-              defaultValue={initialData?.slug ?? ""}
-              required
-              maxLength={64}
-              pattern="[a-z0-9\-]+"
-              placeholder="เช่น ban-chiang (a-z, 0-9, -)"
-              className={inputClass}
+              defaultValue={initialData.slug}
+              readOnly
+              aria-readonly="true"
+              className={`${inputClass} cursor-not-allowed bg-paper text-muted`}
             />
           </label>
-          <p className="mt-1 text-xs text-muted">ใช้ใน URL ของเว็บไซต์ เช่น /c/ban-chiang</p>
+          <p className="mt-1 text-xs text-muted">
+            ที่อยู่ของหน้าเว็บ /c/{initialData.slug} แก้ไขไม่ได้ เพราะลิงก์ ธีม และหมุดบนแผนที่ผูกกับค่านี้
+          </p>
           {state?.fieldErrors?.slug && <p className={errorClass}>{state.fieldErrors.slug}</p>}
         </div>
 
@@ -317,7 +314,7 @@ export default function CommunityForm({ initialData }: CommunityFormProps) {
           disabled={pending}
           className="rounded-full bg-brand px-6 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-brand-dark disabled:opacity-60"
         >
-          {pending ? "กำลังบันทึกข้อมูล…" : isEditing ? "บันทึกการแก้ไข" : "สร้างชุมชน"}
+          {pending ? "กำลังบันทึกข้อมูล…" : "บันทึกการแก้ไข"}
         </button>
       </div>
     </form>

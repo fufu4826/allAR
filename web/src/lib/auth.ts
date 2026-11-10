@@ -63,7 +63,7 @@ export async function login(username: string, password: string, ip: string, user
   username = username.slice(0, 64); ip = ip.slice(0, 45); void userAgent;
   const since = new Date(Date.now() - 15 * 60 * 1000);
   const attempts = await db.select({ username: loginAttempts.username, ip: loginAttempts.ip, total: count() }).from(loginAttempts).where(and(eq(loginAttempts.success, false), gte(loginAttempts.createdAt, since), or(eq(loginAttempts.username, username), eq(loginAttempts.ip, ip)))).groupBy(loginAttempts.username, loginAttempts.ip);
-  const locked = attempts.reduce((n, a) => n + (a.username === username ? a.total : 0), 0) >= 5 || attempts.reduce((n, a) => n + (a.ip === ip ? a.total : 0), 0) >= 20;
+  const locked = isLockedOut(attempts, username, ip);
   const [admin] = await db.select().from(admins).where(eq(admins.username, username)).limit(1);
   const valid = await verifyPassword(admin?.passwordHash ?? await dummyHash, password);
   const success = !locked && !!admin?.isActive && valid;
@@ -73,4 +73,18 @@ export async function login(username: string, password: string, ip: string, user
   await db.update(admins).set({ lastLoginAt: new Date() }).where(eq(admins.id, admin.id));
   await createSession(admin.id); await audit(admin.id, "login", "admin", admin.id);
   return { ok: true };
+}
+
+/**
+ * Lockout over the failed attempts of the last 15 minutes.
+ * - 5 from the same address for the same username: that person is guessing.
+ * - 20 from one address across usernames: that address is trying many accounts.
+ * - 50 for one username from any addresses: a spread-out attack on one account.
+ * The first rule is per address on purpose, so someone who knows an admin's username cannot
+ * lock the real admin out from another network with five wrong passwords.
+ * (Without TRUST_PROXY every request has the same address and the first rule is per username.)
+ */
+export function isLockedOut(attempts: { username: string; ip: string; total: number }[], username: string, ip: string) {
+  const sum = (keep: (a: { username: string; ip: string }) => boolean) => attempts.reduce((n, a) => n + (keep(a) ? a.total : 0), 0);
+  return sum((a) => a.username === username && a.ip === ip) >= 5 || sum((a) => a.ip === ip) >= 20 || sum((a) => a.username === username) >= 50;
 }

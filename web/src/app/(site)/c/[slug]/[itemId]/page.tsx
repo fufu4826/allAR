@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
@@ -5,9 +6,18 @@ import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import ModelViewer from "@/components/ModelViewer";
 import { getCommunityWithContent, getItem } from "@/lib/queries";
+import { pageMetadata } from "@/content/seo";
 
 export function generateStaticParams() {
   return [{ slug: "__placeholder__", itemId: "__placeholder__" }];
+}
+
+// Tab title and share preview (LINE, Facebook) carry the item's own name and picture.
+export async function generateMetadata({ params }: PageProps<"/c/[slug]/[itemId]">): Promise<Metadata> {
+  const { slug, itemId } = await params;
+  const [community, item] = await Promise.all([getCommunityWithContent(slug), getItem(slug, itemId)]);
+  if (!community || !item) return {};
+  return pageMetadata(`${item.name} · ${community.shortName}`, item.description, item.thumbnail || community.cover);
 }
 
 export default function ItemPage({ params }: PageProps<"/c/[slug]/[itemId]">) {
@@ -75,7 +85,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
           >
             {item.model ? (
               <div style={{ width: "100%", height: "450px" }}>
-                <ModelViewer src={item.model} poster={item.thumbnail} alt={item.name} />
+                <ModelViewer src={item.model} iosSrc={item.usdz} poster={item.thumbnail} alt={item.name} />
               </div>
             ) : item.thumbnail ? (
               <figure style={{ margin: 0 }}>
@@ -127,8 +137,8 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
               {item.name}
             </h1>
 
-            {/* Audio guide */}
-            {item.audio ? (
+            {/* Audio guide: shown only when the item has a recording */}
+            {item.audio && (
               <div
                 style={{
                   margin: "20px 0",
@@ -143,19 +153,6 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
                 </p>
                 <audio controls preload="none" src={item.audio} style={{ width: "100%" }} />
               </div>
-            ) : (
-              <p
-                style={{
-                  margin: "20px 0",
-                  padding: "14px 20px",
-                  border: "1px dashed var(--slate-300)",
-                  borderRadius: "14px",
-                  fontSize: "0.85rem",
-                  color: "var(--slate-500)",
-                }}
-              >
-                ยังไม่มีเสียงบรรยาย
-              </p>
             )}
 
             {/* Description */}

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
@@ -8,9 +9,18 @@ import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
 import { getCommunityWithContent } from "@/lib/queries";
 import SiteName from "@/components/SiteName";
 import SiteIcon from "@/components/SiteIcon";
+import { pageMetadata } from "@/content/seo";
 
 export function generateStaticParams() {
   return [{ slug: "__placeholder__" }];
+}
+
+// Tab title and share preview (LINE, Facebook) carry the site's own name and cover photo.
+export async function generateMetadata({ params }: PageProps<"/c/[slug]">): Promise<Metadata> {
+  const { slug } = await params;
+  const community = await getCommunityWithContent(slug);
+  if (!community) return {};
+  return pageMetadata(community.name, community.tagline || community.description, community.cover);
 }
 
 export default function CommunityPage({ params }: PageProps<"/c/[slug]">) {
@@ -129,12 +139,12 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
       </>
       )}
 
-      {/* Section 04: 3D & AR Collection */}
+      {/* Section 03: 3D & AR Collection */}
       <section id="models" className="community-section model-section">
         <div className="community-container">
           <div className="section-top">
             <div>
-              <p className="eyebrow">04 / 3D &amp; AR COLLECTION</p>
+              <p className="eyebrow">03 / 3D &amp; AR COLLECTION</p>
               <h2>หมวดหมู่โมเดล 3D AR</h2>
               <p className="section-desc">เลือกหมวดหมู่เพื่อสำรวจโมเดลจากคลัง {community.shortName}</p>
             </div>

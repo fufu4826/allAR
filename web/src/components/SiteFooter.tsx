@@ -72,8 +72,8 @@ export default function SiteFooter() {
                 ilac.snru.ac.th
               </a>
             </p>
-            <p><i className="fa-solid fa-envelope"></i> {siteContact.email}</p>
-            <p><i className="fa-solid fa-phone"></i> {siteContact.phone}</p>
+            <p><i className="fa-solid fa-envelope"></i> <a href={`mailto:${siteContact.email}`}>{siteContact.email}</a></p>
+            <p><i className="fa-solid fa-phone"></i> <a href={`tel:${siteContact.phone.replace(/[^0-9+]/g, "")}`}>{siteContact.phone}</a></p>
             <p>
               <i className="fa-solid fa-building-columns"></i>{" "}
               <span>
@@ -85,10 +85,14 @@ export default function SiteFooter() {
             <p className="text-xs text-slate-500 leading-normal"><i className="fa-solid fa-location-dot"></i> {siteContact.address}</p>
           </div>
           <div className="social-strip">
-            <a href="#" aria-label="Facebook"><i className="fa-brands fa-facebook-f"></i></a>
-            <a href="#" aria-label="GitHub"><i className="fa-brands fa-github"></i></a>
-            <a href="#" aria-label="LinkedIn"><i className="fa-brands fa-linkedin-in"></i></a>
-            <a href="#" aria-label="YouTube"><i className="fa-brands fa-youtube"></i></a>
+            <a
+              href="https://www.facebook.com/ilac.pr.snru?locale=th_TH"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook สถาบันภาษา ศิลปะและวัฒนธรรม"
+            >
+              <i className="fa-brands fa-facebook-f"></i>
+            </a>
           </div>
         </div>
       </div>

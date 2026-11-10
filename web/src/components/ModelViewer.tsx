@@ -8,6 +8,7 @@ declare module "react" {
     interface IntrinsicElements {
       "model-viewer": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         src?: string;
+        "ios-src"?: string;
         poster?: string;
         alt?: string;
         ar?: boolean;
@@ -23,7 +24,18 @@ declare module "react" {
   }
 }
 
-export default function ModelViewer({ src, poster, alt }: { src: string; poster?: string | null; alt: string }) {
+export default function ModelViewer({
+  src,
+  iosSrc,
+  poster,
+  alt,
+}: {
+  src: string;
+  /** USDZ for AR Quick Look on iPhone/iPad; without it the GLB is converted on the device. */
+  iosSrc?: string | null;
+  poster?: string | null;
+  alt: string;
+}) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -44,6 +56,7 @@ export default function ModelViewer({ src, poster, alt }: { src: string; poster?
       {ready ? (
         <model-viewer
           src={src}
+          ios-src={iosSrc ?? undefined}
           poster={poster ?? undefined}
           alt={alt}
           ar
@@ -63,7 +76,16 @@ export default function ModelViewer({ src, poster, alt }: { src: string; poster?
           </button>
         </model-viewer>
       ) : (
-        <div className="grid size-full place-items-center text-muted">กำลังโหลดโมเดล 3D…</div>
+        // The viewer library is still downloading: show the item's picture instead of an empty box.
+        <div className="relative grid size-full place-items-center text-muted">
+          {poster && (
+            // eslint-disable-next-line @next/next/no-img-element -- served from /uploads, already sized
+            <img src={poster} alt={alt} className="absolute inset-0 size-full object-contain" />
+          )}
+          <span className={poster ? "absolute bottom-4 rounded-full bg-white/85 px-4 py-1.5 text-sm shadow" : ""}>
+            กำลังโหลดโมเดล 3D…
+          </span>
+        </div>
       )}
       <p className="pointer-events-none absolute right-3 top-3 rounded-full bg-white/80 px-3 py-1 text-xs text-muted">
         ลากเพื่อหมุน · ถ่างนิ้วเพื่อซูม

@@ -6,7 +6,6 @@ const links = [
   { href: "/admin", label: "แดชบอร์ด" },
   { href: "/admin/communities", label: "ชุมชน" },
   { href: "/admin/items", label: "ชิ้นงาน" },
-  { href: "/admin/content", label: "แกลเลอรี" },
   { href: "/admin/admins", label: "ผู้ดูแล" },
   { href: "/admin/audit", label: "บันทึกการใช้งาน" },
 ];

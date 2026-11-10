@@ -46,11 +46,11 @@ test("in-app browser: escape links keep the page and its query", () => {
   );
 });
 
-test("content routes: only community, item and news paths need a database check", () => {
+test("content routes: only community and item paths need a database check", () => {
   assert.deepEqual(parseContentRoute("/c/nonhom"), { kind: "community", slug: "nonhom" });
   assert.deepEqual(parseContentRoute("/c/nonhom/"), { kind: "community", slug: "nonhom" });
   assert.deepEqual(parseContentRoute("/c/nonhom/abc123"), { kind: "item", slug: "nonhom", itemId: "abc123" });
-  assert.deepEqual(parseContentRoute("/news/n1"), { kind: "news", id: "n1" });
+  assert.equal(parseContentRoute("/news/n1"), null);
   assert.equal(parseContentRoute("/c"), null);
   assert.equal(parseContentRoute("/map"), null);
   assert.equal(parseContentRoute("/c/a/b/c"), null);

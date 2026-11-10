@@ -157,12 +157,18 @@ export interface Sakon3DMapCanvasProps {
   /** Holder for the selected site's card. The scene moves it every frame to the selected label,
    *  so the card grows out of the label and follows it; the label itself is hidden meanwhile. */
   cardAnchorRef?: React.RefObject<HTMLDivElement | null>;
+  /** Called when the browser cannot create a WebGL context (old phone, GPU blocked, in-app browser). */
+  onWebglUnavailable?: () => void;
 }
 
-export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandmark, className, cardAnchorRef }: Sakon3DMapCanvasProps) {
+export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandmark, className, cardAnchorRef, onWebglUnavailable }: Sakon3DMapCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const landmarksRef = useRef<MapLandmark[]>(landmarks);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const onWebglUnavailableRef = useRef(onWebglUnavailable);
+  useEffect(() => {
+    onWebglUnavailableRef.current = onWebglUnavailable;
+  }, [onWebglUnavailable]);
 
   const [roadsVisible, setRoadsVisible] = useState<boolean>(true);
   const [texMode, setTexMode] = useState<"cartoon" | "satellite">("cartoon");
@@ -320,11 +326,19 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     // Phones and tablets: no shadows, no MSAA, lower pixel ratio, to keep mid-range devices smooth.
     const lowPower = window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 768;
 
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !lowPower,
-      alpha: true,
-      powerPreference: lowPower ? "default" : "high-performance",
-    });
+    // No WebGL (old phone, GPU blocked, some in-app browsers): three.js throws here. Tell the
+    // parent, which shows the 2D map instead of leaving a spinner or crashing the page.
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: !lowPower,
+        alpha: true,
+        powerPreference: lowPower ? "default" : "high-performance",
+      });
+    } catch {
+      onWebglUnavailableRef.current?.();
+      return;
+    }
     rendererRef.current = renderer;
     renderer.setClearColor(0x000000, 0);
     renderer.setSize(width, height);

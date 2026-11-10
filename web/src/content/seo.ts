@@ -14,3 +14,18 @@ export const shareImage = {
   height: 630,
   alt: "แหล่งเรียนรู้และพิพิธภัณฑ์ท้องถิ่นจังหวัดสกลนครเสมือนจริง เปิดประตูสู่ 5 แหล่งเรียนรู้ เมืองสกลนคร",
 };
+
+/** Metadata for one page: its own title, a one-line description and, when it has one, its own picture.
+ *  `openGraph` replaces the layout's object as a whole, so the shared fields are repeated here. */
+export function pageMetadata(name: string, text: string | null | undefined, image: string | null | undefined) {
+  const title = `${name} | ${siteTitle}`;
+  const flat = (text ?? "").replace(/\s+/g, " ").trim();
+  const description = flat ? (flat.length > 160 ? `${flat.slice(0, 157)}…` : flat) : siteDescription;
+  const images = image ? [{ url: image, alt: name }] : [shareImage];
+  return {
+    title,
+    description,
+    openGraph: { ...siteOpenGraph, title, description, images },
+    twitter: { card: "summary_large_image" as const, title, description, images: images.map((i) => i.url) },
+  };
+}

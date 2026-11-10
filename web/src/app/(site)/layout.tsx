@@ -5,6 +5,7 @@ import "./community.css";
 import "./collection-browser.css";
 import "./phuphan-theme.css";
 import "./cover.css";
+import "./phone.css";
 
 import type { Metadata } from "next";
 import { headers } from "next/headers";

@@ -9,6 +9,7 @@ import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
 import { getCommunityWithContent } from "@/lib/queries";
 import SiteName from "@/components/SiteName";
 import SiteIcon from "@/components/SiteIcon";
+import StoryText from "@/components/StoryText";
 import { pageMetadata } from "@/content/seo";
 
 export function generateStaticParams() {
@@ -102,7 +103,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
             </h2>
           </div>
           <div>
-            <p className="intro-text">{community.description}</p>
+            <StoryText text={community.description} />
             {community.slug === "phuphan" && (
               <a
                 className="inline-source"

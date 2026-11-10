@@ -1,0 +1,231 @@
+/* ========================================================
+   Phone ergonomics
+   Loaded last (see layout.tsx). Two rules for screens up to 768px:
+   - anything you tap is at least 44px tall;
+   - text you read is at least 14px (small decorative labels: 12px).
+   Selectors start from .site-main / .footer / .navbar so they win over the component
+   stylesheets whatever order those load in. Wide screens are not touched, except for the
+   search filter row and the "show more" button, which are new on every screen.
+   ======================================================== */
+
+/* ---------- Search: filter row and "show more" (all screens) ---------- */
+.search-chips {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 18px;
+  padding-bottom: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.search-chips::-webkit-scrollbar {
+  display: none;
+}
+.search-chip {
+  flex: none;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--slate-300);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--slate-700);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.search-chip.active {
+  border-color: var(--maroon-700);
+  background: var(--maroon-700);
+  color: var(--white);
+}
+.search-more {
+  min-height: 48px;
+  padding: 0 28px;
+  border: 1px solid var(--maroon-700);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--maroon-700);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.search-more:hover {
+  background: var(--maroon-700);
+  color: var(--white);
+}
+
+/* ---------- Pieces that exist only on phones ---------- */
+.item-back,
+.story-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* ---------- Menu bar ---------- */
+  .navbar .logo {
+    min-height: 44px;
+  }
+  .navbar .brand-title {
+    font-size: 0.82rem;
+  }
+
+  /* ---------- Map page ---------- */
+  .site-main .mw-mode-btn,
+  .site-main .mw-layer-btn {
+    min-height: 44px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+  .site-main .mw-icon-btn,
+  .site-main .mw-compass-pill {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .site-main .mw-compass-pill {
+    justify-content: center;
+  }
+  .site-main .mw-hud-close {
+    width: 44px;
+    height: 44px;
+  }
+  .site-main .mw-card-desc,
+  .site-main .mw-hud-desc {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .site-main .mw-gps-link {
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .site-main .mw-ar-btn,
+  .site-main .mw-hud-cta {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+  .site-main .mw-sidebar-sub,
+  .site-main .mw-sidebar-footer,
+  .site-main .mw-ready-pill,
+  .site-main .mw-slide-name,
+  .site-main .mw-slide-count {
+    font-size: 12px;
+  }
+  /* The selected-site card sits above the (now taller) layer buttons. */
+  .site-main .mw-hud-card,
+  .site-main .mw-hud-card--expanded {
+    bottom: 68px;
+  }
+  .site-main .mw-sat-credit {
+    bottom: 70px;
+  }
+
+  /* ---------- Learning-site page ---------- */
+  .site-main .breadcrumb {
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
+  .site-main .cb-tab {
+    min-height: 44px;
+  }
+  .site-main .cb-badge,
+  .site-main .cb-tab-count {
+    font-size: 0.75rem;
+  }
+  .site-main .cb-more {
+    min-height: 44px;
+  }
+  .site-main .model-card small {
+    font-size: 0.875rem;
+  }
+
+  /* A long story is folded to six lines; the button under it opens the rest. */
+  .site-main .intro-text--folded {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
+    overflow: hidden;
+  }
+  .site-main .story-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-top: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ---------- Item page ---------- */
+  .site-main .item-page {
+    padding-top: 12px !important;
+  }
+  /* One back link instead of a three-line trail. */
+  .site-main .item-crumb {
+    display: none;
+  }
+  .site-main .item-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    margin-bottom: 8px;
+    color: var(--accent);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  /* The model fills the card. */
+  .site-main .item-viewer-card {
+    padding: 10px !important;
+    border-radius: 18px !important;
+  }
+  .site-main .item-title {
+    font-size: 1.5rem !important;
+    line-height: 1.4;
+  }
+
+  /* ---------- Footer ---------- */
+  .footer .footer-col ul {
+    gap: 0;
+  }
+  .footer .footer-col ul li a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 0.95rem;
+  }
+  .footer .contact-links p {
+    min-height: 44px;
+    margin-bottom: 0;
+  }
+  .footer .contact-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .footer .social-strip a {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Very narrow phones: the two-line site name still has to clear the menu button. */
+@media (max-width: 400px) {
+  .navbar .brand-title {
+    font-size: 0.8rem;
+  }
+}
+@media (max-width: 370px) {
+  .navbar .brand-title {
+    font-size: 0.75rem;
+  }
+}

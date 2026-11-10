@@ -2144,3 +2144,73 @@ model-viewer {
   .navbar .institution-logo { height: 34px; }
   .navbar .language-logo { width: 36px; }
 }
+
+/* ========================================================
+   Menu: every page from one place
+   ======================================================== */
+/* Wide bar: icons and the site list are for the folded menu only. */
+.nav-icon,
+.nav-sites {
+  display: none;
+}
+
+/* Folded menu (phones and tablets): one full-width row per page, tall enough for a thumb. */
+@media (max-width: 1279px) {
+  .nav-toggle {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .nav-menu {
+    padding: 8px 16px 16px;
+    gap: 0;
+    max-height: calc(100vh - 74px);
+    max-height: calc(100dvh - 74px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .nav-list {
+    gap: 0;
+  }
+  .nav-list li {
+    width: 100%;
+  }
+  .nav-menu .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 8px;
+    font-size: 1rem;
+    white-space: normal;
+    border-radius: var(--radius-sm);
+  }
+  .nav-menu .nav-link:active {
+    background: var(--orange-50, #fff7ed);
+  }
+  .nav-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    flex: none;
+    color: var(--orange-600);
+    font-size: 1rem;
+  }
+  .nav-sites {
+    display: block;
+    margin: 6px 0;
+    padding: 6px 0;
+    border-top: 1px solid var(--slate-200);
+    border-bottom: 1px solid var(--slate-200);
+  }
+  .nav-group-title {
+    display: block;
+    padding: 8px 8px 2px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--slate-500);
+  }
+}

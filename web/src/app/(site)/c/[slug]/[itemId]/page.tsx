@@ -15,6 +15,8 @@ export function generateStaticParams() {
 // Tab title and share preview (LINE, Facebook) carry the item's own name and picture.
 export async function generateMetadata({ params }: PageProps<"/c/[slug]/[itemId]">): Promise<Metadata> {
   const { slug, itemId } = await params;
+  // Request time only: the image is built without a database.
+  await connection();
   const [community, item] = await Promise.all([getCommunityWithContent(slug), getItem(slug, itemId)]);
   if (!community || !item) return {};
   return pageMetadata(`${item.name} · ${community.shortName}`, item.description, item.thumbnail || community.cover);

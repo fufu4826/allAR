@@ -1,4 +1,5 @@
-/* ========================================================
+/* =================================================}
+
    3D & 2D Map Workstation Scoped Styles (Unlayered to override reset)
    ======================================================== */
 
@@ -936,4 +937,38 @@
   font-size: 12.5px;
   font-weight: 500;
   text-align: center;
+}
+
+/* Phones and small tablets: the map fills the screen edge to edge, from under the 75px menu bar
+   to the bottom of the screen (dvh follows the browser bar as it shows/hides). The site list
+   starts below it and keeps its own side margins. */
+@media (max-width: 768px) {
+  .mw-shell {
+    padding: 0 0 20px;
+    gap: 18px;
+    min-height: 0;
+  }
+  .mw-viewport {
+    height: calc(100vh - 75px);
+    height: calc(100dvh - 75px);
+    min-height: 420px;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  .mw-sidebar {
+    width: auto;
+    margin: 0 14px;
+  }
+}
+
+/* Line from a label to its model when the label had to move to stay clear of another one. */
+.mw-pin-leader {
+  position: absolute;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.45);
+  border-radius: 1px;
+  pointer-events: none;
 }

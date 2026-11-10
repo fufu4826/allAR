@@ -832,6 +832,11 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     let disposed = false;
     if (modelCount === 0) setIsLoading(false);
 
+    // Where each site's label points: the centre of the loaded model's footprint, just above its top.
+    // A GLB's origin is often not under the building, and after scaling and rotating the model the
+    // gap shows from some angles, so the label is anchored to the model's real bounds instead.
+    const labelAnchors: Record<string, THREE.Vector3> = {};
+
     sceneLandmarks.forEach((landmark) => {
       const x = (landmark.lon - SAKON_CENTER_LON) * SCALE_LON + (landmark.modelConfig.offset?.x || 0);
       const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
@@ -908,6 +913,12 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
           }
 
           landmarkGroup.add(model);
+          landmarkGroup.updateMatrixWorld(true);
+          const bounds = new THREE.Box3().setFromObject(model);
+          if (!bounds.isEmpty()) {
+            const top = new THREE.Vector3((bounds.min.x + bounds.max.x) / 2, bounds.max.y + 0.15, (bounds.min.z + bounds.max.z) / 2);
+            labelAnchors[landmark.id] = provinceGroup.worldToLocal(top);
+          }
           loadedCount++;
           if (loadedCount >= modelCount) {
             setIsLoading(false);
@@ -929,7 +940,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     let selectedAnchor: { x: number; y: number } | null = null;
     const labelHeights: Record<string, number> = {};
     const compactWidths: Record<string, number> = {};
-    type LabelRect = { id: string; left: number; top: number; w: number; h: number; z: number; selected: boolean };
+    type LabelRect = { id: string; left: number; top: number; w: number; h: number; z: number; selected: boolean; ax: number };
     const labelRects: LabelRect[] = [];
     const camDir = new THREE.Vector3();
 
@@ -988,12 +999,17 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         const pz = exactZ + (lm.modelConfig.offset?.z || 0);
         const elev = getTerrainElev(px, pz);
 
-        tempV.set(px, elev.y + 1.15, pz);
+        const anchor = labelAnchors[lm.id];
+        if (anchor) tempV.copy(anchor);
+        else tempV.set(px, elev.y + 1.15, pz);
         tempV.applyMatrix4(provinceGroup.matrixWorld);
         tempV.project(camera);
 
-        const screenX = (tempV.x * 0.5 + 0.5) * currentWidth + (lm.labelOffset2D?.x || 0);
-        const screenY = (-(tempV.y * 0.5) + 0.5) * currentHeight + (lm.labelOffset2D?.y || 0);
+        // The label sits centred straight above its model at every angle. Fixed screen nudges only
+        // suit one camera angle and drift off the model when the map turns; overlaps are handled by
+        // the collision step below instead.
+        const screenX = (tempV.x * 0.5 + 0.5) * currentWidth;
+        const screenY = (-(tempV.y * 0.5) + 0.5) * currentHeight;
         const visible = tempV.z <= 1.0;
         const zIndex = Math.round((2.0 - tempV.z) * 35);
         const isSelected = selectedIdRef.current === lm.id;
@@ -1004,8 +1020,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
             badgeEl.style.display = "none";
           } else {
             badgeEl.style.display = "block";
-            const anchor = lm.pinAnchor || "center";
-            const anchorFrac = anchor === "left" ? 0.12 : anchor === "right" ? 0.88 : 0.5;
+            const anchorFrac = 0.5;
             // Keep the label inside the canvas on narrow screens. Width is measured once (text never changes).
             let labelWidth = labelWidths[lm.id];
             if (!labelWidth && badgeEl.dataset.compact !== "1") {
@@ -1043,7 +1058,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
               Math.max(margin, currentWidth - labelWidth - margin),
             );
             // Placed after the loop, once every label's position is known (collision avoidance).
-            labelRects.push({ id: lm.id, left, top: screenY - labelHeight, w: labelWidth, h: labelHeight, z: zIndex, selected: isSelected });
+            labelRects.push({ id: lm.id, left, top: screenY - labelHeight, w: labelWidth, h: labelHeight, z: zIndex, selected: isSelected, ax: screenX });
           }
         }
 
@@ -1060,13 +1075,14 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
       }
 
       // 2b. Keep labels from covering each other (matters on phones, where the sites sit close
-      // together on screen). Selected and nearer labels keep their spot; others move up or down
-      // in steps until they are clear. The ground dot always stays at the real GPS position.
+      // together on screen). Selected and nearer labels keep their spot; others move up (or, if
+      // there is no room above, down) in steps until they are clear, and a thin line then joins the
+      // label to its model so it is clear which model it names.
       labelRects.sort((a, b) => Number(b.selected) - Number(a.selected) || b.z - a.z);
       const placedRects: LabelRect[] = [];
       for (const r of labelRects) {
         const step = r.h + 4;
-        const tries = [0, -step, step, -2 * step, 2 * step, -3 * step, 3 * step];
+        const tries = [0, -step, -2 * step, -3 * step, step, 2 * step, 3 * step];
         let top = r.top;
         for (const dy of tries) {
           const t = r.top + dy;
@@ -1085,6 +1101,21 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         if (el) {
           el.style.transform = `translate3d(${r.left}px, ${top + r.h}px, 0) translate(0, -100%) scale(${r.selected ? 1.1 : 1.0})`;
           el.style.zIndex = `${r.selected ? 200 : r.z}`;
+          const leader = el.querySelector<HTMLElement>("[data-leader]");
+          if (leader) {
+            const dy = top - r.top;
+            // Above the model: line from the label's bottom down to the model. Below it: line up.
+            const length = dy < 0 ? -dy : dy - r.h;
+            if (length < 6) {
+              if (leader.style.display !== "none") leader.style.display = "none";
+            } else {
+              leader.style.display = "block";
+              leader.style.left = `${Math.min(Math.max(r.ax - r.left, 8), r.w - 8)}px`;
+              leader.style.height = `${length}px`;
+              leader.style.top = dy < 0 ? "100%" : "auto";
+              leader.style.bottom = dy < 0 ? "auto" : "100%";
+            }
+          }
           // The selected label turns into the card (see cardAnchorRef), so hide it while the card is open.
           const hide = r.selected && !!cardAnchorHolder.current?.current?.firstElementChild;
           if ((el.style.visibility === "hidden") !== hide) el.style.visibility = hide ? "hidden" : "";
@@ -1243,13 +1274,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         {/* Floating Label Badges (Direct GPU translate3d with 0ms delay, rock-solid lock) */}
         {landmarks.map((item) => {
           const isSelected = selectedId === item.id;
-          const anchor = item.pinAnchor || "center";
-          const alignClass =
-            anchor === "left"
-              ? "items-start pl-2"
-              : anchor === "right"
-              ? "items-end pr-2"
-              : "items-center";
+          const alignClass = "items-center";
 
           return (
             <div
@@ -1274,6 +1299,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
                 </div>
                 <div className="w-2.5 h-2.5 bg-white border-r border-b border-slate-200 rotate-45 -mt-1 shadow-sm"></div>
               </div>
+              <span data-leader className="mw-pin-leader" style={{ display: "none" }} aria-hidden="true" />
             </div>
           );
         })}

@@ -329,3 +329,32 @@
     font-size: 0.9rem;
   }
 }
+
+/* Item page on phones: model, then title and audio on the first screen; previous / next last. */
+@media (max-width: 768px) {
+  /* The model column's wrapper steps aside so its two parts can be ordered separately. */
+  .site-main .item-media {
+    display: contents;
+  }
+  .site-main .item-stepper {
+    order: 1;
+    margin-top: 4px;
+  }
+  /* Shorter model box: leaves room for the category, title and audio player below it. */
+  .site-main .item-viewer-card .aspect-square {
+    aspect-ratio: auto;
+    height: clamp(220px, calc(100svh - 440px), 380px);
+  }
+  .site-main .item-viewer-card figure img {
+    max-height: clamp(220px, calc(100svh - 380px), 420px) !important;
+  }
+  .site-main .item-page > div[style*="grid"] {
+    gap: 20px !important;
+  }
+  .site-main .item-details .item-title {
+    margin-bottom: 8px !important;
+  }
+  .site-main .item-details audio {
+    height: 44px;
+  }
+}

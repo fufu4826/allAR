@@ -87,7 +87,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
             alignItems: "start",
           }}
         >
-          <div>
+          <div className="item-media">
             {/* Model / 3D Viewer */}
             <div
               className="item-viewer-card"
@@ -163,7 +163,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
           </div>
 
           {/* Details */}
-          <div>
+          <div className="item-details">
             {collection && (
               <span
                 style={{
@@ -183,7 +183,6 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
             <h1 className="item-title" style={{ fontSize: "2rem", fontWeight: 700, margin: "0 0 16px", color: "var(--ink)" }}>
               {item.name}
             </h1>
-            <ShareButtons title={`${item.name} · ${community.shortName}`} />
 
             {/* Audio guide: shown only when the item has a recording */}
             {item.audio && (
@@ -202,6 +201,9 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
                 <audio controls preload="none" src={item.audio} style={{ width: "100%" }} />
               </div>
             )}
+
+            {/* Share sits under the audio so the title and the audio player fit on a phone's first screen. */}
+            <ShareButtons title={`${item.name} · ${community.shortName}`} />
 
             {/* Description */}
             <p style={{ whiteSpace: "pre-line", lineHeight: 1.8, color: "var(--slate-700)", fontSize: "1rem" }}>

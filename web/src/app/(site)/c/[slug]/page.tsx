@@ -10,6 +10,7 @@ import { getCommunityWithContent } from "@/lib/queries";
 import SiteName from "@/components/SiteName";
 import SiteIcon from "@/components/SiteIcon";
 import StoryText from "@/components/StoryText";
+import TrackVisit from "@/components/TrackVisit";
 import { pageMetadata } from "@/content/seo";
 
 export function generateStaticParams() {
@@ -45,9 +46,12 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
   const isPhuphan = community.slug === "phuphan";
   // A one-sentence story (Tha Rae) reads as a lead paragraph under the heading rather than a lone line in a second column.
   const isShortStory = (community.description ?? "").length < 140;
+  // Items the team ticked as featured in the admin ("ชิ้นเด่น"), in collection order.
+  const featured = community.items.filter((i) => community.recommended.includes(i.id));
 
   return (
     <div className={`theme-${theme}`} data-community={theme} data-theme={theme}>
+      <TrackVisit slug={community.slug} />
       {/* Community Hero. A theme can show the site's cover photo through --hero-cover (see community.css). */}
       <section
         className="community-hero"
@@ -152,6 +156,26 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
               <p className="section-desc">เลือกหมวดหมู่เพื่อสำรวจโมเดลจากคลัง {community.shortName}</p>
             </div>
           </div>
+
+          {featured.length > 0 && (
+            <div className="featured-row">
+              <h3 className="featured-title">
+                <i className="fa-solid fa-star" aria-hidden="true"></i> ชิ้นงานแนะนำ
+              </h3>
+              <div className="featured-scroll">
+                {featured.map((f) => (
+                  <Link key={f.id} href={`/c/${community.slug}/${f.id}`} className="model-card featured-card">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={f.thumbnail || "/brand/snru-logo.png"} alt={f.name} loading="lazy" />
+                    <span>
+                      <strong>{f.name}</strong>
+                      <small>{f.model ? "ดูโมเดล 3D / AR ↗" : "ดูรายละเอียด ↗"}</small>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           <CollectionBrowser
             communitySlug={community.slug}

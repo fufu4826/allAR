@@ -3,6 +3,7 @@ import test from "node:test";
 import { androidChromeIntentUrl, detectInAppBrowser, lineExternalUrl } from "./inAppBrowser";
 import { parseContentRoute } from "./contentRoute";
 import { resolveSiteUrl } from "./siteUrl";
+import { parseStatEvent, thaiDay } from "./stats";
 
 const UA = {
   lineAndroid:
@@ -62,4 +63,16 @@ test("site URL: SITE_URL wins, then the forwarded host and protocol", () => {
   assert.equal(resolveSiteUrl("", { host: "web:3000", forwardedHost: "liac.livecraft.fun", forwardedProto: "https" }), "https://liac.livecraft.fun");
   assert.equal(resolveSiteUrl(undefined, { host: "localhost:3000" }), "http://localhost:3000");
   assert.equal(resolveSiteUrl(undefined, { host: "evil.example/<script>" }), "http://localhost:3000");
+});
+
+test("visit counting: only well-formed views and AR presses are recorded", () => {
+  assert.deepEqual(parseStatEvent({ event: "view", slug: "tharae" }), { event: "view", slug: "tharae", itemId: "" });
+  assert.deepEqual(parseStatEvent({ event: "ar", slug: "tharae", itemId: "abc123" }), { event: "ar", slug: "tharae", itemId: "abc123" });
+  assert.equal(parseStatEvent({ event: "ar", slug: "tharae" }), null);
+  assert.equal(parseStatEvent({ event: "click", slug: "tharae" }), null);
+  assert.equal(parseStatEvent({ event: "view", slug: "../x" }), null);
+  assert.equal(parseStatEvent({ event: "view", slug: "tharae", itemId: "A B" }), null);
+  assert.equal(parseStatEvent(null), null);
+  // 2026-11-10 20:00 UTC is already 11 November in Thailand.
+  assert.equal(thaiDay(Date.UTC(2026, 10, 10, 20, 0)), "2026-11-11");
 });

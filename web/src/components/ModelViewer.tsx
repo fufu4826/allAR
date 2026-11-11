@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { sendStat } from "@/components/TrackVisit";
 
 declare module "react" {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -29,12 +30,15 @@ export default function ModelViewer({
   iosSrc,
   poster,
   alt,
+  stat,
 }: {
   src: string;
   /** USDZ for AR Quick Look on iPhone/iPad; without it the GLB is converted on the device. */
   iosSrc?: string | null;
   poster?: string | null;
   alt: string;
+  /** Page to count an AR press against (admin statistics). */
+  stat?: { slug: string; itemId: string };
 }) {
   const [ready, setReady] = useState(false);
   // True once the viewer reports that this device can open AR (Scene Viewer, Quick Look or WebXR).
@@ -109,7 +113,10 @@ export default function ModelViewer({
       {canAr && (
         <button
           type="button"
-          onClick={() => viewerRef.current?.activateAR?.()}
+          onClick={() => {
+            if (stat) sendStat("ar", stat.slug, stat.itemId);
+            viewerRef.current?.activateAR?.();
+          }}
           style={{ marginTop: "12px" }}
           className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-base font-medium text-white shadow-lg active:bg-brand-dark"
         >

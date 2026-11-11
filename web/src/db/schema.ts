@@ -1,4 +1,4 @@
-import { bigint, boolean, char, datetime, decimal, index, int, json, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { bigint, boolean, char, date, datetime, decimal, index, int, json, mysqlTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 const timestamps = () => ({
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -112,3 +112,19 @@ export const auditLogs = mysqlTable("audit_logs", {
   ip: varchar("ip", { length: 45 }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (table) => [index("audit_logs_admin_id_idx").on(table.adminId)]);
+
+/**
+ * Visit counts per day (Thai time), page and event. One row per (day, event, site, item): no IP,
+ * no cookie, nothing that identifies a visitor. item_id is "" for a learning-site page.
+ * event: "view" = page opened, "ar" = the "view in AR" button pressed.
+ */
+export const pageStats = mysqlTable("page_stats", {
+  day: date("day", { mode: "string" }).notNull(),
+  event: varchar("event", { length: 8 }).notNull(),
+  slug: varchar("slug", { length: 64 }).notNull(),
+  itemId: varchar("item_id", { length: 32 }).notNull().default(""),
+  count: int("count").notNull().default(0),
+}, (table) => [
+  primaryKey({ columns: [table.day, table.event, table.slug, table.itemId] }),
+  index("page_stats_slug_item_idx").on(table.slug, table.itemId),
+]);

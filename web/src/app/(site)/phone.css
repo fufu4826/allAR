@@ -229,3 +229,103 @@
     font-size: 0.75rem;
   }
 }
+
+/* ========================================================
+   Item page: previous / next, share; learning-site page: featured row
+   ======================================================== */
+.item-stepper {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.item-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--slate-200);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  justify-self: start;
+}
+.item-step--next {
+  justify-self: end;
+}
+.item-step--off {
+  visibility: hidden;
+}
+.item-step:hover {
+  border-color: var(--accent);
+}
+.item-step-count {
+  color: var(--slate-500);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -4px 0 16px;
+}
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--slate-300);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--slate-700);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.share-btn--primary {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.featured-row {
+  margin: 24px 0 32px;
+}
+.featured-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.featured-title i {
+  color: var(--accent);
+}
+.featured-scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 220px;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.featured-scroll .featured-card {
+  scroll-snap-align: start;
+}
+@media (max-width: 768px) {
+  .featured-scroll {
+    grid-auto-columns: 62%;
+  }
+  .item-step span {
+    font-size: 0.9rem;
+  }
+}

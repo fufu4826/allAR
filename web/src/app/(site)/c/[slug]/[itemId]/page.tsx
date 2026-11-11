@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import ModelViewer from "@/components/ModelViewer";
+import ShareButtons from "@/components/ShareButtons";
+import TrackVisit from "@/components/TrackVisit";
 import { getCommunityWithContent, getItem } from "@/lib/queries";
 import { pageMetadata } from "@/content/seo";
 
@@ -40,12 +42,18 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
   const related = community.items
     .filter((i) => i.collectionId === item.collectionId && i.id !== item.id)
     .slice(0, 4);
+  // Previous / next item within the same category, in the order the category lists them.
+  const siblings = community.items.filter((i) => i.collectionId === item.collectionId);
+  const position = siblings.findIndex((i) => i.id === item.id);
+  const prev = position > 0 ? siblings[position - 1] : null;
+  const next = position >= 0 && position < siblings.length - 1 ? siblings[position + 1] : null;
 
   const theme = community.theme || community.slug || "default";
 
   return (
     <div className={`theme-${theme}`} data-community={theme} data-theme={theme}>
       <div className="community-container item-page" style={{ padding: "40px 0 80px" }}>
+        <TrackVisit slug={community.slug} itemId={item.id} />
         {/* Breadcrumb: the full trail on wide screens, one back link on phones (see community.css) */}
         <p className="item-crumb" style={{ fontSize: "0.85rem", color: "var(--slate-500)", marginBottom: "24px" }}>
           <Link href="/" style={{ color: "var(--accent)", fontWeight: 500 }}>
@@ -79,46 +87,78 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
             alignItems: "start",
           }}
         >
-          {/* Model / 3D Viewer */}
-          <div
-            className="item-viewer-card"
-            style={{
-              background: "white",
-              borderRadius: "20px",
-              padding: "20px",
-              border: "1px solid #e7ded5",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            }}
-          >
-            {item.model ? (
-              <div style={{ width: "100%" }}>
-                <ModelViewer src={item.model} iosSrc={item.usdz} poster={item.thumbnail} alt={item.name} />
-              </div>
-            ) : item.thumbnail ? (
-              <figure style={{ margin: 0 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element -- served from /uploads, sizes already optimized */}
-                <img
-                  src={item.thumbnail}
-                  alt={item.name}
-                  style={{ width: "100%", maxHeight: "450px", objectFit: "contain", borderRadius: "14px", background: "var(--paper)" }}
-                />
-                <figcaption style={{ marginTop: "10px", fontSize: "0.85rem", color: "var(--slate-500)", textAlign: "center" }}>
-                  ภาพถ่ายวัตถุจริง · โมเดล 3D อยู่ระหว่างจัดทำ
-                </figcaption>
-              </figure>
-            ) : (
-              <div
-                style={{
-                  height: "350px",
-                  display: "grid",
-                  placeItems: "center",
-                  background: "var(--paper)",
-                  borderRadius: "14px",
-                  color: "var(--slate-500)",
-                }}
-              >
-                โมเดล 3D อยู่ระหว่างจัดทำ
-              </div>
+          <div>
+            {/* Model / 3D Viewer */}
+            <div
+              className="item-viewer-card"
+              style={{
+                background: "white",
+                borderRadius: "20px",
+                padding: "20px",
+                border: "1px solid #e7ded5",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+              }}
+            >
+              {item.model ? (
+                <div style={{ width: "100%" }}>
+                  <ModelViewer
+                    src={item.model}
+                    iosSrc={item.usdz}
+                    poster={item.thumbnail}
+                    alt={item.name}
+                    stat={{ slug: community.slug, itemId: item.id }}
+                  />
+                </div>
+              ) : item.thumbnail ? (
+                <figure style={{ margin: 0 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- served from /uploads, sizes already optimized */}
+                  <img
+                    src={item.thumbnail}
+                    alt={item.name}
+                    style={{ width: "100%", maxHeight: "450px", objectFit: "contain", borderRadius: "14px", background: "var(--paper)" }}
+                  />
+                  <figcaption style={{ marginTop: "10px", fontSize: "0.85rem", color: "var(--slate-500)", textAlign: "center" }}>
+                    ภาพถ่ายวัตถุจริง · โมเดล 3D อยู่ระหว่างจัดทำ
+                  </figcaption>
+                </figure>
+              ) : (
+                <div
+                  style={{
+                    height: "350px",
+                    display: "grid",
+                    placeItems: "center",
+                    background: "var(--paper)",
+                    borderRadius: "14px",
+                    color: "var(--slate-500)",
+                  }}
+                >
+                  โมเดล 3D อยู่ระหว่างจัดทำ
+                </div>
+              )}
+            </div>
+
+            {siblings.length > 1 && (
+              <nav className="item-stepper" aria-label="ชิ้นงานในหมวดเดียวกัน">
+                {prev ? (
+                  <Link href={`/c/${community.slug}/${prev.id}`} className="item-step" rel="prev">
+                    <i className="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                    <span>ชิ้นก่อนหน้า</span>
+                  </Link>
+                ) : (
+                  <span className="item-step item-step--off" aria-hidden="true"></span>
+                )}
+                <span className="item-step-count">
+                  ชิ้นที่ {position + 1} จาก {siblings.length}
+                </span>
+                {next ? (
+                  <Link href={`/c/${community.slug}/${next.id}`} className="item-step item-step--next" rel="next">
+                    <span>ชิ้นถัดไป</span>
+                    <i className="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                  </Link>
+                ) : (
+                  <span className="item-step item-step--off" aria-hidden="true"></span>
+                )}
+              </nav>
             )}
           </div>
 
@@ -143,6 +183,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
             <h1 className="item-title" style={{ fontSize: "2rem", fontWeight: 700, margin: "0 0 16px", color: "var(--ink)" }}>
               {item.name}
             </h1>
+            <ShareButtons title={`${item.name} · ${community.shortName}`} />
 
             {/* Audio guide: shown only when the item has a recording */}
             {item.audio && (

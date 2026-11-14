@@ -38,7 +38,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
       }
       if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start > end) return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${info.size}` } });
     }
-    const headers = new Headers({ "Content-Type": type, "Content-Length": String(end - start + 1), "Accept-Ranges": "bytes", "Cache-Control": "public, max-age=2592000, immutable", "X-Content-Type-Options": "nosniff" });
+    // Video and audio stay out of the Cloudflare cache: it stores them without a length (Next.js
+    // streams the body) and then answers byte-range requests with the whole file, which iPhone
+    // Safari refuses to play. Uncached, the range goes through to this route and comes back 206.
+    const headers = new Headers({ "Content-Type": type, "Content-Length": String(end - start + 1), "Accept-Ranges": "bytes", "Cache-Control": type.startsWith("video/") || type.startsWith("audio/") ? "private, max-age=2592000, immutable" : "public, max-age=2592000, immutable", "X-Content-Type-Options": "nosniff" });
     if (range) headers.set("Content-Range", `bytes ${start}-${end}/${info.size}`);
     const body = info.size ? Readable.toWeb(createReadStream(file, { start, end })) as ReadableStream : null;
     return new Response(body, { status: range ? 206 : 200, headers });

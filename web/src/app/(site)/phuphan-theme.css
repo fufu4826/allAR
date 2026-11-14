@@ -405,9 +405,10 @@
 }
 
 /* ---------- Hero with the centre's cover photo (set in the admin, same image as the video poster) ----------
-   Like the Wat Klang and Wat Nuea heroes: the photo fills the banner, an indigo veil keeps the text
-   readable, and the weave and silk band stay along the bottom. The weave square on the right gives
-   way to the photo. */
+   Like the Wat Klang and Wat Nuea heroes: the photo fills the banner and an indigo veil keeps the
+   text readable. The Nakhon Tham weave leaves the photo and becomes a band along the top, edged
+   in silk gold; the silk band stays along the bottom. The weave square on the right gives way to
+   the photo. */
 [data-theme='phuphan'] .community-hero[data-has-cover] {
   background:
     linear-gradient(90deg, rgba(18, 26, 53, 0.93) 0%, rgba(18, 26, 53, 0.8) 38%, rgba(18, 26, 53, 0.32) 70%, rgba(18, 26, 53, 0.1) 100%),
@@ -415,15 +416,44 @@
     var(--hero-cover) center 60% / cover no-repeat,
     var(--indigo-950);
 }
+[data-theme='phuphan'] .community-hero[data-has-cover]::before {
+  inset: 0 0 auto;
+  z-index: 0;
+  height: 34px;
+  opacity: 1;
+  background:
+    linear-gradient(rgba(18, 26, 53, 0.35), rgba(18, 26, 53, 0.35)),
+    var(--weave-indigo) repeat-x left center / auto 34px;
+  border-bottom: 3px solid var(--silk-500);
+  box-shadow: 0 1px 0 var(--silk-200);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
 [data-theme='phuphan'] .community-hero[data-has-cover] .hero-layout {
+  position: relative;
+  z-index: 1;
   min-height: 520px;
-  grid-template-columns: minmax(0, 680px) 1fr;
+  grid-template-columns: minmax(0, 760px) 1fr;
+}
+[data-theme='phuphan'] .community-hero[data-has-cover] .hero-copy {
+  padding-top: 76px;
 }
 [data-theme='phuphan'] .community-hero[data-has-cover] .hero-art {
   display: none;
 }
 [data-theme='phuphan'] .community-hero[data-has-cover] h1 {
+  font-size: clamp(1.15rem, 7.6vw, 2.9rem);
+  line-height: 1.35;
   text-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
+}
+/* The name breaks only between its phrases, never inside one. */
+[data-theme='phuphan'] .community-hero h1 .name-part {
+  white-space: nowrap;
+}
+@media (min-width: 851px) {
+  [data-theme='phuphan'] .community-hero[data-has-cover] h1 {
+    font-size: clamp(1.9rem, 3.3vw, 2.9rem);
+  }
 }
 @media (max-width: 850px) {
   [data-theme='phuphan'] .community-hero[data-has-cover] {
@@ -432,11 +462,15 @@
       var(--hero-cover) 65% center / cover no-repeat,
       var(--indigo-950);
   }
+  [data-theme='phuphan'] .community-hero[data-has-cover]::before {
+    height: 26px;
+    background-size: auto, auto 26px;
+  }
   [data-theme='phuphan'] .community-hero[data-has-cover] .hero-layout {
     min-height: 0;
     grid-template-columns: 1fr;
   }
   [data-theme='phuphan'] .community-hero[data-has-cover] .hero-copy {
-    padding: 40px 0 48px;
+    padding: 52px 0 48px;
   }
 }

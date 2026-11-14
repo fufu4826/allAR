@@ -25,14 +25,24 @@ export default function SiteName({ name }: { name: string }) {
   );
 }
 
-/** Keeps a village name ("บ้านโนนหอม") on one line: Thai line breaking would otherwise split it (โนน|หอม). */
+/** Keeps a village name ("บ้านโนนหอม") on one line: Thai line breaking would otherwise split it (โนน|หอม).
+ *  Each space-separated phrase is also a `.name-part`, which the Phu Phan hero keeps whole
+ *  ("จังหวัดสกลนคร" never splits into จังหวัด|สกลนคร); see phuphan-theme.css. */
 function KeepVillage({ line }: { line: string }) {
-  const at = line.indexOf("บ้าน");
-  if (at <= 0) return <>{line}</>;
+  const parts = line.split(/\s+/);
   return (
     <>
-      {line.slice(0, at)}
-      <span style={{ whiteSpace: "nowrap" }}>{line.slice(at)}</span>
+      {parts.map((part, i) => {
+        const at = part.indexOf("บ้าน");
+        return (
+          <Fragment key={i}>
+            {i > 0 && " "}
+            <span className="name-part">
+              {at <= 0 ? part : <>{part.slice(0, at)}<span style={{ whiteSpace: "nowrap" }}>{part.slice(at)}</span></>}
+            </span>
+          </Fragment>
+        );
+      })}
     </>
   );
 }

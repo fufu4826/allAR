@@ -403,3 +403,40 @@
 [data-theme='phuphan'] .cb-more:focus-visible {
   outline-color: #f3d58d;
 }
+
+/* ---------- Hero with the centre's cover photo (set in the admin, same image as the video poster) ----------
+   Like the Wat Klang and Wat Nuea heroes: the photo fills the banner, an indigo veil keeps the text
+   readable, and the weave and silk band stay along the bottom. The weave square on the right gives
+   way to the photo. */
+[data-theme='phuphan'] .community-hero[data-has-cover] {
+  background:
+    linear-gradient(90deg, rgba(18, 26, 53, 0.93) 0%, rgba(18, 26, 53, 0.8) 38%, rgba(18, 26, 53, 0.32) 70%, rgba(18, 26, 53, 0.1) 100%),
+    linear-gradient(0deg, rgba(18, 26, 53, 0.55), transparent 45%),
+    var(--hero-cover) center 60% / cover no-repeat,
+    var(--indigo-950);
+}
+[data-theme='phuphan'] .community-hero[data-has-cover] .hero-layout {
+  min-height: 520px;
+  grid-template-columns: minmax(0, 680px) 1fr;
+}
+[data-theme='phuphan'] .community-hero[data-has-cover] .hero-art {
+  display: none;
+}
+[data-theme='phuphan'] .community-hero[data-has-cover] h1 {
+  text-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
+}
+@media (max-width: 850px) {
+  [data-theme='phuphan'] .community-hero[data-has-cover] {
+    background:
+      linear-gradient(180deg, rgba(18, 26, 53, 0.9) 0%, rgba(18, 26, 53, 0.74) 60%, rgba(18, 26, 53, 0.5) 100%),
+      var(--hero-cover) 65% center / cover no-repeat,
+      var(--indigo-950);
+  }
+  [data-theme='phuphan'] .community-hero[data-has-cover] .hero-layout {
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+  [data-theme='phuphan'] .community-hero[data-has-cover] .hero-copy {
+    padding: 40px 0 48px;
+  }
+}

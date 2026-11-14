@@ -20,6 +20,7 @@ export const communities = mysqlTable("communities", {
   lng: decimal("lng", { precision: 9, scale: 6 }).notNull(),
   color: varchar("color", { length: 7 }).notNull(),
   coverPath: varchar("cover_path", { length: 500 }),
+  videoPath: varchar("video_path", { length: 500 }),
   sortOrder: int("sort_order").notNull().default(0),
   isPublished: boolean("is_published").notNull().default(false),
   ...timestamps(),

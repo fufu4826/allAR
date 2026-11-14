@@ -11,6 +11,7 @@ import SiteName from "@/components/SiteName";
 import SiteIcon from "@/components/SiteIcon";
 import StoryText from "@/components/StoryText";
 import TrackVisit from "@/components/TrackVisit";
+import SiteVideo from "@/components/SiteVideo";
 import { pageMetadata } from "@/content/seo";
 
 export function generateStaticParams() {
@@ -90,6 +91,11 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
           </div>
         </div>
       </section>
+
+      {/* The site's own video, between the hero and the story. Nothing is shown until a file is added. */}
+      {community.video && (
+        <SiteVideo src={community.video} poster={community.cover} siteName={community.shortName} />
+      )}
 
       {isPhuphan ? (
         <PhuphanCentre community={community} />

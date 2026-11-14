@@ -1,0 +1,1 @@
+ALTER TABLE `communities` ADD `video_path` varchar(500);

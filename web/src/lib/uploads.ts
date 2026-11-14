@@ -4,14 +4,16 @@ import { mkdir, rename, unlink, writeFile, realpath } from "node:fs/promises";
 import path from "node:path";
 import { fileTypeFromBuffer } from "file-type";
 export class UploadError extends Error {}
-type Kind = "model" | "usdz" | "image" | "audio";
-const limits: Record<Kind, number> = { model: 100, usdz: 100, image: 15, audio: 30 };
+type Kind = "model" | "usdz" | "image" | "audio" | "video";
+const limits: Record<Kind, number> = { model: 100, usdz: 100, image: 15, audio: 30, video: 200 };
 export async function detectUpload(bytes: Uint8Array, kind: Kind, name: string) {
   if (kind === "model" && Buffer.from(bytes.subarray(0, 4)).equals(Buffer.from("glTF"))) return "glb";
   if (kind === "usdz" && /\.usdz$/i.test(name) && Buffer.from(bytes.subarray(0, 4)).equals(Buffer.from([0x50, 0x4b, 0x03, 0x04]))) return "usdz";
   let type; try { type = await fileTypeFromBuffer(bytes); } catch { /* truncated data */ }
   if (kind === "image" && type && ["jpg", "png", "webp"].includes(type.ext)) return type.ext;
   if (kind === "audio" && type && ["mp3", "wav", "m4a"].includes(type.ext)) return type.ext;
+  // Only the two formats every current phone and desktop browser plays.
+  if (kind === "video" && type && ["mp4", "webm"].includes(type.ext)) return type.ext;
   throw new UploadError("ชนิดหรือขนาดไฟล์ไม่ถูกต้อง");
 }
 function root() { if (!process.env.UPLOAD_DIR) throw new UploadError("ไม่ได้ตั้งค่าที่เก็บไฟล์"); return path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR); }

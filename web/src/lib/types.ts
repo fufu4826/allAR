@@ -32,6 +32,8 @@ export type Community = {
   position: [number, number];
   color: string;
   cover: string | null;
+  /** วีดิทัศน์แนะนำแหล่งเรียนรู้ (ไฟล์ .mp4 / .webm) */
+  video?: string | null;
   collections: Collection[];
   items: Item[];
   recommended: string[];

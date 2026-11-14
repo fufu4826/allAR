@@ -20,6 +20,7 @@ interface CommunityFormProps {
     lng: string;
     color: string;
     coverPath: string | null;
+    videoPath: string | null;
     sortOrder: number;
     isPublished: boolean;
   };
@@ -283,6 +284,38 @@ export default function CommunityForm({ initialData }: CommunityFormProps) {
                 เลือกไฟล์ใหม่ด้านบนหากต้องการเปลี่ยนรูปหน้าปก
               </span>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Site video */}
+      <div className="rounded-2xl border border-line bg-paper p-5">
+        <label className={labelClass}>
+          วีดิทัศน์แนะนำแหล่งเรียนรู้
+          <input
+            name="videoFile"
+            type="file"
+            accept="video/mp4,video/webm"
+            className="mt-2 block w-full text-sm text-ink file:mr-4 file:rounded-full file:border-0 file:bg-brand-soft file:px-4 file:py-2 file:text-xs file:font-semibold file:text-brand-dark hover:file:bg-brand/20"
+          />
+        </label>
+        <p className="mt-2 text-xs text-muted">
+          ไฟล์วิดีโอ (.mp4, .webm) — ขนาดสูงสุด 200 MB แสดงใต้ส่วนหัวของหน้าแหล่งเรียนรู้ ถ้าไม่มีวิดีโอ ช่องนี้จะไม่แสดงบนเว็บ
+        </p>
+
+        {initialData?.videoPath && (
+          <div className="mt-4 space-y-3">
+            <span className="text-xs font-medium text-muted">วีดิทัศน์ปัจจุบัน:</span>
+            <video
+              src={initialData.videoPath}
+              controls
+              preload="metadata"
+              className="aspect-video w-full max-w-md rounded-xl border border-line bg-black"
+            />
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
+              <input name="removeVideo" type="checkbox" className="size-4 rounded border-line accent-brand" />
+              ลบวีดิทัศน์นี้ออกจากหน้าแหล่งเรียนรู้
+            </label>
           </div>
         )}
       </div>

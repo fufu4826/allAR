@@ -7,6 +7,7 @@ const types: Record<string, string> = {
   ".glb": "model/gltf-binary", ".gltf": "model/gltf+json", ".usdz": "model/vnd.usdz+zip",
   ".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
   ".mp3": "audio/mpeg", ".wav": "audio/wav", ".m4a": "audio/mp4",
+  ".mp4": "video/mp4", ".webm": "video/webm",
 };
 
 export async function GET(request: Request, { params }: { params: Promise<{ path: string[] }> }) {

@@ -126,11 +126,18 @@ export async function updateCommunityAction(
   const coverFile = formData.get("coverImage");
   let coverPath = existing.coverPath;
   let newUploadedPath: string | null = null;
+  const videoFile = formData.get("videoFile");
+  let videoPath = formData.get("removeVideo") === "on" ? null : existing.videoPath;
+  let newVideoPath: string | null = null;
 
   try {
     if (coverFile instanceof File && coverFile.size > 0) {
       newUploadedPath = await saveUpload(coverFile, "image");
       coverPath = newUploadedPath;
+    }
+    if (videoFile instanceof File && videoFile.size > 0) {
+      newVideoPath = await saveUpload(videoFile, "video");
+      videoPath = newVideoPath;
     }
 
     await db
@@ -149,6 +156,7 @@ export async function updateCommunityAction(
         lng: data.lng,
         color: data.color,
         coverPath,
+        videoPath,
         sortOrder: data.sortOrder,
         isPublished: data.isPublished,
       })
@@ -158,6 +166,10 @@ export async function updateCommunityAction(
     if (newUploadedPath && existing.coverPath && existing.coverPath !== newUploadedPath) {
       await deleteUpload(existing.coverPath).catch(() => {});
     }
+    // Same for the video: replaced or removed, the old file goes.
+    if (existing.videoPath && existing.videoPath !== videoPath) {
+      await deleteUpload(existing.videoPath).catch(() => {});
+    }
 
     await audit(admin.id, "update", "community", id, { name: data.name, slug: data.slug });
     revalidateTag("content", { expire: 0 });
@@ -165,6 +177,9 @@ export async function updateCommunityAction(
   } catch (error) {
     if (newUploadedPath) {
       await deleteUpload(newUploadedPath).catch(() => {});
+    }
+    if (newVideoPath) {
+      await deleteUpload(newVideoPath).catch(() => {});
     }
     if (error instanceof UploadError) {
       return { error: error.message };

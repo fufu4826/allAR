@@ -1,4 +1,5 @@
 import { phuphanCentre, phuphanContact } from "@/content/phuphan";
+import SiteName from "@/components/SiteName";
 import type { Community } from "@/lib/types";
 
 // Sections carried over from the original Phu Phan AR site: centre information with the
@@ -12,7 +13,7 @@ export function PhuphanCentre({ community }: { community: Community }) {
     <section id="about" className="community-section pp-centre" aria-labelledby="pp-centre-title">
       <div className="community-container">
         <p className="eyebrow pp-pill">{phuphanCentre.eyebrow}</p>
-        <h2 id="pp-centre-title">{community.name}</h2>
+        <h2 id="pp-centre-title"><SiteName name={community.name} /></h2>
 
         <div className="pp-centre-grid">
           <div className="pp-story">

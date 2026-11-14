@@ -403,3 +403,167 @@
 [data-theme='phuphan'] .cb-more:focus-visible {
   outline-color: #f3d58d;
 }
+
+/* ---------- Hero with the centre's cover photo (set in the admin, same image as the video poster) ----------
+   Like the Wat Klang and Wat Nuea heroes: the photo fills the banner and an indigo veil keeps the
+   text readable. The Nakhon Tham weave leaves the photo and becomes a band along the top, edged
+   in silk gold; the silk band stays along the bottom. The weave square on the right gives way to
+   the photo. */
+[data-theme='phuphan'] .community-hero[data-has-cover] {
+  background:
+    linear-gradient(90deg, rgba(18, 26, 53, 0.93) 0%, rgba(18, 26, 53, 0.8) 38%, rgba(18, 26, 53, 0.32) 70%, rgba(18, 26, 53, 0.1) 100%),
+    linear-gradient(0deg, rgba(18, 26, 53, 0.55), transparent 45%),
+    var(--hero-cover) center 60% / cover no-repeat,
+    var(--indigo-950);
+}
+[data-theme='phuphan'] .community-hero[data-has-cover]::before {
+  inset: 0 0 auto;
+  z-index: 0;
+  height: 34px;
+  opacity: 1;
+  background:
+    linear-gradient(rgba(18, 26, 53, 0.35), rgba(18, 26, 53, 0.35)),
+    var(--weave-indigo) repeat-x left center / auto 34px;
+  border-bottom: 3px solid var(--silk-500);
+  box-shadow: 0 1px 0 var(--silk-200);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+[data-theme='phuphan'] .community-hero[data-has-cover] .hero-layout {
+  position: relative;
+  z-index: 1;
+  min-height: 520px;
+  grid-template-columns: minmax(0, 760px) 1fr;
+}
+[data-theme='phuphan'] .community-hero[data-has-cover] .hero-copy {
+  padding-top: 76px;
+}
+[data-theme='phuphan'] .community-hero[data-has-cover] .hero-art {
+  display: none;
+}
+[data-theme='phuphan'] .community-hero[data-has-cover] h1 {
+  font-size: clamp(1.15rem, 7.6vw, 2.9rem);
+  line-height: 1.35;
+  text-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
+}
+/* The name breaks only between its phrases, never inside one. */
+[data-theme='phuphan'] .community-hero h1 .name-part,
+[data-theme='phuphan'] .pp-centre h2 .name-part {
+  white-space: nowrap;
+}
+@media (min-width: 851px) {
+  [data-theme='phuphan'] .community-hero[data-has-cover] h1 {
+    font-size: clamp(1.9rem, 3.3vw, 2.9rem);
+  }
+}
+@media (max-width: 850px) {
+  [data-theme='phuphan'] .community-hero[data-has-cover] {
+    background:
+      linear-gradient(180deg, rgba(18, 26, 53, 0.9) 0%, rgba(18, 26, 53, 0.74) 60%, rgba(18, 26, 53, 0.5) 100%),
+      var(--hero-cover) 65% center / cover no-repeat,
+      var(--indigo-950);
+  }
+  [data-theme='phuphan'] .community-hero[data-has-cover]::before {
+    height: 26px;
+    background-size: auto, auto 26px;
+  }
+  [data-theme='phuphan'] .community-hero[data-has-cover] .hero-layout {
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+  [data-theme='phuphan'] .community-hero[data-has-cover] .hero-copy {
+    padding: 52px 0 48px;
+  }
+}
+
+/* =====================================================================
+   Nakhon Tham weave as a material (Phu Phan only)
+   - the centre information section sits on the cloth, its story text on a mulberry-paper label;
+   - the main buttons are woven indigo with gold lettering;
+   - the video hangs in a woven frame.
+   The weave is always under an indigo veil, so text on it keeps AA contrast.
+   ===================================================================== */
+[data-theme='phuphan'] {
+  --weave-veil: linear-gradient(rgba(18, 26, 53, 0.86), rgba(18, 26, 53, 0.86));
+  --weave-button: linear-gradient(rgba(18, 26, 53, 0.8), rgba(18, 26, 53, 0.8)), var(--weave-indigo) center / 96px auto;
+}
+
+/* ---------- Centre information on the cloth ---------- */
+[data-theme='phuphan'] .community-section.pp-centre {
+  position: relative;
+  padding: 72px 0 64px;
+  background: var(--weave-veil), var(--weave-indigo) center / 220px auto, var(--indigo-950);
+  border-top: 3px solid var(--silk-500);
+  border-bottom: 3px solid var(--silk-500);
+}
+[data-theme='phuphan'] .pp-centre .pp-pill {
+  color: #f3d58d;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(243, 213, 141, 0.5);
+}
+[data-theme='phuphan'] .pp-centre h2,
+[data-theme='phuphan'] .pp-centre h2 span {
+  color: #fff;
+}
+[data-theme='phuphan'] .pp-story {
+  padding: 30px 32px 26px;
+  background: var(--pp-paper-2);
+  border-radius: 12px;
+  border-top: 4px solid var(--silk-500);
+  box-shadow: 0 18px 40px rgba(6, 10, 24, 0.35);
+}
+[data-theme='phuphan'] .pp-contact {
+  border-color: rgba(243, 213, 141, 0.4);
+  box-shadow: 0 18px 40px rgba(6, 10, 24, 0.35);
+}
+@media (max-width: 850px) {
+  [data-theme='phuphan'] .community-section.pp-centre {
+    padding: 48px 0 44px;
+    background-size: auto, 160px auto, auto;
+  }
+  [data-theme='phuphan'] .pp-story {
+    padding: 22px 18px 18px;
+  }
+}
+
+/* ---------- Woven buttons ---------- */
+[data-theme='phuphan'] .community-hero .button-primary,
+[data-theme='phuphan'] .pp-button {
+  background: var(--weave-button);
+  color: #f3d58d;
+  border: 1px solid #d9b25f;
+  box-shadow: 0 6px 18px rgba(6, 10, 24, 0.3), inset 0 0 0 1px rgba(243, 213, 141, 0.18);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+[data-theme='phuphan'] .community-hero .button-primary:hover,
+[data-theme='phuphan'] .pp-button:hover {
+  background: linear-gradient(rgba(18, 26, 53, 0.7), rgba(18, 26, 53, 0.7)), var(--weave-indigo) center / 96px auto;
+  color: #fff3cf;
+  border-color: #f3d58d;
+}
+
+/* ---------- Woven video frame ---------- */
+[data-theme='phuphan'] .site-video-frame {
+  aspect-ratio: auto;
+  padding: 14px;
+  border-radius: 20px;
+  background: linear-gradient(rgba(18, 26, 53, 0.35), rgba(18, 26, 53, 0.35)), var(--weave-indigo) center / 120px auto;
+  border: 2px solid var(--silk-500);
+  box-shadow: 0 18px 44px rgba(18, 26, 53, 0.3), inset 0 0 0 1px rgba(243, 213, 141, 0.35);
+}
+[data-theme='phuphan'] .site-video-frame video {
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(243, 213, 141, 0.6);
+}
+@media (max-width: 850px) {
+  [data-theme='phuphan'] .site-video-frame {
+    padding: 8px;
+    border-radius: 14px;
+    background-size: auto, 80px auto;
+  }
+  [data-theme='phuphan'] .site-video-frame video {
+    border-radius: 8px;
+  }
+}

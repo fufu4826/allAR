@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 /** Send one visit count to /api/stats. No cookie, nothing about the visitor. */
-export function sendStat(event: "view" | "ar", slug: string, itemId?: string) {
+export function sendStat(event: "view" | "ar" | "video", slug: string, itemId?: string) {
   const body = JSON.stringify({ event, slug, itemId: itemId ?? "" });
   try {
     if (navigator.sendBeacon?.("/api/stats", new Blob([body], { type: "application/json" }))) return;

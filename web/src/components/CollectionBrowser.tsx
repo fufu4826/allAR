@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import ViewCount from "@/components/ViewCount";
 
 type Collection = { id: string; name: string; description: string };
 type Item = { id: string; collectionId: string; name: string; thumbnail: string | null; model?: string | null };
@@ -13,10 +14,13 @@ export default function CollectionBrowser({
   communitySlug,
   collections,
   items,
+  views = {},
 }: {
   communitySlug: string;
   collections: Collection[];
   items: Item[];
+  /** Times each item page was opened (public counter). */
+  views?: Record<string, number>;
 }) {
   const [selectedId, setSelectedId] = useState(collections[0]?.id ?? "");
   const [expanded, setExpanded] = useState(false);
@@ -96,8 +100,11 @@ export default function CollectionBrowser({
               </span>
               <span className="cb-body">
                 <strong>{item.name}</strong>
-                <small>
-                  {item.model ? "ดูโมเดล" : "ดูรายละเอียด"} <i className="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                <small className="cb-foot">
+                  <span>
+                    {item.model ? "ดูโมเดล" : "ดูรายละเอียด"} <i className="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                  </span>
+                  <ViewCount count={views[item.id]} compact />
                 </small>
               </span>
             </Link>

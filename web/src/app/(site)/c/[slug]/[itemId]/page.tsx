@@ -7,7 +7,8 @@ import PageSkeleton from "@/components/PageSkeleton";
 import ModelViewer from "@/components/ModelViewer";
 import ShareButtons from "@/components/ShareButtons";
 import TrackVisit from "@/components/TrackVisit";
-import { getCommunityWithContent, getItem } from "@/lib/queries";
+import ViewCount from "@/components/ViewCount";
+import { getViewCounts, getCommunityWithContent, getItem } from "@/lib/queries";
 import { pageMetadata } from "@/content/seo";
 
 export function generateStaticParams() {
@@ -35,7 +36,7 @@ export default function ItemPage({ params }: PageProps<"/c/[slug]/[itemId]">) {
 async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemId]">["params"] }) {
   const { slug, itemId } = await params;
   await connection();
-  const [community, item] = await Promise.all([getCommunityWithContent(slug), getItem(slug, itemId)]);
+  const [community, item, counts] = await Promise.all([getCommunityWithContent(slug), getItem(slug, itemId), getViewCounts(slug)]);
   if (!community || !item) notFound();
 
   const collection = community.collections.find((c) => c.id === item.collectionId);
@@ -183,6 +184,7 @@ async function ItemPageContent({ params }: { params: PageProps<"/c/[slug]/[itemI
             <h1 className="item-title" style={{ fontSize: "2rem", fontWeight: 700, margin: "0 0 16px", color: "var(--ink)" }}>
               {item.name}
             </h1>
+            <ViewCount count={counts.items[item.id]} />
 
             {/* Audio guide: shown only when the item has a recording */}
             {item.audio && (

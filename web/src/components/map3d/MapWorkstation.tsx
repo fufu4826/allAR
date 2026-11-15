@@ -59,6 +59,28 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
 
   const shellRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
+  // Phones: how much of the map's bottom the sheet covers (px), so the 3D view can centre the
+  // selected site in the part that stays visible.
+  const [coverPx, setCoverPx] = useState(0);
+  useEffect(() => {
+    const panel = panelRef.current;
+    const view = viewportRef.current;
+    if (!panel || !view) return;
+    const measure = () => {
+      const cover = Math.max(0, Math.round(view.getBoundingClientRect().bottom - panel.getBoundingClientRect().top));
+      setCoverPx((prev) => (Math.abs(prev - cover) < 4 ? prev : cover));
+    };
+    const ro = new ResizeObserver(measure);
+    ro.observe(panel);
+    ro.observe(view);
+    // The sheet animates its height; measure again once it has settled.
+    panel.addEventListener("transitionend", measure);
+    return () => {
+      ro.disconnect();
+      panel.removeEventListener("transitionend", measure);
+    };
+  }, []);
   // The 3D map has loaded: time to show how to turn it.
   const [mapReady, setMapReady] = useState(false);
   const touchStartY = useRef<number | null>(null);
@@ -202,6 +224,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
               insetTop={isPhone ? 60 : 68}
               insetBottom={isPhone ? 72 : 56}
               cardBelow={isPhone}
+              coverBottomPx={isPhone && selected ? coverPx : 0}
               cardLeftPx={isPhone ? 0 : CARD_DOCK_PX}
               className="w-full h-full"
               onReady={() => setMapReady(true)}
@@ -237,7 +260,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
         )}
       </div>
 
-      <aside className="mw-panel" aria-label="5 แหล่งเรียนรู้">
+      <aside ref={panelRef} className="mw-panel" aria-label="5 แหล่งเรียนรู้">
         {isPhone && (
           <div className="mw-sheet-grip" onTouchStart={onGripTouchStart} onTouchEnd={onGripTouchEnd}>
             <button

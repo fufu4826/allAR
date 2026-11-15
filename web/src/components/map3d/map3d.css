@@ -141,6 +141,9 @@
    map above a sheet with the sites (phones, see the end of this file).
    ======================================================== */
 .mw-shell {
+  /* Own layer: the map's controls, card and sheet stack among themselves and always stay under
+     the site's sticky top bar, even when the page is scrolled. */
+  isolation: isolate;
   width: 100%;
   height: calc(100vh - 109px);
   min-height: 600px;

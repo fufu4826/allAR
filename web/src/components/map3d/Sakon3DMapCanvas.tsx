@@ -232,8 +232,10 @@ export default function Sakon3DMapCanvas({
   const controlsRef = useRef<OrbitControls | null>(null);
   const animStateRef = useRef<CameraAnimState | null>(null);
   const viewOffsetRef = useRef({ x: 0, y: 0 });
+  // True while the visitor drags the map (OrbitControls start..end).
+  const controlsDraggingRef = useRef(false);
   // Each loaded model's centre and size (scene units), so a site's close-up fits its model.
-  const modelFocusRef = useRef<Record<string, { center: THREE.Vector3; size: number }>>({});
+  const modelFocusRef = useRef<Record<string, { center: THREE.Vector3; height: number; width: number }>>({});
   const roadGroupRef = useRef<THREE.Group | null>(null);
   const terrainMeshRef = useRef<THREE.Mesh | null>(null);
   const cartoonTextureRef = useRef<THREE.Texture | null>(null);
@@ -291,11 +293,23 @@ export default function Sakon3DMapCanvas({
       const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
       const elev = getTerrainElev(x, z);
 
-      // Close-up sized to the model: it fills about two thirds of the map's height (a little less
-      // on phones, where the sheet covers the lower map). Before the model has loaded, a fixed view.
+      // Close-up sized to the model and to the part of the map left open beside the card: far
+      // enough that both its height and its width fit (narrow phone screens are limited by width,
+      // and their sheet covers the lower ~30% of the map). Before the model has loaded, a fixed view.
       const focus = modelFocusRef.current[landmark.id];
-      const fill = cardBelowRef.current ? 3.4 : 2.9;
-      const distance = focus ? THREE.MathUtils.clamp(focus.size * fill, 3, 13) : 13;
+      let distance = 13;
+      if (focus) {
+        const vw = mountRef.current?.clientWidth || 800;
+        const vh = mountRef.current?.clientHeight || 600;
+        const openW = Math.max(160, vw - (cardBelowRef.current ? 0 : cardLeftRef.current));
+        const openH = cardBelowRef.current ? vh * 0.7 : vh;
+        const tan = Math.tan(THREE.MathUtils.degToRad(38 / 2));
+        // Share of the open area the model may take (lower in height: the camera looks down at it,
+        // so its base comes out larger than its height alone suggests).
+        const byHeight = (focus.height * vh) / (2 * tan * 0.5 * openH);
+        const byWidth = (focus.width * vh) / (2 * tan * 0.8 * openW);
+        distance = THREE.MathUtils.clamp(Math.max(byHeight, byWidth), 3, 14);
+      }
       // The pivot is the model itself, so turning the map spins around the site. Room for the
       // card comes from shifting the picture instead (targetOffset below).
       targetLookAt = focus ? focus.center.clone() : new THREE.Vector3(x, elev.y + 0.6, z);
@@ -424,6 +438,8 @@ export default function Sakon3DMapCanvas({
       animStateRef.current = null;
     };
     controls.addEventListener("start", cancelAnim);
+    controls.addEventListener("start", () => (controlsDraggingRef.current = true));
+    controls.addEventListener("end", () => (controlsDraggingRef.current = false));
     renderer.domElement.addEventListener("wheel", cancelAnim, { passive: true });
     renderer.domElement.addEventListener("pointerdown", cancelAnim, { passive: true });
     renderer.domElement.addEventListener("touchstart", cancelAnim, { passive: true });
@@ -972,8 +988,12 @@ export default function Sakon3DMapCanvas({
             const dims = bounds.getSize(new THREE.Vector3());
             modelFocusRef.current[landmark.id] = {
               center: provinceGroup.worldToLocal(bounds.getCenter(new THREE.Vector3())),
-              size: Math.max(dims.y, Math.max(dims.x, dims.z) * 0.75),
+              height: dims.y,
+              width: Math.max(dims.x, dims.z),
             };
+            // Picked before its model had loaded (slow connection): fly in again to the close-up
+            // that fits the model, unless the visitor is already turning the map.
+            if (selectedIdRef.current === landmark.id && !controlsDraggingRef.current) flyTo(landmark);
           }
           loadedCount++;
           if (loadedCount >= modelCount) {

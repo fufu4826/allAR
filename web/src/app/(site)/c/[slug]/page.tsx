@@ -6,7 +6,7 @@ import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import CollectionBrowser from "@/components/CollectionBrowser";
 import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
-import { getCommunityWithContent, getViewCounts } from "@/lib/queries";
+import { getCommunities, getCommunityWithContent, getViewCounts } from "@/lib/queries";
 import SiteName from "@/components/SiteName";
 import SiteIcon from "@/components/SiteIcon";
 import StoryText from "@/components/StoryText";
@@ -14,6 +14,7 @@ import TrackVisit from "@/components/TrackVisit";
 import SiteVideo from "@/components/SiteVideo";
 import { pageMetadata } from "@/content/seo";
 import ViewCount from "@/components/ViewCount";
+import NextSite from "@/components/NextSite";
 
 export function generateStaticParams() {
   return [{ slug: "__placeholder__" }];
@@ -40,8 +41,12 @@ export default function CommunityPage({ params }: PageProps<"/c/[slug]">) {
 async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">["params"] }) {
   const { slug } = await params;
   await connection();
-  const [community, counts] = await Promise.all([getCommunityWithContent(slug), getViewCounts(slug)]);
+  const [community, counts, allSites] = await Promise.all([getCommunityWithContent(slug), getViewCounts(slug), getCommunities()]);
   if (!community) notFound();
+  // The next site in the tour, in the five sites' order, from the last back to the first.
+  const tour = allSites.filter((c) => !c.placeholder);
+  const here = tour.findIndex((c) => c.slug === community.slug);
+  const nextSite = tour.length > 1 && here >= 0 ? tour[(here + 1) % tour.length] : null;
 
   const theme = community.theme || community.slug || "default";
   // Phu Phan uses the sections and look of the original Phu Phan AR site (phuphan-theme.css).
@@ -193,6 +198,8 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
           />
         </div>
       </section>
+
+      {nextSite && <NextSite site={nextSite} position={((here + 1) % tour.length) + 1} total={tour.length} />}
     </div>
   );
 }

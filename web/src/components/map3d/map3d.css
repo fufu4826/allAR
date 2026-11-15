@@ -776,7 +776,7 @@
   .mw-viewport {
     position: absolute;
     inset: 0 0 auto 0;
-    height: calc(100% - 138px);
+    height: calc(100% - 104px);
     border-radius: 0;
     border: 0;
     box-shadow: none;
@@ -827,7 +827,7 @@
     bottom: 0;
     z-index: 1200;
     width: auto;
-    height: 160px;
+    height: 128px;
     border: 0;
     border-radius: 22px 22px 0 0;
     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
@@ -863,13 +863,193 @@
     background: #d6cdc4;
   }
   .mw-panel-head {
-    padding: 0 18px 8px;
+    padding: 0 12px 8px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
   }
   .mw-panel-title {
     font-size: 16px !important;
   }
-  .mw-panel-sub {
+  .mw-panel-more {
+    flex: none;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: #fff7ed;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #c2410c;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .mw-panel-more i {
+    font-size: 11px;
+  }
+  /* Lowered sheet: the five sites in one row that scrolls sideways. */
+  .mw-chips {
+    display: flex;
+    gap: 8px;
+    padding: 0 14px 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .mw-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .mw-chip {
+    flex: none;
+    min-height: 44px;
+    padding: 0 14px 0 6px;
+    border: 1.5px solid #ede5dc;
+    border-radius: 999px;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #1c1917;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .mw-chip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #ea580c;
+    font-size: 13px;
+  }
+  .mw-chip.lit {
+    border-color: #ea580c;
+    background: #fff7ed;
+  }
+  .mw-chip.lit .mw-chip-icon {
+    background: #ea580c;
+    color: #fff;
+  }
+
+  /* The selected site, as a compact strip in the sheet. */
+  .mw-site-card--sheet {
+    width: auto;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0 16px 14px;
+  }
+  .mw-sheet-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .mw-sheet-thumb {
+    flex: none;
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 24px;
+  }
+  .mw-sheet-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .mw-sheet-titles {
+    flex: 1;
+    min-width: 0;
+  }
+  .mw-sheet-name {
+    margin: 0;
+    color: #1c1917;
+    font-size: 17px !important;
+    font-weight: 800;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+  .mw-sheet-full {
+    display: block;
+    color: #78716c;
     font-size: 12.5px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mw-sheet-meta {
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #78716c;
+    font-size: 13px;
+  }
+  .mw-sheet-meta .fa-cube {
+    color: #ea580c;
+  }
+  .mw-sheet-meta a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 32px;
+    color: #c2410c;
+    font-weight: 600;
+  }
+  .mw-sheet-meta .fa-location-dot {
+    color: #e11d48;
+  }
+  .mw-sheet-close {
+    flex: none;
+    align-self: flex-start;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 999px;
+    background: #f4ede6;
+    color: #57534e;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .mw-sheet-desc {
+    margin: 10px 0 0;
+    color: #57534e;
+    font-size: 13.5px;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+  .mw-sheet-cta {
+    margin-top: 12px;
+    min-height: 50px;
+  }
+  .mw-site-card--sheet .mw-site-next {
+    width: 100%;
+    margin: 10px 0 0;
+    min-height: 56px;
+    border-radius: 16px;
   }
   .mw-rows {
     padding: 2px 12px 20px;
@@ -889,38 +1069,6 @@
     font-size: 15px;
   }
 
-  /* The card inside the sheet. */
-  .mw-site-card--sheet {
-    width: auto;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    background: transparent;
-    padding: 0 0 6px;
-  }
-  .mw-site-back {
-    margin: 0 12px 6px;
-    min-height: 44px;
-    padding: 0 6px;
-    border: 0;
-    background: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: #c2410c;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .mw-site-card--sheet .mw-site-cover {
-    margin: 0 16px;
-    aspect-ratio: 16 / 7;
-    border-radius: 16px;
-  }
-  .mw-site-card--sheet .mw-site-body {
-    padding: 12px 18px 8px;
-  }
 }
 
 /* Very narrow phones: shorter hint, smaller pins (the five sites sit close together). */
@@ -1004,7 +1152,7 @@
 }
 @media (max-width: 768px) {
   .mw-start {
-    bottom: 34px;
+    bottom: 40px;
     min-height: 52px;
     padding: 0 24px;
     font-size: 17px;
@@ -1082,15 +1230,275 @@
   background: #881337;
   border-color: #881337;
 }
+@media (prefers-reduced-motion: reduce) {
+  .mw-site-next > i {
+    animation: none;
+  }
+}
+
+/* ---------- Phones: the site's top bar folds away on the map page ---------- */
+.mw-bar-toggle {
+  display: none;
+}
 @media (max-width: 768px) {
-  .mw-site-card--sheet .mw-site-next {
-    width: calc(100% - 32px);
-    margin: 6px 16px 0;
-    border-radius: 16px;
+  body:has(.mw-shell[data-bar="folded"]) .top-announcement,
+  body:has(.mw-shell[data-bar="folded"]) .navbar {
+    display: none;
+  }
+  .mw-shell[data-bar="folded"] {
+    height: 100vh;
+    height: 100dvh;
+  }
+  .mw-bar-toggle {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1150;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(226, 215, 203, 0.95);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+    color: #4c0b1d;
+    font-size: 17px;
+    cursor: pointer;
+  }
+  /* The hint moves over to make room for the toggle. */
+  .mw-hint {
+    left: 64px;
+    max-width: calc(100% - 128px);
+  }
+}
+
+/* Narrow phones: the hint stays on one line (Thai words must not split). */
+@media (max-width: 400px) {
+  .mw-hint {
+    white-space: nowrap;
+    font-size: 12.5px;
+    padding: 9px 12px;
+    gap: 7px;
+  }
+}
+
+/* ---------- How to turn the map (MapGestureHint.tsx) ---------- */
+.mw-gesture {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  z-index: 1080;
+  transform: translate(-50%, -50%);
+  width: min(320px, calc(100% - 40px));
+  padding: 18px 20px 16px;
+  border-radius: 22px;
+  background: rgba(20, 14, 18, 0.72);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  color: #fff;
+  text-align: center;
+  pointer-events: none;
+  animation: mw-gesture-in 0.45s ease both;
+}
+.mw-gesture.leaving {
+  animation: mw-gesture-out 0.45s ease both;
+}
+@keyframes mw-gesture-in {
+  from { opacity: 0; transform: translate(-50%, -44%) scale(0.94); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+@keyframes mw-gesture-out {
+  to { opacity: 0; transform: translate(10%, 60%) scale(0.25); }
+}
+.mw-gesture-track {
+  position: relative;
+  height: 64px;
+  margin: 0 auto 10px;
+  width: 200px;
+}
+.mw-gesture-arrow {
+  position: absolute;
+  top: 50%;
+  margin-top: -9px;
+  font-size: 18px;
+  color: #fdba74;
+}
+.mw-gesture-arrow.left {
+  left: 0;
+  animation: mw-gesture-arrow-l 2.4s ease-in-out infinite;
+}
+.mw-gesture-arrow.right {
+  right: 0;
+  animation: mw-gesture-arrow-r 2.4s ease-in-out infinite;
+}
+/* The path the hand travels along. */
+.mw-gesture-trail {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  top: 50%;
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(253, 186, 116, 0.75), transparent);
+}
+.mw-gesture-hand {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  color: #fff;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+  animation: mw-gesture-drag 2.4s ease-in-out infinite;
+}
+/* A ring where the press starts, so it reads as "press and drag". */
+.mw-gesture-press {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  width: 22px;
+  height: 22px;
+  margin-left: -15px;
+  border: 2px solid #fdba74;
+  border-radius: 999px;
+  opacity: 0;
+  animation: mw-gesture-ring 2.4s ease-out infinite;
+}
+@keyframes mw-gesture-drag {
+  0% { transform: translateX(0); }
+  10% { transform: translateX(0) scale(0.9); }
+  35% { transform: translateX(-62px) scale(0.9); }
+  65% { transform: translateX(62px) scale(0.9); }
+  85% { transform: translateX(0) scale(0.9); }
+  100% { transform: translateX(0); }
+}
+@keyframes mw-gesture-ring {
+  0%, 6% { opacity: 0; transform: scale(0.5); }
+  12% { opacity: 1; transform: scale(1); }
+  30% { opacity: 0; transform: scale(1.7); }
+  100% { opacity: 0; }
+}
+@keyframes mw-gesture-arrow-l {
+  0%, 20%, 50%, 100% { opacity: 0.35; transform: none; }
+  35% { opacity: 1; transform: translateX(-4px); }
+}
+@keyframes mw-gesture-arrow-r {
+  0%, 50%, 80%, 100% { opacity: 0.35; transform: none; }
+  65% { opacity: 1; transform: translateX(4px); }
+}
+.mw-gesture-text {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.mw-gesture-text span,
+.mw-gesture-sub span {
+  white-space: nowrap;
+}
+.mw-gesture-sub {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+}
+@media (max-width: 768px) {
+  .mw-gesture {
+    top: 42%;
+    width: min(300px, calc(100% - 32px));
+  }
+  .mw-gesture-text {
+    font-size: 15px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mw-site-next > i {
+  .mw-gesture,
+  .mw-gesture.leaving,
+  .mw-gesture-hand,
+  .mw-gesture-press,
+  .mw-gesture-arrow.left,
+  .mw-gesture-arrow.right {
+    animation: none;
+  }
+  .mw-gesture.leaving {
+    opacity: 0;
+  }
+}
+
+/* Small reminder in the bottom-right corner once the visitor has tried (press: large hint again). */
+.mw-gesture-mini {
+  position: absolute;
+  right: 16px;
+  bottom: 30px;
+  z-index: 1080;
+  min-height: 44px;
+  padding: 0 16px 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(20, 14, 18, 0.72);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  animation: mw-gesture-mini-in 0.4s ease both;
+}
+.mw-gesture-mini:hover {
+  background: rgba(20, 14, 18, 0.85);
+}
+.mw-gesture-mini-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 15px;
+}
+.mw-gesture-mini-icon .fa-caret-left,
+.mw-gesture-mini-icon .fa-caret-right {
+  font-size: 11px;
+  color: #fdba74;
+}
+.mw-gesture-mini-icon > i:nth-child(2) {
+  animation: mw-gesture-sway 2.4s ease-in-out infinite;
+}
+@keyframes mw-gesture-sway {
+  0%, 100% { transform: translateX(0); }
+  30% { transform: translateX(-3px); }
+  70% { transform: translateX(3px); }
+}
+@keyframes mw-gesture-mini-in {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: none; }
+}
+@media (max-width: 768px) {
+  /* Phones: icon only, level with the compass, clear of the "เริ่มเรียนรู้" button. */
+  .mw-gesture-mini {
+    right: 12px;
+    bottom: 32px;
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+  .mw-gesture-mini-text {
+    display: none;
+  }
+  .mw-gesture-mini-icon .fa-caret-left,
+  .mw-gesture-mini-icon .fa-caret-right {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-gesture-mini,
+  .mw-gesture-mini-icon > i:nth-child(2) {
     animation: none;
   }
 }

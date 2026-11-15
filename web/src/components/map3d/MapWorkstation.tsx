@@ -8,6 +8,7 @@ import type { MapLandmark } from "@/components/map3d/data/landmarksData";
 import MapViewMenu, { type MapMode, type TextureMode } from "@/components/map3d/MapViewMenu";
 import MapSiteCard from "@/components/map3d/MapSiteCard";
 import SiteIcon from "@/components/SiteIcon";
+import MapGestureHint from "@/components/map3d/MapGestureHint";
 
 interface MapWorkstationProps {
   landmarks: MapLandmark[];
@@ -47,10 +48,16 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const [hasPicked, setHasPicked] = useState(false);
   // Phone sheet: "peek" shows the heading and the first rows, "open" the whole list.
   const [sheetOpen, setSheetOpen] = useState(false);
+  // Phones: the site's top bar (logos, menu) is folded away on this page so the map gets the
+  // whole screen; the "≡" button on the map unfolds it (see map3d.css, data-bar).
+  const [barFolded, setBarFolded] = useState(true);
   // Set when the device cannot draw WebGL: the 2D map takes over and the 3D choice is turned off.
   const [webglFailed, setWebglFailed] = useState(false);
 
   const shellRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  // The 3D map has loaded: time to show how to turn it.
+  const [mapReady, setMapReady] = useState(false);
   const cardAnchorRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
   // "เริ่มเรียนรู้": the pins light up in turn like a roulette wheel, then one site is picked.
@@ -134,8 +141,18 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const sheetState = isPhone ? (selected ? "card" : sheetOpen ? "open" : "peek") : undefined;
 
   return (
-    <div ref={shellRef} className="mw-shell" data-sheet={sheetState}>
-      <div className="mw-viewport">
+    <div ref={shellRef} className="mw-shell" data-sheet={sheetState} data-bar={barFolded ? "folded" : "shown"}>
+      <div ref={viewportRef} className="mw-viewport">
+        <button
+          type="button"
+          className="mw-bar-toggle"
+          onClick={() => setBarFolded((v) => !v)}
+          aria-label={barFolded ? "แสดงแถบเมนูของเว็บไซต์" : "พับแถบเมนูของเว็บไซต์"}
+          aria-expanded={!barFolded}
+        >
+          <i className={`fa-solid ${barFolded ? "fa-bars" : "fa-chevron-up"}`} aria-hidden="true"></i>
+        </button>
+
         {!selected && (
           <button
             type="button"
@@ -182,9 +199,10 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
               resetViewKey={resetViewKey}
               hoverId={hoverSlug}
               insetTop={isPhone ? 60 : 68}
-              insetBottom={56}
+              insetBottom={isPhone ? 72 : 56}
               cardBelow={isPhone}
               className="w-full h-full"
+              onReady={() => setMapReady(true)}
               onWebglUnavailable={() => {
                 setWebglFailed(true);
                 setMapMode("osm");
@@ -210,6 +228,8 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
 
         {/* Wide screens: the card grows out of the site's label in 3D (the scene moves its holder)
             and sits in the corner in 2D. Phones show it in the sheet instead. */}
+        {mapMode === "3d" && !selected && !spinning && <MapGestureHint ready={mapReady} targetRef={viewportRef} />}
+
         {mapMode === "3d" ? (
           <div ref={cardAnchorRef} className="mw-card-anchor" style={{ display: "none" }}>
             {selected && !isPhone && <MapSiteCard site={selected} variant="float" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />}
@@ -240,11 +260,36 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
           <>
             <div className="mw-panel-head">
               <h2 className="mw-panel-title">เลือกแหล่งเรียนรู้ที่อยากเข้าชม</h2>
-              <p className="mw-panel-sub">
-                {isPhone ? "กดชื่อเพื่อดูบนแผนที่" : "กดหมุดบนแผนที่ หรือกดจากรายการนี้"}
-              </p>
+              {isPhone ? (
+                <button type="button" className="mw-panel-more" onClick={() => setSheetOpen((v) => !v)}>
+                  {sheetOpen ? "ย่อ" : "ดูทั้งหมด"}
+                  <i className={`fa-solid fa-chevron-${sheetOpen ? "down" : "up"}`} aria-hidden="true"></i>
+                </button>
+              ) : (
+                <p className="mw-panel-sub">กดหมุดบนแผนที่ หรือกดจากรายการนี้</p>
+              )}
             </div>
-            <ul className="mw-rows">
+            {/* Phones, sheet lowered: the five sites as one row of chips, all within reach. */}
+            {sheetState === "peek" && (
+              <div className="mw-chips" role="list">
+                {landmarks.map((site) => (
+                  <button
+                    key={site.id}
+                    type="button"
+                    role="listitem"
+                    className={`mw-chip ${spinning && hoverSlug === site.id ? "lit" : ""}`}
+                    onClick={() => select(site.id)}
+                    disabled={spinning}
+                  >
+                    <span className="mw-chip-icon" aria-hidden="true">
+                      <SiteIcon slug={site.slug} />
+                    </span>
+                    {site.mapLabel || site.shortName}
+                  </button>
+                ))}
+              </div>
+            )}
+            <ul className="mw-rows" hidden={sheetState === "peek"}>
               {landmarks.map((site) => {
                 const active = site.id === selectedSlug;
                 return (
@@ -264,8 +309,8 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
                         <SiteIcon slug={site.slug} />
                       </span>
                       <span className="mw-row-text">
-                        <strong>{site.shortName}</strong>
-                        <small>{site.desc || site.location}</small>
+                        <strong>{isPhone ? site.mapLabel || site.shortName : site.shortName}</strong>
+                        <small>{isPhone ? site.shortName : site.desc || site.location}</small>
                       </span>
                       <i className="fa-solid fa-chevron-right mw-row-go" aria-hidden="true"></i>
                     </button>

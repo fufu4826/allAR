@@ -159,6 +159,8 @@ export interface Sakon3DMapCanvasProps {
   cardAnchorRef?: React.RefObject<HTMLDivElement | null>;
   /** Called when the browser cannot create a WebGL context (old phone, GPU blocked, in-app browser). */
   onWebglUnavailable?: () => void;
+  /** Called once the terrain and the site models have loaded (the loading veil is gone). */
+  onReady?: () => void;
   /** View settings, chosen in the page's "มุมมองแผนที่" menu (MapViewMenu). */
   roadsVisible?: boolean;
   textureMode?: "color" | "satellite";
@@ -181,6 +183,7 @@ export default function Sakon3DMapCanvas({
   className,
   cardAnchorRef,
   onWebglUnavailable,
+  onReady,
   roadsVisible = true,
   textureMode = "color",
   resetViewKey = 0,
@@ -199,6 +202,13 @@ export default function Sakon3DMapCanvas({
 
   const texMode = textureMode === "satellite" ? "satellite" : "cartoon";
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const onReadyRef = useRef(onReady);
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
+  useEffect(() => {
+    if (!isLoading) onReadyRef.current?.();
+  }, [isLoading]);
 
   // References for camera tweening
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -263,7 +273,7 @@ export default function Sakon3DMapCanvas({
       const half = distance * Math.tan(THREE.MathUtils.degToRad(38 / 2));
       // With the card in the phone's sheet over the lower map, aim below the model instead, so it
       // shows in the strip of map above the sheet.
-      const lift = cardBelowRef.current ? -half * 0.62 : half * (camera.aspect < 1 ? 0.66 : 0.6);
+      const lift = cardBelowRef.current ? -half * 0.3 : half * (camera.aspect < 1 ? 0.66 : 0.6);
       targetLookAt = new THREE.Vector3(x, elev.y + 0.6 + lift, z);
       targetPos = cameraAt(targetLookAt, distance, azimuth, SITE_POLAR);
     }

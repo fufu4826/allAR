@@ -15,13 +15,18 @@ export default function MapSiteCard({
   site,
   variant,
   onClose,
-  onShuffle,
+  next,
+  onNext,
+  position,
 }: {
   site: MapLandmark;
   variant: "float" | "corner" | "sheet";
   onClose: () => void;
-  /** Pick another site at random (the map's "เริ่มเรียนรู้"). */
-  onShuffle?: () => void;
+  /** The next site in the list, offered as "ถัดไป" at the bottom of the card. */
+  next?: MapLandmark;
+  onNext?: () => void;
+  /** Where this site is in the list (shown on the "ถัดไป" button). */
+  position?: { at: number; of: number };
 }) {
   const sheet = variant === "sheet";
   return (
@@ -65,18 +70,21 @@ export default function MapSiteCard({
         <Link href={`/c/${site.slug}`} className="mw-site-cta">
           เข้าชมแหล่งเรียนรู้ <i className="fa-solid fa-arrow-right" aria-hidden="true"></i>
         </Link>
-        <div className="mw-site-links">
-          {onShuffle && (
-            <button type="button" className="mw-site-nav" onClick={onShuffle}>
-              <i className="fa-solid fa-dice mw-site-dice" aria-hidden="true"></i> สุ่มแหล่งอื่น
-            </button>
-          )}
-          <a href={site.gmapsUrl} target="_blank" rel="noopener noreferrer" className="mw-site-nav">
-            <i className="fa-solid fa-location-dot" aria-hidden="true"></i> นำทาง
-            <i className="fa-solid fa-arrow-up-right-from-square mw-site-ext" aria-hidden="true"></i>
-          </a>
-        </div>
+        <a href={site.gmapsUrl} target="_blank" rel="noopener noreferrer" className="mw-site-nav">
+          <i className="fa-solid fa-location-dot" aria-hidden="true"></i> นำทางด้วย Google Maps
+          <i className="fa-solid fa-arrow-up-right-from-square mw-site-ext" aria-hidden="true"></i>
+        </a>
       </div>
+
+      {next && onNext && (
+        <button type="button" className="mw-site-next" onClick={onNext}>
+          <span className="mw-site-next-text">
+            <small>{position ? `ถัดไป · ${position.at === position.of ? 1 : position.at + 1} จาก ${position.of}` : "ถัดไป"}</small>
+            <strong>{next.mapLabel || next.shortName}</strong>
+          </span>
+          <i className="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      )}
     </article>
   );
 }

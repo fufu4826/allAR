@@ -65,6 +65,12 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
     if (slug) setHasPicked(true);
   };
   // A pin pressed again closes its card.
+  // "ถัดไป" on the card: the next site in list order, from the last back to the first.
+  const selectedIndex = landmarks.findIndex((lm) => lm.id === selectedSlug);
+  const nextSite = selectedIndex >= 0 && landmarks.length > 1 ? landmarks[(selectedIndex + 1) % landmarks.length] : undefined;
+  const goNext = () => nextSite && select(nextSite.id);
+  const tourPosition = selectedIndex >= 0 ? { at: selectedIndex + 1, of: landmarks.length } : undefined;
+
   const selectFromMap = (slug: string) => select(!slug || slug === selectedSlug ? "" : slug);
 
   const startRandom = () => {
@@ -206,10 +212,10 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
             and sits in the corner in 2D. Phones show it in the sheet instead. */}
         {mapMode === "3d" ? (
           <div ref={cardAnchorRef} className="mw-card-anchor" style={{ display: "none" }}>
-            {selected && !isPhone && <MapSiteCard site={selected} variant="float" onClose={() => select("")} onShuffle={startRandom} />}
+            {selected && !isPhone && <MapSiteCard site={selected} variant="float" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />}
           </div>
         ) : (
-          selected && !isPhone && <MapSiteCard site={selected} variant="corner" onClose={() => select("")} onShuffle={startRandom} />
+          selected && !isPhone && <MapSiteCard site={selected} variant="corner" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />
         )}
       </div>
 
@@ -229,7 +235,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
         )}
 
         {isPhone && selected ? (
-          <MapSiteCard site={selected} variant="sheet" onClose={() => select("")} onShuffle={startRandom} />
+          <MapSiteCard site={selected} variant="sheet" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />
         ) : (
           <>
             <div className="mw-panel-head">

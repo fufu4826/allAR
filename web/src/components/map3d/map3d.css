@@ -1002,26 +1002,6 @@
 .mw-row:disabled {
   cursor: progress;
 }
-/* Card: "สุ่มแหล่งอื่น" and "นำทาง" side by side under the main button. */
-.mw-site-links {
-  display: flex;
-  justify-content: center;
-  gap: 4px 18px;
-  flex-wrap: wrap;
-}
-button.mw-site-nav {
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: #c2410c;
-  cursor: pointer;
-  padding: 0 4px;
-}
-.mw-site-dice {
-  color: #c2410c;
-}
 @media (max-width: 768px) {
   .mw-start {
     bottom: 34px;
@@ -1034,5 +1014,71 @@ button.mw-site-nav {
   .mw-start,
   .mw-start.spinning i {
     animation: none;
+  }
+}
+
+/* Card: "ถัดไป" to the next site in the list, along the bottom of the card. */
+.mw-site-next {
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 18px;
+  border: 0;
+  border-top: 1px solid #f0e8df;
+  border-radius: 0 0 20px 20px;
+  background: #fffaf5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #1c1917;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.mw-site-next:hover,
+.mw-site-next:focus-visible {
+  background: #fff1e6;
+}
+.mw-site-next-text {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.mw-site-next-text small {
+  flex: none;
+  color: #c2410c;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.mw-site-next-text strong {
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mw-site-next > i {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+  color: #fff;
+  font-size: 12px;
+  transition: transform 0.15s ease;
+}
+.mw-site-next:hover > i {
+  transform: translateX(3px);
+}
+@media (max-width: 768px) {
+  .mw-site-card--sheet .mw-site-next {
+    width: auto;
+    margin: 4px 16px 0;
+    border: 1px solid #f0e8df;
+    border-radius: 14px;
   }
 }

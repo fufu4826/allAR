@@ -7,8 +7,7 @@ import SiteName from "@/components/SiteName";
 
 /**
  * The selected site's card: cover, name, one line about it, and a single main button into the site.
- * - "float": over the 3D map, growing out of the site's label (the scene positions its holder);
- * - "corner": over the 2D map, bottom-left;
+ * - "dock": wide screens, docked at the top-left of the map (the camera frames the site beside it);
  * - "sheet": inside the phone's bottom sheet, as a compact strip (close returns to the list).
  */
 export default function MapSiteCard({
@@ -20,7 +19,7 @@ export default function MapSiteCard({
   position,
 }: {
   site: MapLandmark;
-  variant: "float" | "corner" | "sheet";
+  variant: "dock" | "sheet";
   onClose: () => void;
   /** The next site in the list, offered as "ถัดไป" at the bottom of the card. */
   next?: MapLandmark;

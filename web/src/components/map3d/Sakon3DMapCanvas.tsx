@@ -174,6 +174,9 @@ export interface Sakon3DMapCanvasProps {
   /** The card covers the lower part of the map (phone sheet): frame the site high on screen
    *  instead of leaving room above it. */
   cardBelow?: boolean;
+  /** Width in px taken by the site card docked on the left of the map (wide screens): the site is
+   *  framed in the middle of the open area to its right, so the card never covers the model. */
+  cardLeftPx?: number;
 }
 
 export default function Sakon3DMapCanvas({
@@ -191,6 +194,7 @@ export default function Sakon3DMapCanvas({
   insetTop = 64,
   insetBottom = 16,
   cardBelow = false,
+  cardLeftPx = 0,
 }: Sakon3DMapCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const landmarksRef = useRef<MapLandmark[]>(landmarks);
@@ -238,6 +242,10 @@ export default function Sakon3DMapCanvas({
   useEffect(() => {
     cardBelowRef.current = cardBelow;
   }, [cardBelow]);
+  const cardLeftRef = useRef(cardLeftPx);
+  useEffect(() => {
+    cardLeftRef.current = cardLeftPx;
+  }, [cardLeftPx]);
   useEffect(() => {
     insetsRef.current = { top: insetTop, bottom: insetBottom };
   }, [insetTop, insetBottom]);
@@ -273,8 +281,18 @@ export default function Sakon3DMapCanvas({
       const half = distance * Math.tan(THREE.MathUtils.degToRad(38 / 2));
       // With the card in the phone's sheet over the lower map, aim below the model instead, so it
       // shows in the strip of map above the sheet.
-      const lift = cardBelowRef.current ? -half * 0.3 : half * (camera.aspect < 1 ? 0.66 : 0.6);
+      // Phone: the card is in the sheet over the lower map, so aim a little below the model.
+      // Wide screens: the card is docked on the left, so aim left of the model by half the card's
+      // width; the model then sits in the middle of the open area, its label just above it.
+      const lift = cardBelowRef.current ? -half * 0.3 : half * 0.1;
       targetLookAt = new THREE.Vector3(x, elev.y + 0.6 + lift, z);
+      const viewWidth = mountRef.current?.clientWidth || 0;
+      if (!cardBelowRef.current && cardLeftRef.current > 0 && viewWidth > cardLeftRef.current * 1.6) {
+        const shift = (cardLeftRef.current / 2 / (viewWidth / 2)) * half * camera.aspect;
+        // Camera's right-hand direction for this azimuth (see cameraAt).
+        targetLookAt.x -= Math.cos(azimuth) * shift;
+        targetLookAt.z += Math.sin(azimuth) * shift;
+      }
       targetPos = cameraAt(targetLookAt, distance, azimuth, SITE_POLAR);
     }
 

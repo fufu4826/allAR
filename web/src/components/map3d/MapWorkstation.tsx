@@ -303,12 +303,37 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
                       onFocus={() => !spinning && setHoverSlug(site.id)}
                       onBlur={() => !spinning && setHoverSlug(null)}
                     >
-                      <span className="mw-row-icon" aria-hidden="true">
-                        <SiteIcon slug={site.slug} />
-                      </span>
+                      {isPhone ? (
+                        <span className="mw-row-icon" aria-hidden="true">
+                          <SiteIcon slug={site.slug} />
+                        </span>
+                      ) : (
+                        <span className="mw-row-thumb" aria-hidden="true">
+                          {site.cover ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={site.cover} alt="" loading="lazy" />
+                          ) : null}
+                          <span className="mw-row-badge">
+                            <SiteIcon slug={site.slug} />
+                          </span>
+                          {!site.placeholder && site.itemCount > 0 && (
+                            <span className="mw-row-count">
+                              <i className="fa-solid fa-cube"></i> {site.itemCount}
+                            </span>
+                          )}
+                        </span>
+                      )}
+                      {/* Short name as the title, so long official names never split mid-word. */}
                       <span className="mw-row-text">
-                        <strong>{isPhone ? site.mapLabel || site.shortName : site.shortName}</strong>
-                        <small>{isPhone ? site.shortName : site.desc || site.location}</small>
+                        <strong>{site.mapLabel || site.shortName}</strong>
+                        {isPhone ? (
+                          <small>{site.shortName}</small>
+                        ) : (
+                          <>
+                            {site.mapLabel && <small className="mw-row-full">{site.shortName}</small>}
+                            {site.desc && <small className="mw-row-desc">{site.desc}</small>}
+                          </>
+                        )}
                       </span>
                       <i className="fa-solid fa-chevron-right mw-row-go" aria-hidden="true"></i>
                     </button>

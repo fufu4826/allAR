@@ -31,8 +31,11 @@ export default function MapSiteCard({
   const nextButton = next && onNext && (
     <button type="button" className="mw-site-next" onClick={onNext}>
       <span className="mw-site-next-text">
-        <small>{position ? `ถัดไป · ${position.at === position.of ? 1 : position.at + 1} จาก ${position.of}` : "ถัดไป"}</small>
-        <strong>{next.mapLabel || next.shortName}</strong>
+        <strong>ถัดไป</strong>
+        <small>
+          {next.mapLabel || next.shortName}
+          {position ? ` · ${position.at === position.of ? 1 : position.at + 1} จาก ${position.of}` : ""}
+        </small>
       </span>
       <i className="fa-solid fa-chevron-right" aria-hidden="true"></i>
     </button>

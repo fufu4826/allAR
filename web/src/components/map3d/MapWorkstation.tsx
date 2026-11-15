@@ -8,6 +8,7 @@ import type { MapLandmark } from "@/components/map3d/data/landmarksData";
 import MapViewMenu, { type MapMode, type TextureMode } from "@/components/map3d/MapViewMenu";
 import MapSiteCard from "@/components/map3d/MapSiteCard";
 import SiteIcon from "@/components/SiteIcon";
+import MapGestureHint from "@/components/map3d/MapGestureHint";
 
 interface MapWorkstationProps {
   landmarks: MapLandmark[];
@@ -54,6 +55,9 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const [webglFailed, setWebglFailed] = useState(false);
 
   const shellRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  // The 3D map has loaded: time to show how to turn it.
+  const [mapReady, setMapReady] = useState(false);
   const cardAnchorRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
   // "เริ่มเรียนรู้": the pins light up in turn like a roulette wheel, then one site is picked.
@@ -138,7 +142,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
 
   return (
     <div ref={shellRef} className="mw-shell" data-sheet={sheetState} data-bar={barFolded ? "folded" : "shown"}>
-      <div className="mw-viewport">
+      <div ref={viewportRef} className="mw-viewport">
         <button
           type="button"
           className="mw-bar-toggle"
@@ -198,6 +202,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
               insetBottom={isPhone ? 72 : 56}
               cardBelow={isPhone}
               className="w-full h-full"
+              onReady={() => setMapReady(true)}
               onWebglUnavailable={() => {
                 setWebglFailed(true);
                 setMapMode("osm");
@@ -223,6 +228,8 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
 
         {/* Wide screens: the card grows out of the site's label in 3D (the scene moves its holder)
             and sits in the corner in 2D. Phones show it in the sheet instead. */}
+        {mapMode === "3d" && !selected && !spinning && <MapGestureHint ready={mapReady} targetRef={viewportRef} />}
+
         {mapMode === "3d" ? (
           <div ref={cardAnchorRef} className="mw-card-anchor" style={{ display: "none" }}>
             {selected && !isPhone && <MapSiteCard site={selected} variant="float" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />}

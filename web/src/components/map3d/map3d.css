@@ -943,3 +943,154 @@
     padding: 3px;
   }
 }
+
+/* ---------- "เริ่มเรียนรู้": picks a site at random (MapWorkstation startRandom) ---------- */
+.mw-start {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  z-index: 1100;
+  transform: translateX(-50%);
+  min-height: 56px;
+  padding: 0 30px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+  box-shadow: 0 10px 28px rgba(136, 19, 55, 0.45), 0 0 0 4px rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: #ffffff;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  animation: mw-start-pulse 2.2s ease-in-out infinite;
+}
+.mw-start i {
+  font-size: 20px;
+}
+.mw-start:hover {
+  filter: brightness(1.08);
+}
+.mw-start:disabled {
+  cursor: progress;
+  animation: none;
+}
+.mw-start.spinning i {
+  animation: mw-dice-roll 0.5s linear infinite;
+}
+@keyframes mw-start-pulse {
+  0%, 100% { box-shadow: 0 10px 28px rgba(136, 19, 55, 0.45), 0 0 0 4px rgba(255, 255, 255, 0.85); }
+  50% { box-shadow: 0 10px 28px rgba(136, 19, 55, 0.45), 0 0 0 4px rgba(255, 255, 255, 0.85), 0 0 0 14px rgba(234, 88, 12, 0.22); }
+}
+@keyframes mw-dice-roll {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+/* The site lit by the roulette, in the list. */
+.mw-row.lit {
+  border-color: #ea580c;
+  background: #fff7ed;
+}
+.mw-row.lit .mw-row-icon {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #fff;
+}
+.mw-row:disabled {
+  cursor: progress;
+}
+@media (max-width: 768px) {
+  .mw-start {
+    bottom: 34px;
+    min-height: 52px;
+    padding: 0 24px;
+    font-size: 17px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-start,
+  .mw-start.spinning i {
+    animation: none;
+  }
+}
+
+/* Card: "ถัดไป" to the next site in the list, a solid bar along the bottom of the card
+   (deep maroon, so it stands out without competing with the orange main button). */
+.mw-site-next {
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 14px 10px 20px;
+  border: 0;
+  border-radius: 0 0 20px 20px;
+  background: linear-gradient(135deg, #4c0b1d 0%, #881337 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #ffffff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.mw-site-next:hover,
+.mw-site-next:focus-visible {
+  filter: brightness(1.12);
+}
+.mw-site-next-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.mw-site-next-text small {
+  color: #fed7aa;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.mw-site-next-text strong {
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mw-site-next > i {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #ea580c;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  animation: mw-next-nudge 1.8s ease-in-out infinite;
+}
+@keyframes mw-next-nudge {
+  0%, 60%, 100% { transform: none; }
+  30% { transform: translateX(4px); }
+}
+/* The pointer under the floating card takes the bar's colour. */
+.mw-site-card--float:has(.mw-site-next)::after {
+  background: #881337;
+  border-color: #881337;
+}
+@media (max-width: 768px) {
+  .mw-site-card--sheet .mw-site-next {
+    width: calc(100% - 32px);
+    margin: 6px 16px 0;
+    border-radius: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-site-next > i {
+    animation: none;
+  }
+}

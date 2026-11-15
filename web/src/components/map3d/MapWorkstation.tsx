@@ -1,7 +1,7 @@
 "use client";
 
 import "./map3d.css";
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Sakon3DMap from "@/components/map3d/Sakon3DMap";
 import CommunityMap from "@/components/CommunityMap";
 import type { MapLandmark } from "@/components/map3d/data/landmarksData";
@@ -53,6 +53,10 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const shellRef = useRef<HTMLDivElement>(null);
   const cardAnchorRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
+  // "เริ่มเรียนรู้": the pins light up in turn like a roulette wheel, then one site is picked.
+  const [spinning, setSpinning] = useState(false);
+  const spinTimers = useRef<number[]>([]);
+  useEffect(() => () => spinTimers.current.forEach((t) => window.clearTimeout(t)), []);
 
   const selected = landmarks.find((lm) => lm.id === selectedSlug);
 
@@ -61,7 +65,45 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
     if (slug) setHasPicked(true);
   };
   // A pin pressed again closes its card.
+  // "ถัดไป" on the card: the next site in list order, from the last back to the first.
+  const selectedIndex = landmarks.findIndex((lm) => lm.id === selectedSlug);
+  const nextSite = selectedIndex >= 0 && landmarks.length > 1 ? landmarks[(selectedIndex + 1) % landmarks.length] : undefined;
+  const goNext = () => nextSite && select(nextSite.id);
+  const tourPosition = selectedIndex >= 0 ? { at: selectedIndex + 1, of: landmarks.length } : undefined;
+
   const selectFromMap = (slug: string) => select(!slug || slug === selectedSlug ? "" : slug);
+
+  const startRandom = () => {
+    if (spinning || landmarks.length === 0) return;
+    // A different site from the one open now, when there is a choice.
+    const pool = landmarks.length > 1 ? landmarks.filter((lm) => lm.id !== selectedSlug) : landmarks;
+    const target = pool[Math.floor(Math.random() * pool.length)];
+    setSelectedSlug(null);
+    setSheetOpen(false);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      select(target.id);
+      return;
+    }
+    setSpinning(true);
+    setHasPicked(true);
+    // Light the sites in list order, slowing down, and stop on the target.
+    const order = landmarks.map((lm) => lm.id);
+    const steps = order.length * 2 + order.indexOf(target.id) + 1;
+    let at = 0;
+    spinTimers.current.forEach((t) => window.clearTimeout(t));
+    spinTimers.current = [];
+    for (let i = 0; i < steps; i++) {
+      at += 55 + i * i * 0.9;
+      spinTimers.current.push(window.setTimeout(() => setHoverSlug(order[i % order.length]), at));
+    }
+    spinTimers.current.push(
+      window.setTimeout(() => {
+        setHoverSlug(null);
+        setSpinning(false);
+        select(target.id);
+      }, at + 350),
+    );
+  };
 
   const resetView = () => {
     setSelectedSlug(null);
@@ -94,10 +136,23 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   return (
     <div ref={shellRef} className="mw-shell" data-sheet={sheetState}>
       <div className="mw-viewport">
+        {!selected && (
+          <button
+            type="button"
+            className={`mw-start ${spinning ? "spinning" : ""}`}
+            onClick={startRandom}
+            disabled={spinning}
+            aria-live="polite"
+          >
+            <i className="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+            {spinning ? "กำลังสุ่มแหล่งเรียนรู้…" : "เริ่มเรียนรู้"}
+          </button>
+        )}
+
         {!hasPicked && (
           <p className="mw-hint" role="note">
             <i className="fa-solid fa-hand-pointer" aria-hidden="true"></i>
-            {isPhone ? "กดหมุด หรือเลือกจากรายการด้านล่าง" : "กดหมุดบนแผนที่ หรือเลือกจากรายการ เพื่อเข้าชม"}
+            {isPhone ? "กดหมุด หรือกดเริ่มเรียนรู้" : "กดหมุดบนแผนที่ เลือกจากรายการ หรือกดเริ่มเรียนรู้ให้สุ่มให้"}
           </p>
         )}
 
@@ -157,10 +212,10 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
             and sits in the corner in 2D. Phones show it in the sheet instead. */}
         {mapMode === "3d" ? (
           <div ref={cardAnchorRef} className="mw-card-anchor" style={{ display: "none" }}>
-            {selected && !isPhone && <MapSiteCard site={selected} variant="float" onClose={() => select("")} />}
+            {selected && !isPhone && <MapSiteCard site={selected} variant="float" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />}
           </div>
         ) : (
-          selected && !isPhone && <MapSiteCard site={selected} variant="corner" onClose={() => select("")} />
+          selected && !isPhone && <MapSiteCard site={selected} variant="corner" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />
         )}
       </div>
 
@@ -180,7 +235,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
         )}
 
         {isPhone && selected ? (
-          <MapSiteCard site={selected} variant="sheet" onClose={() => select("")} />
+          <MapSiteCard site={selected} variant="sheet" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />
         ) : (
           <>
             <div className="mw-panel-head">
@@ -196,13 +251,14 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
                   <li key={site.id}>
                     <button
                       type="button"
-                      className={`mw-row ${active ? "active" : ""}`}
+                      className={`mw-row ${active ? "active" : ""} ${spinning && hoverSlug === site.id ? "lit" : ""}`}
                       aria-current={active ? "true" : undefined}
                       onClick={() => select(site.id)}
-                      onMouseEnter={() => setHoverSlug(site.id)}
-                      onMouseLeave={() => setHoverSlug(null)}
-                      onFocus={() => setHoverSlug(site.id)}
-                      onBlur={() => setHoverSlug(null)}
+                      disabled={spinning}
+                      onMouseEnter={() => !spinning && setHoverSlug(site.id)}
+                      onMouseLeave={() => !spinning && setHoverSlug(null)}
+                      onFocus={() => !spinning && setHoverSlug(site.id)}
+                      onBlur={() => !spinning && setHoverSlug(null)}
                     >
                       <span className="mw-row-icon" aria-hidden="true">
                         <SiteIcon slug={site.slug} />

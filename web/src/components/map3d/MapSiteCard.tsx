@@ -15,10 +15,18 @@ export default function MapSiteCard({
   site,
   variant,
   onClose,
+  next,
+  onNext,
+  position,
 }: {
   site: MapLandmark;
   variant: "float" | "corner" | "sheet";
   onClose: () => void;
+  /** The next site in the list, offered as "ถัดไป" at the bottom of the card. */
+  next?: MapLandmark;
+  onNext?: () => void;
+  /** Where this site is in the list (shown on the "ถัดไป" button). */
+  position?: { at: number; of: number };
 }) {
   const sheet = variant === "sheet";
   return (
@@ -67,6 +75,16 @@ export default function MapSiteCard({
           <i className="fa-solid fa-arrow-up-right-from-square mw-site-ext" aria-hidden="true"></i>
         </a>
       </div>
+
+      {next && onNext && (
+        <button type="button" className="mw-site-next" onClick={onNext}>
+          <span className="mw-site-next-text">
+            <small>{position ? `ถัดไป · ${position.at === position.of ? 1 : position.at + 1} จาก ${position.of}` : "ถัดไป"}</small>
+            <strong>{next.mapLabel || next.shortName}</strong>
+          </span>
+          <i className="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      )}
     </article>
   );
 }

@@ -10,6 +10,10 @@ interface LeafletMapProps {
   landmarks: MapLandmark[];
   selectedId?: string | null;
   onSelectLandmark?: (slug: string) => void;
+  /** Site the visitor points at in the list: its label is highlighted. */
+  hoverId?: string | null;
+  /** Changing this number fits the whole province again (the "ดูทั้งจังหวัด" menu command). */
+  resetViewKey?: number;
 }
 
 const OVERVIEW_CENTER: [number, number] = [17.152, 104.135];
@@ -26,7 +30,7 @@ const pillTransform = (anchor: string) =>
     ? "translate(calc(-100% - 10px), -50%)"
     : "translate(-50%, calc(-100% - 10px))";
 
-function createLandmarkDivIcon(lm: MapLandmark, isSelected: boolean) {
+function createLandmarkDivIcon(lm: MapLandmark, isSelected: boolean, isHover: boolean) {
   const anchor = lm.pinAnchor || "center";
   const badgeTranslate = pillTransform(anchor);
 
@@ -37,9 +41,9 @@ function createLandmarkDivIcon(lm: MapLandmark, isSelected: boolean) {
     html: `
       <div style="position:relative;width:0;height:0;">
         <div class="mw-2d-dot ${isSelected ? "active" : ""}"></div>
-        <div class="mw-pin-pill mw-2d-pill ${isSelected ? "active" : ""}" data-anchor="${anchor}" style="transform:${badgeTranslate};">
+        <div class="mw-pin-pill mw-2d-pill ${isSelected ? "active" : ""} ${isHover ? "hover" : ""}" data-anchor="${anchor}" style="transform:${badgeTranslate};">
           <span class="mw-pin-icon">${siteIconHtml(lm.slug)}</span>
-          <span class="mw-pin-text">${escapeHtml(lm.shortName)}</span>
+          <span class="mw-pin-text">${escapeHtml(lm.mapLabel || lm.shortName)}</span>
         </div>
       </div>
     `,
@@ -129,7 +133,7 @@ function LabelFitter({ selectedId }: { selectedId?: string | null }) {
   return null;
 }
 
-function MapFlyController({ landmarks, selectedId }: { landmarks: MapLandmark[]; selectedId?: string | null }) {
+function MapFlyController({ landmarks, selectedId, resetViewKey }: { landmarks: MapLandmark[]; selectedId?: string | null; resetViewKey?: number }) {
   const map = useMap();
 
   useEffect(() => {
@@ -158,12 +162,12 @@ function MapFlyController({ landmarks, selectedId }: { landmarks: MapLandmark[];
     if (found) {
       map.flyTo([found.lat, found.lon], 15, { duration: 0.75 });
     }
-  }, [landmarks, selectedId, map]);
+  }, [landmarks, selectedId, resetViewKey, map]);
 
   return null;
 }
 
-export default function LeafletMap({ landmarks, selectedId, onSelectLandmark }: LeafletMapProps) {
+export default function LeafletMap({ landmarks, selectedId, onSelectLandmark, hoverId, resetViewKey }: LeafletMapProps) {
   return (
     <div className="relative w-full h-full bg-[#e5edf5]">
       <MapContainer
@@ -173,13 +177,13 @@ export default function LeafletMap({ landmarks, selectedId, onSelectLandmark }: 
         zoomControl={false}
         className="h-full w-full z-10"
       >
-        <ZoomControl position="topleft" />
+        <ZoomControl position="bottomright" />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <MapFlyController landmarks={landmarks} selectedId={selectedId} />
+        <MapFlyController landmarks={landmarks} selectedId={selectedId} resetViewKey={resetViewKey} />
         <LabelFitter selectedId={selectedId} />
 
         {landmarks.map((lm) => {
@@ -188,7 +192,7 @@ export default function LeafletMap({ landmarks, selectedId, onSelectLandmark }: 
             <Marker
               key={lm.id}
               position={[lm.lat, lm.lon]}
-              icon={createLandmarkDivIcon(lm, isSelected)}
+              icon={createLandmarkDivIcon(lm, isSelected, hoverId === lm.id && !isSelected)}
               zIndexOffset={isSelected ? 1000 : 100}
               eventHandlers={{
                 click: () => {
@@ -202,18 +206,6 @@ export default function LeafletMap({ landmarks, selectedId, onSelectLandmark }: 
         })}
       </MapContainer>
 
-      {/* Bottom-Right Reset Overview Button on 2D Map */}
-      <div className="mw-layer-bar">
-        <button
-          type="button"
-          onClick={() => onSelectLandmark && onSelectLandmark("")}
-          className="mw-layer-btn"
-          title="รีเซ็ตมุมมองภาพรวมสกลนคร"
-        >
-          <i className="fa-solid fa-rotate-left text-brand"></i>
-          <span>มุมมองรวม</span>
-        </button>
-      </div>
     </div>
   );
 }

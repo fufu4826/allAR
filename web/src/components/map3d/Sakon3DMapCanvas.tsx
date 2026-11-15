@@ -159,9 +159,36 @@ export interface Sakon3DMapCanvasProps {
   cardAnchorRef?: React.RefObject<HTMLDivElement | null>;
   /** Called when the browser cannot create a WebGL context (old phone, GPU blocked, in-app browser). */
   onWebglUnavailable?: () => void;
+  /** View settings, chosen in the page's "มุมมองแผนที่" menu (MapViewMenu). */
+  roadsVisible?: boolean;
+  textureMode?: "color" | "satellite";
+  /** Changing this number flies the camera back to the whole-province view. */
+  resetViewKey?: number;
+  /** Site the visitor points at in the list: its label is highlighted. */
+  hoverId?: string | null;
+  /** Room kept free for the page's own controls over the map, in px (labels and the card stay clear). */
+  insetTop?: number;
+  insetBottom?: number;
+  /** The card covers the lower part of the map (phone sheet): frame the site high on screen
+   *  instead of leaving room above it. */
+  cardBelow?: boolean;
 }
 
-export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandmark, className, cardAnchorRef, onWebglUnavailable }: Sakon3DMapCanvasProps) {
+export default function Sakon3DMapCanvas({
+  landmarks,
+  selectedId,
+  onSelectLandmark,
+  className,
+  cardAnchorRef,
+  onWebglUnavailable,
+  roadsVisible = true,
+  textureMode = "color",
+  resetViewKey = 0,
+  hoverId = null,
+  insetTop = 64,
+  insetBottom = 16,
+  cardBelow = false,
+}: Sakon3DMapCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const landmarksRef = useRef<MapLandmark[]>(landmarks);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -170,8 +197,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     onWebglUnavailableRef.current = onWebglUnavailable;
   }, [onWebglUnavailable]);
 
-  const [roadsVisible, setRoadsVisible] = useState<boolean>(true);
-  const [texMode, setTexMode] = useState<"cartoon" | "satellite">("cartoon");
+  const texMode = textureMode === "satellite" ? "satellite" : "cartoon";
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // References for camera tweening
@@ -187,7 +213,6 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
   const badgeRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const dotRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const compassNeedleRef = useRef<HTMLDivElement | null>(null);
-  const compassLabelRef = useRef<HTMLSpanElement | null>(null);
   const selectedIdRef = useRef<string | null | undefined>(selectedId);
 
   useEffect(() => {
@@ -197,6 +222,15 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
   useEffect(() => {
     landmarksRef.current = landmarks;
   }, [landmarks]);
+
+  const insetsRef = useRef({ top: insetTop, bottom: insetBottom });
+  const cardBelowRef = useRef(cardBelow);
+  useEffect(() => {
+    cardBelowRef.current = cardBelow;
+  }, [cardBelow]);
+  useEffect(() => {
+    insetsRef.current = { top: insetTop, bottom: insetBottom };
+  }, [insetTop, insetBottom]);
 
   // The render loop is set up once, so it reads the card holder through a ref.
   const cardAnchorHolder = useRef(cardAnchorRef);
@@ -226,7 +260,10 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
       // Aim above the model so it sits low on the screen, leaving room for the site's card above it.
       // Portrait screens (phones) need a bit more room, the card is taller there relative to the map.
       const distance = 13;
-      const lift = distance * Math.tan(THREE.MathUtils.degToRad(38 / 2)) * (camera.aspect < 1 ? 0.66 : 0.6);
+      const half = distance * Math.tan(THREE.MathUtils.degToRad(38 / 2));
+      // With the card in the phone's sheet over the lower map, aim below the model instead, so it
+      // shows in the strip of map above the sheet.
+      const lift = cardBelowRef.current ? -half * 0.62 : half * (camera.aspect < 1 ? 0.66 : 0.6);
       targetLookAt = new THREE.Vector3(x, elev.y + 0.6 + lift, z);
       targetPos = cameraAt(targetLookAt, distance, azimuth, SITE_POLAR);
     }
@@ -271,42 +308,6 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
       onSelectLandmark(item.id);
     }
   };
-
-  const handleResetCamera = useCallback(() => {
-    if (onSelectLandmark) {
-      onSelectLandmark("");
-    }
-    flyTo(null);
-  }, [flyTo, onSelectLandmark]);
-
-  const handleToggleRoads = useCallback(() => {
-    setRoadsVisible((prev) => {
-      const next = !prev;
-      if (roadGroupRef.current) roadGroupRef.current.visible = next;
-      return next;
-    });
-  }, []);
-
-  const handleToggleTexture = useCallback(() => {
-    setTexMode((prev) => {
-      const next = prev === "cartoon" ? "satellite" : "cartoon";
-      if (terrainMeshRef.current && (terrainMeshRef.current.material as THREE.MeshStandardMaterial)) {
-        const mat = terrainMeshRef.current.material as THREE.MeshStandardMaterial;
-        if (next === "satellite" && !satelliteTextureRef.current) {
-          const renderer = rendererRef.current;
-          satelliteTextureRef.current = new THREE.TextureLoader().load(SATELLITE_TEXTURE_URL, (tex) => {
-            tex.colorSpace = THREE.SRGBColorSpace;
-            if (renderer) tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-            tex.generateMipmaps = true;
-            tex.needsUpdate = true;
-          });
-        }
-        mat.map = next === "cartoon" ? cartoonTextureRef.current : satelliteTextureRef.current;
-        mat.needsUpdate = true;
-      }
-      return next;
-    });
-  }, []);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -1086,8 +1087,8 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         let top = r.top;
         for (const dy of tries) {
           const t = r.top + dy;
-          // Stay clear of the top buttons (3D/2D switch, fullscreen) and the bottom layer bar.
-          if (t < 52 || t + r.h > currentHeight - 58) continue;
+          // Stay clear of the page's controls over the map (hint, view menu, compass).
+          if (t < insetsRef.current.top || t + r.h > currentHeight - insetsRef.current.bottom) continue;
           const hit = placedRects.some(
             (p) => r.left < p.left + p.w + 4 && r.left + r.w + 4 > p.left && t < p.top + p.h + 2 && t + r.h + 2 > p.top,
           );
@@ -1134,7 +1135,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
           anchorEl.style.display = "block";
           const half = card.offsetWidth / 2;
           const x = Math.min(Math.max(selectedAnchor.x, half + 8), Math.max(half + 8, currentWidth - half - 8));
-          const y = Math.max(selectedAnchor.y, card.offsetHeight + 58);
+          const y = Math.max(selectedAnchor.y, card.offsetHeight + insetsRef.current.top);
           anchorEl.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         }
       }
@@ -1149,20 +1150,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         compassNeedleRef.current.style.transform = `rotate(${-headingAngleDeg}deg)`;
       }
 
-      const normDeg = (headingAngleDeg + 360) % 360;
-      let label = "ทิศเหนือ (N)";
-      if (normDeg > 337.5 || normDeg <= 22.5) label = "ทิศเหนือ (N)";
-      else if (normDeg > 22.5 && normDeg <= 67.5) label = "ต.อ.เฉียงเหนือ (NE)";
-      else if (normDeg > 67.5 && normDeg <= 112.5) label = "ทิศตะวันออก (E)";
-      else if (normDeg > 112.5 && normDeg <= 157.5) label = "ต.อ.เฉียงใต้ (SE)";
-      else if (normDeg > 157.5 && normDeg <= 202.5) label = "ทิศใต้ (S)";
-      else if (normDeg > 202.5 && normDeg <= 247.5) label = "ต.ต.เฉียงใต้ (SW)";
-      else if (normDeg > 247.5 && normDeg <= 292.5) label = "ทิศตะวันตก (W)";
-      else if (normDeg > 292.5 && normDeg <= 337.5) label = "ต.ต.เฉียงเหนือ (NW)";
 
-      if (compassLabelRef.current && compassLabelRef.current.textContent !== label) {
-        compassLabelRef.current.textContent = label;
-      }
     };
 
     const resume = () => {
@@ -1234,6 +1222,40 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
     };
   }, [flyTo]);
 
+  // View settings from the page menu. Declared after the scene is built, so on first render the
+  // road group and terrain already exist.
+  useEffect(() => {
+    if (roadGroupRef.current) roadGroupRef.current.visible = roadsVisible;
+  }, [roadsVisible]);
+
+  useEffect(() => {
+    const mesh = terrainMeshRef.current;
+    if (!mesh) return;
+    const mat = mesh.material as THREE.MeshStandardMaterial;
+    if (texMode === "satellite" && !satelliteTextureRef.current) {
+      const renderer = rendererRef.current;
+      satelliteTextureRef.current = new THREE.TextureLoader().load(SATELLITE_TEXTURE_URL, (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        if (renderer) tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+        tex.generateMipmaps = true;
+        tex.needsUpdate = true;
+      });
+    }
+    const next = texMode === "cartoon" ? cartoonTextureRef.current : satelliteTextureRef.current;
+    if (next && mat.map !== next) {
+      mat.map = next;
+      mat.needsUpdate = true;
+    }
+  }, [texMode]);
+
+  const lastResetKeyRef = useRef(resetViewKey);
+  useEffect(() => {
+    if (lastResetKeyRef.current === resetViewKey) return;
+    lastResetKeyRef.current = resetViewKey;
+    lastFlyIdRef.current = null;
+    flyTo(null);
+  }, [resetViewKey, flyTo]);
+
   return (
     <div
       className={`relative w-full ${className || "h-[620px]"} select-none font-sans`}
@@ -1274,6 +1296,7 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         {/* Floating Label Badges (Direct GPU translate3d with 0ms delay, rock-solid lock) */}
         {landmarks.map((item) => {
           const isSelected = selectedId === item.id;
+          const isHover = hoverId === item.id && !isSelected;
           const alignClass = "items-center";
 
           return (
@@ -1288,14 +1311,14 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
             >
               <div
                 className={`group flex flex-col ${alignClass} ${
-                  isSelected ? "scale-105" : "hover:scale-105"
+                  isSelected || isHover ? "scale-105" : "hover:scale-105"
                 } transition-transform duration-150`}
               >
-                <div className={`mw-pin-pill ${isSelected ? "active" : ""}`}>
+                <div className={`mw-pin-pill ${isSelected ? "active" : ""} ${isHover ? "hover" : ""}`}>
                   <span className="mw-pin-icon">
                     <SiteIcon slug={item.slug} />
                   </span>
-                  <span className="mw-pin-text">{item.shortName}</span>
+                  <span className="mw-pin-text">{item.mapLabel || item.shortName}</span>
                 </div>
                 <div className="w-2.5 h-2.5 bg-white border-r border-b border-slate-200 rotate-45 -mt-1 shadow-sm"></div>
               </div>
@@ -1305,16 +1328,10 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         })}
       </div>
 
-      {/* Top-Left Compass Pill */}
-      <div className="mw-top-left">
-        <div className="mw-compass-pill">
-          <div
-            ref={compassNeedleRef}
-            className="w-5 h-5 flex items-center justify-center will-change-transform"
-          >
-            <i className="fa-solid fa-compass text-brand text-base"></i>
-          </div>
-          <span ref={compassLabelRef}>ทิศเหนือ (N)</span>
+      {/* Compass (bottom-left): the needle turns with the camera. */}
+      <div className="mw-compass" aria-hidden="true">
+        <div ref={compassNeedleRef} className="mw-compass-needle will-change-transform">
+          <span className="mw-compass-n">N</span>
         </div>
       </div>
 
@@ -1330,36 +1347,6 @@ export default function Sakon3DMapCanvas({ landmarks, selectedId, onSelectLandma
         </a>
       )}
 
-      {/* Bottom-Right Compact 3D Layer Controls */}
-      <div className="mw-layer-bar">
-        <button
-          type="button"
-          onClick={handleToggleRoads}
-          className={`mw-layer-btn ${roadsVisible ? "active" : ""}`}
-        >
-          <i className="fa-solid fa-route"></i>
-          <span>ทางหลวง</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={handleToggleTexture}
-          className="mw-layer-btn"
-        >
-          <i className="fa-solid fa-layer-group text-brand"></i>
-          <span>{texMode === "cartoon" ? "ภาพการ์ตูน" : "ภาพดาวเทียม"}</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={handleResetCamera}
-          title="รีเซ็ตมุมมองภาพรวมสกลนคร"
-          className="mw-layer-btn"
-        >
-          <i className="fa-solid fa-rotate-left"></i>
-          <span>มุมมองรวม</span>
-        </button>
-      </div>
     </div>
   );
 }

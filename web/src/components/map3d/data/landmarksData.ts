@@ -12,10 +12,9 @@ export interface Landmark3DConfig {
     offset?: { x: number; y: number; z: number };
   };
   pinAnchor?: "center" | "left" | "right"; // 2D map only
+  /** Short name on the map pin, so the five labels do not crowd each other. */
+  mapLabel?: string;
 }
-
-/** One picture in a site's slideshow on the map card. */
-export type MapSlide = { id: string; name: string; image: string; href: string };
 
 /** A site on the map: database fields merged with its 3D config. */
 export interface MapLandmark extends Landmark3DConfig {
@@ -31,7 +30,8 @@ export interface MapLandmark extends Landmark3DConfig {
   gmapsUrl: string;
   itemCount: number;
   placeholder: boolean;
-  slides: MapSlide[];
+  /** Cover photo shown on the site's card (null: the card shows the site's icon instead). */
+  cover: string | null;
 }
 
 const DEFAULT_CONFIG: Landmark3DConfig = {
@@ -41,26 +41,31 @@ const DEFAULT_CONFIG: Landmark3DConfig = {
 
 export const LANDMARK_3D_CONFIG: Record<string, Landmark3DConfig> = {
   tharae: {
+    mapLabel: "ท่าแร่",
     modelUrl: "/map3d/models/tharae.glb",
     modelConfig: { scale: 2.2, rotationY: Math.PI * 0.85, offset: { x: 0, y: 0.05, z: 0 } },
     pinAnchor: "center",
   },
   watklang: {
+    mapLabel: "วัดกลางฯ",
     modelUrl: "/map3d/models/watklang.glb",
     modelConfig: { scale: 1.45, rotationY: Math.PI * 0.35, offset: { x: 0.35, y: 0.05, z: 0.45 } },
     pinAnchor: "left",
   },
   watnuea: {
+    mapLabel: "วัดมหาพรหมฯ",
     modelUrl: "/map3d/models/watnuea.glb",
     modelConfig: { scale: 1.25, rotationY: Math.PI * 0.25, offset: { x: -0.22, y: 0.05, z: -0.45 } },
     pinAnchor: "right",
   },
   nonhom: {
+    mapLabel: "บ้านโนนหอม",
     modelUrl: "/map3d/models/nonhom.glb",
     modelConfig: { scale: 1.25, rotationY: Math.PI * 0.15, offset: { x: 0, y: 0.05, z: 0 } },
     pinAnchor: "left",
   },
   phuphan: {
+    mapLabel: "ศูนย์ภูพาน",
     modelUrl: "/map3d/models/phuphan.glb",
     // The centre's coordinates fall just outside the อำเภอเมือง boundary used for the raised
     // plateau, so the model is nudged north-west onto it.
@@ -79,7 +84,7 @@ export type MapCommunity = {
   position: [number, number];
   itemCount: number;
   placeholder: boolean;
-  slides?: MapSlide[];
+  cover?: string | null;
 };
 
 /** Merge database communities with their 3D config. Sites without a config still get a pin (no model). */
@@ -101,7 +106,7 @@ export function toMapLandmarks(communities: MapCommunity[]): MapLandmark[] {
       gmapsUrl: `https://www.google.com/maps?q=${lat},${lon}`,
       itemCount: c.itemCount,
       placeholder: c.placeholder,
-      slides: c.slides ?? [],
+      cover: c.cover ?? null,
     };
   });
 }

@@ -1,173 +1,8 @@
-/* =================================================}
-
-   3D & 2D Map Workstation Scoped Styles (Unlayered to override reset)
+/* ========================================================
+   Map page (MapWorkstation.tsx): scoped styles, unlayered so they override the reset.
    ======================================================== */
 
-.mw-shell {
-  width: 100%;
-  height: calc(100vh - 109px);
-  min-height: 640px;
-  max-height: calc(100vh - 109px);
-  background: #f5efe8;
-  padding: 16px 20px;
-  display: flex;
-  flex-direction: row;
-  gap: 18px;
-  overflow: hidden;
-  user-select: none;
-  font-family: var(--font-thai, var(--font-prompt), sans-serif);
-}
-
-.mw-viewport {
-  flex: 1;
-  height: 100%;
-  min-height: 0;
-  position: relative;
-  border-radius: 24px;
-  overflow: hidden;
-  border: 1px solid #e2d7cb;
-  box-shadow: 0 12px 32px -8px rgba(38, 4, 11, 0.14);
-  background: radial-gradient(ellipse at 50% 44%, #263850 0%, #142033 65%, #0c1422 100%);
-}
-
-/* Floating Map Controls (z-index 1100 to stay above Leaflet's z-index 400-1000) */
-.mw-top-left {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 1100;
-  pointer-events: none;
-}
-
-.mw-compass-pill {
-  pointer-events: auto;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 215, 203, 0.9);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: #292524;
-  font-size: 12.5px;
-  font-weight: 700;
-}
-
-.mw-top-right {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mw-mode-group {
-  padding: 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 215, 203, 0.95);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.mw-mode-btn {
-  padding: 7px 15px;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 700;
-  border: none;
-  background: transparent;
-  color: #57534e;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  transition: all 0.2s ease;
-}
-
-.mw-mode-btn:hover {
-  color: #1c1917;
-}
-
-.mw-mode-btn.active {
-  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.32);
-}
-
-.mw-icon-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 215, 203, 0.95);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #44403c;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.mw-icon-btn:hover {
-  color: #ea580c;
-  transform: translateY(-1px);
-}
-
-/* Bottom-Right Layer Toolbar */
-.mw-layer-bar {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
-  z-index: 1100;
-  padding: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 215, 203, 0.95);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.mw-layer-btn {
-  padding: 7px 14px;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  border: none;
-  background: transparent;
-  color: #44403c;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-}
-
-.mw-layer-btn:hover {
-  background: #f5efe8;
-  color: #1c1917;
-}
-
-.mw-layer-btn.active {
-  background: #ea580c;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.28);
-}
-
+/* ---------- Site labels on the map (3D and 2D) ---------- */
 /* 3D & 2D Map Floating Pin Badges (No numbers, clean icon + text) */
 .mw-pin-pill {
   padding: 5px 13px 5px 6px;
@@ -184,6 +19,11 @@
 
 .mw-pin-pill:hover {
   border-color: #ea580c;
+}
+
+.mw-pin-pill.hover {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.28), 0 8px 20px rgba(0, 0, 0, 0.26);
 }
 
 .mw-pin-pill.active {
@@ -270,9 +110,9 @@
   cursor: pointer;
 }
 
-.mw-viewport .leaflet-top.leaflet-left {
-  top: 16px;
-  left: 16px;
+.mw-viewport .leaflet-bottom.leaflet-right {
+  bottom: 16px;
+  right: 16px;
 }
 
 .mw-viewport .leaflet-bar {
@@ -295,106 +135,458 @@
   color: #ea580c !important;
 }
 
-/* Selected Landmark HUD Card (Bottom-Left) */
-.mw-hud-card {
-  position: absolute;
-  bottom: 16px;
-  left: 56px;
-  z-index: 1100;
-  width: 370px;
-  max-width: calc(100% - 72px);
-  padding: 18px 20px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(12px);
-  border: 1px solid #e7ded5;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
-  color: #292524;
+
+/* ========================================================
+   Layout: map on the left, the five sites on the right (wide screens);
+   map above a sheet with the sites (phones, see the end of this file).
+   ======================================================== */
+.mw-shell {
+  width: 100%;
+  height: calc(100vh - 109px);
+  min-height: 600px;
+  max-height: calc(100vh - 109px);
+  background: #f5efe8;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  overflow: hidden;
+  user-select: none;
+  font-family: var(--font-thai, var(--font-prompt), sans-serif);
+}
+.mw-shell:fullscreen {
+  height: 100vh;
+  max-height: 100vh;
 }
 
-.mw-hud-header {
+.mw-viewport {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid #e2d7cb;
+  box-shadow: 0 12px 32px -8px rgba(38, 4, 11, 0.14);
+  background: radial-gradient(ellipse at 50% 44%, #263850 0%, #142033 65%, #0c1422 100%);
+}
+
+/* ---------- What to do first ---------- */
+.mw-hint {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1100;
+  max-width: calc(100% - 230px);
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 215, 203, 0.95);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #292524;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  pointer-events: none;
+  animation: mw-hint-in 0.5s ease 0.6s both;
+}
+.mw-hint i {
+  color: #ea580c;
+  animation: mw-hint-tap 1.6s ease-in-out 1.2s 3;
+}
+@keyframes mw-hint-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes mw-hint-tap {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(3px) scale(0.92); }
+}
+
+/* ---------- "มุมมองแผนที่" menu (MapViewMenu.tsx) ---------- */
+.mw-view-anchor {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1150;
+}
+.mw-view {
+  position: relative;
+}
+.mw-view-btn {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 215, 203, 0.95);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #292524;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mw-view-btn > .fa-layer-group {
+  color: #ea580c;
+}
+.mw-view-btn:hover,
+.mw-view-btn.open {
+  border-color: #ea580c;
+}
+.mw-view-caret {
+  font-size: 10px;
+  color: #78716c;
+  transition: transform 0.2s ease;
+}
+.mw-view-btn.open .mw-view-caret {
+  transform: rotate(180deg);
+}
+.mw-view-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 250px;
+  padding: 6px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e7ded5;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  animation: mw-hint-in 0.16s ease both;
+}
+.mw-view-group {
+  margin: 8px 10px 2px;
+  color: #a8a29e;
+  font-size: 12px;
+  font-weight: 700;
+}
+.mw-view-group small {
+  font-weight: 500;
+}
+.mw-view-item {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #292524;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.mw-view-item:hover:not(:disabled),
+.mw-view-item:focus-visible {
+  background: #faf5ef;
+}
+.mw-view-item:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.mw-view-item small {
+  display: block;
+  color: #78716c;
+  font-size: 11.5px;
+}
+.mw-view-mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d6cdc4;
+  background: #fff;
+}
+.mw-view-mark.radio {
+  border-radius: 999px;
+}
+.mw-view-mark.check {
+  position: relative;
+  border-radius: 5px;
+}
+.mw-view-item[aria-checked="true"] .mw-view-mark.radio {
+  border-color: #ea580c;
+  background: radial-gradient(circle, #ea580c 0 4px, #fff 4.5px);
+}
+.mw-view-item[aria-checked="true"] .mw-view-mark.check {
+  border-color: #ea580c;
+  background: #ea580c;
+}
+.mw-view-item[aria-checked="true"] .mw-view-mark.check::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.mw-view-icon {
+  flex: none;
+  width: 18px;
+  text-align: center;
+  color: #78716c;
+}
+.mw-view-sep {
+  height: 1px;
+  margin: 6px 6px;
+  background: #f0e8df;
+}
+
+/* ---------- Compass (3D map, bottom-left) ---------- */
+.mw-compass {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 30;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+}
+.mw-compass-needle {
+  position: absolute;
+  inset: 0;
+}
+.mw-compass-needle::before,
+.mw-compass-needle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  margin-left: -5px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+.mw-compass-needle::before {
+  top: 13px;
+  border-bottom: 10px solid #dc2626;
+}
+.mw-compass-needle::after {
+  top: 23px;
+  border-top: 10px solid #a8a29e;
+}
+.mw-compass-n {
+  position: absolute;
+  top: 1px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #dc2626;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 12px;
+}
+.mw-viewport .mw-sat-credit {
+  left: 70px;
+  right: 16px;
+  bottom: 6px;
+}
+
+/* ---------- Selected site's card (MapSiteCard.tsx) ---------- */
+.mw-site-card {
+  position: relative;
+  width: 320px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #e7ded5;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  color: #292524;
+  text-align: left;
+  user-select: text;
+}
+.mw-site-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  color: #44403c;
+  font-size: 16px;
+  cursor: pointer;
+}
+.mw-site-close:hover {
+  color: #1c1917;
+  background: #fff;
+}
+.mw-site-cover {
+  aspect-ratio: 16 / 9;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+  display: grid;
+  place-items: center;
+}
+.mw-site-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mw-site-cover-icon {
+  color: #fff;
+  font-size: 40px;
+  opacity: 0.9;
+}
+.mw-site-body {
+  padding: 14px 18px 14px;
+}
+.mw-site-title {
+  margin: 0;
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 10px;
-}
-
-.mw-hud-title {
-  font-size: 14.5px !important;
-  font-weight: 800;
   color: #1c1917;
-  line-height: 1.3;
-  margin: 0;
+  font-size: 16px !important;
+  font-weight: 800;
+  line-height: 1.4;
 }
-
-.mw-hud-eng {
-  font-size: 11.5px;
-  color: #78716c;
-  display: block;
-  margin-top: 2px;
-}
-
-.mw-hud-close {
-  width: 28px;
-  height: 28px;
+.mw-site-icon {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin-top: -2px;
   border-radius: 999px;
-  border: none;
-  background: #f4ede6;
-  color: #57534e;
-  cursor: pointer;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
+  font-size: 13px;
 }
-
-.mw-hud-close:hover {
-  background: #e7ded5;
-  color: #1c1917;
-}
-
-.mw-hud-desc {
-  margin-top: 10px;
-  font-size: 12.5px;
+.mw-site-desc {
+  margin: 8px 0 0;
   color: #57534e;
+  font-size: 13.5px;
   line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
-
-.mw-hud-footer {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #f0e8df;
+.mw-site-meta {
+  margin: 8px 0 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 7px;
+  color: #78716c;
+  font-size: 13px;
 }
-
-.mw-hud-cta {
-  padding: 7px 16px;
+.mw-site-meta i {
+  color: #ea580c;
+}
+.mw-site-cta {
+  margin-top: 14px;
+  min-height: 48px;
+  padding: 0 18px;
   border-radius: 999px;
   background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.32);
   color: #ffffff !important;
-  font-size: 12px;
-  font-weight: 700;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 7px;
-  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
-  transition: all 0.2s ease;
+  justify-content: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-
-.mw-hud-cta:hover {
+.mw-site-cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.4);
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.42);
+}
+.mw-site-nav {
+  margin-top: 6px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #78716c;
+  font-size: 13px;
+  font-weight: 500;
+}
+.mw-site-nav .fa-location-dot {
+  color: #e11d48;
+}
+.mw-site-nav:hover {
+  color: #c2410c;
+}
+.mw-site-ext {
+  font-size: 10px;
 }
 
-/* Right Sidebar Panel ("5 แหล่งเรียนรู้สำคัญ") */
-.mw-sidebar {
-  width: 400px;
+/* 3D: the card grows out of the site's label and hangs above it (the scene moves the holder). */
+.mw-card-anchor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1100;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.mw-site-card--float {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  translate: -50% 0;
+  transform-origin: bottom center;
+  pointer-events: auto;
+  animation: mw-card-from-label 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+.mw-site-card--float::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  background: #ffffff;
+  border-right: 1px solid #e7ded5;
+  border-bottom: 1px solid #e7ded5;
+  transform: rotate(45deg);
+}
+@keyframes mw-card-from-label {
+  from { opacity: 0; transform: scale(0.2, 0.1); }
+  60% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+/* 2D: bottom-left corner of the map. */
+.mw-site-card--corner {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 1100;
+  animation: mw-hint-in 0.25s ease both;
+}
+
+/* ---------- The five sites (right-hand panel; a sheet on phones) ---------- */
+.mw-panel {
+  width: 360px;
   height: 100%;
   min-height: 0;
+  flex-shrink: 0;
   border-radius: 24px;
   background: #ffffff;
   border: 1px solid #e2d7cb;
@@ -402,393 +594,337 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  flex-shrink: 0;
 }
-
-.mw-sidebar-header {
-  padding: 18px 20px 15px;
-  border-bottom: 1px solid #f0e8df;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  background: #ffffff;
-  flex-shrink: 0;
+.mw-panel-head {
+  flex: none;
+  padding: 20px 20px 12px;
 }
-
-.mw-sidebar-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  box-shadow: 0 4px 12px rgba(136, 19, 55, 0.25);
-  flex-shrink: 0;
-}
-
-.mw-sidebar-title {
+.mw-panel-title {
+  margin: 0;
+  color: #1c1917;
   font-size: 18px !important;
   font-weight: 800;
-  color: #1c1917;
-  line-height: 1.25;
-  margin: 0;
+  line-height: 1.35;
 }
-
-.mw-sidebar-sub {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #a8a29e;
-  text-transform: uppercase;
-  margin-top: 2px;
-  display: block;
+.mw-panel-sub {
+  margin: 4px 0 0;
+  color: #78716c;
+  font-size: 13.5px;
 }
-
-.mw-card-list {
+.mw-rows {
   flex: 1;
   min-height: 0;
+  margin: 0;
+  padding: 4px 14px 16px;
+  list-style: none;
   overflow-y: auto;
-  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: #faf7f4;
-  scroll-behavior: smooth;
-}
-
-.mw-card {
-  padding: 15px 16px;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1.5px solid #ede5dc;
-  box-shadow: 0 2px 6px rgba(38, 4, 11, 0.03);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-}
-
-.mw-card:hover {
-  border-color: #fdba74;
-  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.08);
-  transform: translateY(-1px);
-}
-
-.mw-card.active {
-  background: #fffaf5;
-  border-color: #ea580c;
-  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.14), 0 8px 20px rgba(234, 88, 12, 0.1);
-}
-
-.mw-card-top {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-
-.mw-card-title {
-  font-size: 14.5px !important;
-  font-weight: 700;
-  color: #1c1917;
-  line-height: 1.3;
-  margin: 0;
-}
-
-.mw-card-eng {
-  font-size: 11.5px;
-  color: #78716c;
-  font-weight: 500;
-  margin-top: 1px;
-  display: block;
-}
-
-.mw-card-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
-  background: #fff7ed;
-  border: 1px solid #ffedd5;
-  color: #ea580c;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.mw-card.active .mw-card-icon {
-  background: #ea580c;
-  border-color: #ea580c;
-  color: #ffffff;
-}
-
-.mw-card-desc {
-  margin-top: 9px;
-  font-size: 12.2px;
-  color: #57534e;
-  line-height: 1.62;
-}
-
-.mw-card-footer {
-  margin-top: 11px;
-  padding-top: 10px;
-  border-top: 1px solid #f3ece4;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 8px;
 }
-
-.mw-gps-link {
-  font-size: 11px;
-  color: #78716c;
-  font-weight: 500;
-  display: inline-flex;
+.mw-row {
+  width: 100%;
+  min-height: 66px;
+  padding: 11px 14px;
+  border-radius: 16px;
+  border: 1.5px solid #ede5dc;
+  background: #ffffff;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  transition: color 0.2s ease;
+  gap: 12px;
+  color: #292524;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
-
-.mw-gps-link:hover {
-  color: #ea580c;
+.mw-row:hover,
+.mw-row:focus-visible {
+  border-color: #fdba74;
+  background: #fffaf5;
 }
-
-.mw-ar-btn {
-  padding: 5px 13px;
+.mw-row.active {
+  border-color: #ea580c;
+  background: #fffaf5;
+  box-shadow: inset 4px 0 0 #ea580c, 0 6px 16px rgba(234, 88, 12, 0.12);
+}
+.mw-row-icon {
+  flex: none;
+  width: 42px;
+  height: 42px;
   border-radius: 999px;
   background: #fff7ed;
   border: 1px solid #fed7aa;
-  color: #c2410c !important;
-  font-size: 11px;
-  font-weight: 700;
+  color: #ea580c;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
+  justify-content: center;
+  font-size: 16px;
 }
-
-.mw-ar-btn:hover {
+.mw-row.active .mw-row-icon {
   background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
   border-color: transparent;
-  color: #ffffff !important;
-}
-
-.mw-sidebar-footer {
-  padding: 11px 18px;
-  background: #ffffff;
-  border-top: 1px solid #f0e8df;
-  font-size: 11px;
-  color: #78716c;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-
-.mw-ready-pill {
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #047857;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-/* Selected site with pictures: the card grows and plays a slideshow of its items. */
-.mw-hud-card--expanded {
-  width: 440px;
-  max-height: calc(100% - 32px);
-  overflow-y: auto;
-  padding: 0 0 16px;
-  overflow-x: hidden;
-  transform-origin: bottom left;
-  animation: mw-card-grow 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.1);
-}
-.mw-hud-card--expanded > :not(.mw-slides) {
-  margin-left: 20px;
-  margin-right: 20px;
-}
-.mw-hud-card--expanded .mw-hud-header {
-  margin-top: 14px;
-}
-@keyframes mw-card-grow {
-  from { opacity: 0.4; transform: scale(0.82); }
-  to { opacity: 1; transform: none; }
-}
-
-.mw-slides {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  border-radius: 22px 22px 0 0;
-  background: #2b211b;
-}
-.mw-slide {
-  position: absolute;
-  inset: 0;
-  display: block;
-  animation: mw-slide-in 0.6s ease;
-}
-.mw-slide-backdrop {
-  position: absolute;
-  inset: -20px;
-  background-size: cover;
-  background-position: center;
-  filter: blur(18px) brightness(0.75) saturate(1.1);
-}
-.mw-slide-img {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.mw-slide-caption {
-  position: absolute;
-  inset: auto 0 0 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 36px 18px 26px;
-  background: linear-gradient(180deg, transparent, rgba(20, 12, 8, 0.78));
   color: #fff;
 }
-.mw-slide-name {
-  font-size: 1rem;
+.mw-row-text {
+  flex: 1;
+  min-width: 0;
+}
+.mw-row-text strong {
+  display: block;
+  color: #1c1917;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.35;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
-.mw-slide-count {
+.mw-row-text small {
+  display: block;
+  margin-top: 2px;
+  color: #78716c;
+  font-size: 12.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mw-row-go {
   flex: none;
-  padding: 2px 9px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
-  font-size: 0.72rem;
-  font-weight: 600;
+  color: #c9b9aa;
+  font-size: 12px;
 }
-.mw-slide-preload {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-.mw-slide-nav {
-  position: absolute;
-  top: 50%;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  margin-top: -30px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.85);
-  color: #3b2418;
-  font-size: 13px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-.mw-slide-nav.prev { left: 10px; }
-.mw-slide-nav.next { right: 10px; }
-.mw-slide-nav:hover { background: #fff; }
-.mw-slide-dots {
-  position: absolute;
-  inset: auto 0 9px 0;
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-  pointer-events: none;
-}
-.mw-slide-dots span {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.45);
-  transition: width 0.25s, background 0.25s;
-}
-.mw-slide-dots span.active {
-  width: 16px;
-  background: #fff;
-}
-@keyframes mw-slide-in {
-  from { opacity: 0; transform: scale(1.03); }
-  to { opacity: 1; transform: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .mw-hud-card--expanded, .mw-slide { animation: none; }
+.mw-row:hover .mw-row-go,
+.mw-row.active .mw-row-go {
+  color: #ea580c;
 }
 
-@media (max-width: 1024px) {
+/* Shown over the 2D map when the device cannot draw the 3D one. */
+.mw-fallback-note {
+  position: absolute;
+  left: 50%;
+  top: 70px;
+  transform: translateX(-50%);
+  z-index: 1000;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  color: #44403c;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Line from a label to its model when the label had to move to stay clear of another one. */
+.mw-pin-leader {
+  position: absolute;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.45);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mw-hint,
+  .mw-hint i,
+  .mw-view-menu,
+  .mw-site-card--float,
+  .mw-site-card--corner {
+    animation: none;
+  }
+}
+
+/* ---------- Tablets: map above, list below ---------- */
+@media (max-width: 1024px) and (min-width: 769px) {
   .mw-shell {
     flex-direction: column;
     height: auto;
     max-height: none;
   }
   .mw-viewport {
-    /* explicit height: the shell is height:auto here, so height:100% would collapse the label overlay to 0 */
     flex: none;
-    height: min(70vh, 560px);
-    min-height: 420px;
+    height: min(70vh, 600px);
+    min-height: 440px;
   }
-  .mw-sidebar {
+  .mw-panel {
     width: 100%;
-    max-height: none;
+    height: auto;
   }
-  /* The list scrolls with the page on phones/tablets, not inside its own box
-     (a box that scrolls inside a scrolling page traps the swipe). */
-  .mw-card-list {
-    flex: none;
-    overflow-y: visible;
+  .mw-rows {
+    overflow: visible;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* Narrow phones (<= 480px): compass shows only its icon so it does not cover the 3D/2D switch,
-   and the bottom layer buttons stay on one line. */
-@media (max-width: 480px) {
-  .mw-top-left {
+/* ---------- Phones: the map fills the screen under the menu bar, the five sites are a sheet
+   along the bottom. Peek: heading and the first rows; open: the whole list; card: the selected
+   site. The page itself does not scroll here, only the sheet's content does. ---------- */
+@media (max-width: 768px) {
+  .mw-shell {
+    position: relative;
+    display: block;
+    height: calc(100vh - 75px);
+    height: calc(100dvh - 75px);
+    max-height: none;
+    min-height: 480px;
+    padding: 0;
+  }
+  .mw-viewport {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: calc(100% - 138px);
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+  }
+  .mw-hint {
     top: 12px;
-    left: 10px;
+    left: 12px;
+    max-width: calc(100% - 84px);
+    padding: 9px 14px;
+    font-size: 13px;
   }
-  .mw-top-right {
+  .mw-view-anchor {
     top: 12px;
-    right: 10px;
-    gap: 6px;
+    right: 12px;
   }
-  .mw-compass-pill {
-    padding: 8px;
-    gap: 0;
+  .mw-view-btn {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
   }
-  .mw-compass-pill span {
+  .mw-view-btn-text,
+  .mw-view-caret {
     display: none;
   }
-  .mw-mode-btn {
-    padding: 7px 10px;
-    font-size: 11.5px;
-    white-space: nowrap;
+  .mw-view-menu {
+    width: min(270px, calc(100vw - 24px));
   }
-  .mw-layer-bar {
-    right: 10px;
-    left: 10px;
-    bottom: 10px;
-    justify-content: space-between;
+  .mw-view-item {
+    min-height: 46px;
   }
-  .mw-sat-credit {
-    bottom: 62px;
-    right: 10px;
+  .mw-compass {
+    left: 12px;
+    bottom: 32px;
   }
-  .mw-layer-btn {
-    padding: 7px 9px;
-    font-size: 11px;
-    white-space: nowrap;
+  .mw-viewport .mw-sat-credit {
+    left: 64px;
+    right: 12px;
+    bottom: 26px;
   }
-  /* Smaller map labels so the five sites fit side by side on a phone. */
+  .mw-viewport .leaflet-bottom.leaflet-right {
+    bottom: 22px;
+  }
+
+  .mw-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1200;
+    width: auto;
+    height: 160px;
+    border: 0;
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+    transition: height 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+  .mw-shell[data-sheet="open"] .mw-panel {
+    height: 74%;
+  }
+  .mw-shell[data-sheet="card"] .mw-panel {
+    height: auto;
+    max-height: 82%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .mw-sheet-grip {
+    flex: none;
+    touch-action: none;
+  }
+  .mw-sheet-handle {
+    width: 100%;
+    height: 34px;
+    border: 0;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .mw-sheet-handle span {
+    width: 46px;
+    height: 5px;
+    border-radius: 3px;
+    background: #d6cdc4;
+  }
+  .mw-panel-head {
+    padding: 0 18px 8px;
+  }
+  .mw-panel-title {
+    font-size: 16px !important;
+  }
+  .mw-panel-sub {
+    font-size: 12.5px;
+  }
+  .mw-rows {
+    padding: 2px 12px 20px;
+    overflow: hidden;
+  }
+  .mw-shell[data-sheet="open"] .mw-rows {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .mw-row {
+    min-height: 60px;
+    padding: 9px 12px;
+  }
+  .mw-row-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  /* The card inside the sheet. */
+  .mw-site-card--sheet {
+    width: auto;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0 0 6px;
+  }
+  .mw-site-back {
+    margin: 0 12px 6px;
+    min-height: 44px;
+    padding: 0 6px;
+    border: 0;
+    background: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #c2410c;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .mw-site-card--sheet .mw-site-cover {
+    margin: 0 16px;
+    aspect-ratio: 16 / 7;
+    border-radius: 16px;
+  }
+  .mw-site-card--sheet .mw-site-body {
+    padding: 12px 18px 8px;
+  }
+}
+
+/* Very narrow phones: shorter hint, smaller pins (the five sites sit close together). */
+@media (max-width: 480px) {
   .mw-pin-pill {
     padding: 3px 9px 3px 4px;
     gap: 5px;
@@ -806,169 +942,4 @@
   .mw-pin-pill[data-compact="1"] {
     padding: 3px;
   }
-  /* The selected-site card spans the width and sits above the layer buttons instead of covering them. */
-  .mw-hud-card {
-    left: 10px;
-    right: 10px;
-    bottom: 60px;
-    width: auto;
-    max-width: none;
-    padding: 14px 16px;
-    border-radius: 18px;
-  }
-  .mw-hud-cta {
-    white-space: nowrap;
-  }
-  .mw-hud-card--expanded {
-    top: 58px;
-    bottom: 60px;
-    max-height: none;
-    padding: 0 0 14px;
-    transform-origin: bottom center;
-    display: flex;
-    flex-direction: column;
-  }
-  .mw-hud-card--expanded > :not(.mw-slides) {
-    flex: none;
-  }
-  .mw-hud-card--expanded > :not(.mw-slides) {
-    margin-left: 16px;
-    margin-right: 16px;
-  }
-  .mw-slides {
-    aspect-ratio: auto;
-    flex: 1 1 auto;
-    min-height: 180px;
-    border-radius: 18px 18px 0 0;
-  }
-  .mw-slide-name {
-    font-size: 0.92rem;
-  }
-}
-
-/* 3D mode: the selected site's card grows out of its label on the map. The holder is moved every
-   frame by the scene (Sakon3DMapCanvas) to the label's bottom-centre; the card hangs above it. */
-.mw-card-anchor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1100;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-  will-change: transform;
-}
-.mw-hud-card.mw-hud-card--anchored {
-  position: absolute;
-  top: auto;
-  right: auto;
-  bottom: 14px;
-  left: 0;
-  width: min(400px, calc(100vw - 80px));
-  max-width: none;
-  max-height: none;
-  overflow: visible;
-  translate: -50% 0;
-  transform-origin: bottom center;
-  pointer-events: auto;
-  animation: mw-card-from-label 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.15);
-}
-.mw-hud-card.mw-hud-card--anchored .mw-slides {
-  flex: none;
-  height: auto;
-  aspect-ratio: 16 / 9;
-}
-/* Pointer from the card down to the site on the map. */
-.mw-hud-card.mw-hud-card--anchored::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -8px;
-  width: 16px;
-  height: 16px;
-  margin-left: -8px;
-  background: rgba(255, 255, 255, 0.97);
-  border-right: 1px solid #e7ded5;
-  border-bottom: 1px solid #e7ded5;
-  transform: rotate(45deg);
-}
-@keyframes mw-card-from-label {
-  from { opacity: 0; transform: scale(0.18, 0.08); border-radius: 999px; }
-  60% { opacity: 1; }
-  to { opacity: 1; transform: none; }
-}
-@media (max-width: 480px) {
-  .mw-hud-card.mw-hud-card--anchored {
-    width: calc(100vw - 56px);
-    display: block;
-    padding: 0 0 12px;
-  }
-  .mw-hud-card.mw-hud-card--anchored .mw-slides {
-    aspect-ratio: 16 / 9;
-    min-height: 0;
-  }
-  .mw-hud-card.mw-hud-card--anchored .mw-hud-desc {
-    display: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .mw-hud-card.mw-hud-card--anchored { animation: none; }
-}
-
-
-/* Shown over the 2D map when the device cannot draw the 3D one. */
-.mw-mode-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-.mw-fallback-note {
-  position: absolute;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  z-index: 1000;
-  max-width: calc(100% - 32px);
-  margin: 0;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
-  color: #44403c;
-  font-size: 12.5px;
-  font-weight: 500;
-  text-align: center;
-}
-
-/* Phones and small tablets: the map fills the screen edge to edge, from under the 75px menu bar
-   to the bottom of the screen (dvh follows the browser bar as it shows/hides). The site list
-   starts below it and keeps its own side margins. */
-@media (max-width: 768px) {
-  .mw-shell {
-    padding: 0 0 20px;
-    gap: 18px;
-    min-height: 0;
-  }
-  .mw-viewport {
-    height: calc(100vh - 75px);
-    height: calc(100dvh - 75px);
-    min-height: 420px;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-  }
-  .mw-sidebar {
-    width: auto;
-    margin: 0 14px;
-  }
-}
-
-/* Line from a label to its model when the label had to move to stay clear of another one. */
-.mw-pin-leader {
-  position: absolute;
-  width: 2px;
-  margin-left: -1px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.45);
-  border-radius: 1px;
-  pointer-events: none;
 }

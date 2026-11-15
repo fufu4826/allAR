@@ -1017,44 +1017,45 @@
   }
 }
 
-/* Card: "ถัดไป" to the next site in the list, along the bottom of the card. */
+/* Card: "ถัดไป" to the next site in the list, a solid bar along the bottom of the card
+   (deep maroon, so it stands out without competing with the orange main button). */
 .mw-site-next {
   width: 100%;
-  min-height: 52px;
-  padding: 8px 18px;
+  min-height: 60px;
+  padding: 10px 14px 10px 20px;
   border: 0;
-  border-top: 1px solid #f0e8df;
   border-radius: 0 0 20px 20px;
-  background: #fffaf5;
+  background: linear-gradient(135deg, #4c0b1d 0%, #881337 100%);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  color: #1c1917;
+  color: #ffffff;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: filter 0.15s ease;
 }
 .mw-site-next:hover,
 .mw-site-next:focus-visible {
-  background: #fff1e6;
+  filter: brightness(1.12);
 }
 .mw-site-next-text {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  flex-direction: column;
   min-width: 0;
 }
 .mw-site-next-text small {
-  flex: none;
-  color: #c2410c;
+  color: #fed7aa;
   font-size: 12.5px;
   font-weight: 700;
+  letter-spacing: 0.02em;
 }
 .mw-site-next-text strong {
-  font-size: 15px;
-  font-weight: 700;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1063,22 +1064,33 @@
   flex: none;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #881337 0%, #ea580c 100%);
-  color: #fff;
-  font-size: 12px;
-  transition: transform 0.15s ease;
+  background: #ffffff;
+  color: #ea580c;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  animation: mw-next-nudge 1.8s ease-in-out infinite;
 }
-.mw-site-next:hover > i {
-  transform: translateX(3px);
+@keyframes mw-next-nudge {
+  0%, 60%, 100% { transform: none; }
+  30% { transform: translateX(4px); }
+}
+/* The pointer under the floating card takes the bar's colour. */
+.mw-site-card--float:has(.mw-site-next)::after {
+  background: #881337;
+  border-color: #881337;
 }
 @media (max-width: 768px) {
   .mw-site-card--sheet .mw-site-next {
-    width: auto;
-    margin: 4px 16px 0;
-    border: 1px solid #f0e8df;
-    border-radius: 14px;
+    width: calc(100% - 32px);
+    margin: 6px 16px 0;
+    border-radius: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mw-site-next > i {
+    animation: none;
   }
 }

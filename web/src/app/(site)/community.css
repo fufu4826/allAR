@@ -590,3 +590,19 @@
   .site-video-head { margin-bottom: 16px; }
   .site-video-frame { border-radius: 16px; }
 }
+
+/* ---------- Public view counters (components/ViewCount.tsx) ---------- */
+.view-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.view-count i { color: var(--accent); }
+.item-title + .view-count { margin: -6px 0 14px; }
+.site-video-head .view-count { margin-top: 8px; }
+.view-count--compact { gap: 5px; font-size: 0.8rem; color: #6b7280; font-weight: 500; }
+.cb-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.featured-card .view-count--compact { display: flex; margin-top: 2px; }

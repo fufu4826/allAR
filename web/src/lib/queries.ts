@@ -1,9 +1,9 @@
 import "server-only";
 
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
-import { communities, collections, items } from "@/db/schema";
+import { communities, collections, items, pageStats } from "@/db/schema";
 import type { Community, Item } from "@/lib/types";
 
 export async function getCommunities(): Promise<Community[]> {
@@ -58,4 +58,26 @@ export async function getSearchIndex() {
   cacheTag("content");
   cacheLife("hours");
   return (await getCommunities()).flatMap((community) => community.items.map((item) => ({ ...item, communitySlug: community.slug, communityName: community.shortName })));
+}
+
+export type ViewCounts = { items: Record<string, number>; video: number };
+
+/** Public counters for one learning site: how often each item page was opened, and how often its
+ *  video was played. All days added up. Cached for a few minutes, so a new visit shows up shortly
+ *  after rather than on the next page load. */
+export async function getViewCounts(slug: string): Promise<ViewCounts> {
+  "use cache";
+  cacheTag("stats");
+  cacheLife("minutes");
+  const rows = await db
+    .select({ itemId: pageStats.itemId, event: pageStats.event, total: sql<number>`CAST(SUM(${pageStats.count}) AS SIGNED)` })
+    .from(pageStats)
+    .where(and(eq(pageStats.slug, slug), sql`${pageStats.event} IN ('view', 'video')`))
+    .groupBy(pageStats.itemId, pageStats.event);
+  const counts: ViewCounts = { items: {}, video: 0 };
+  for (const row of rows) {
+    if (row.event === "video") counts.video += Number(row.total);
+    else if (row.itemId) counts.items[row.itemId] = Number(row.total);
+  }
+  return counts;
 }

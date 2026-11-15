@@ -117,7 +117,7 @@ export const auditLogs = mysqlTable("audit_logs", {
 /**
  * Visit counts per day (Thai time), page and event. One row per (day, event, site, item): no IP,
  * no cookie, nothing that identifies a visitor. item_id is "" for a learning-site page.
- * event: "view" = page opened, "ar" = the "view in AR" button pressed.
+ * event: "view" = page opened, "ar" = the "view in AR" button pressed, "video" = play pressed on the site video.
  */
 export const pageStats = mysqlTable("page_stats", {
   day: date("day", { mode: "string" }).notNull(),

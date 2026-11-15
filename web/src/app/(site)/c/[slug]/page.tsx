@@ -6,13 +6,14 @@ import { connection } from "next/server";
 import PageSkeleton from "@/components/PageSkeleton";
 import CollectionBrowser from "@/components/CollectionBrowser";
 import { PhuphanCentre } from "@/components/phuphan/PhuphanSections";
-import { getCommunityWithContent } from "@/lib/queries";
+import { getCommunityWithContent, getViewCounts } from "@/lib/queries";
 import SiteName from "@/components/SiteName";
 import SiteIcon from "@/components/SiteIcon";
 import StoryText from "@/components/StoryText";
 import TrackVisit from "@/components/TrackVisit";
 import SiteVideo from "@/components/SiteVideo";
 import { pageMetadata } from "@/content/seo";
+import ViewCount from "@/components/ViewCount";
 
 export function generateStaticParams() {
   return [{ slug: "__placeholder__" }];
@@ -39,7 +40,7 @@ export default function CommunityPage({ params }: PageProps<"/c/[slug]">) {
 async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">["params"] }) {
   const { slug } = await params;
   await connection();
-  const community = await getCommunityWithContent(slug);
+  const [community, counts] = await Promise.all([getCommunityWithContent(slug), getViewCounts(slug)]);
   if (!community) notFound();
 
   const theme = community.theme || community.slug || "default";
@@ -94,7 +95,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
 
       {/* The site's own video, between the hero and the story. Nothing is shown until a file is added. */}
       {community.video && (
-        <SiteVideo src={community.video} poster={community.cover} siteName={community.shortName} />
+        <SiteVideo src={community.video} poster={community.cover} siteName={community.shortName} slug={community.slug} plays={counts.video} />
       )}
 
       {isPhuphan ? (
@@ -176,6 +177,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
                     <span>
                       <strong>{f.name}</strong>
                       <small>{f.model ? "ดูโมเดล 3D / AR ↗" : "ดูรายละเอียด ↗"}</small>
+                      <ViewCount count={counts.items[f.id]} compact />
                     </span>
                   </Link>
                 ))}
@@ -187,6 +189,7 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
             communitySlug={community.slug}
             collections={community.collections}
             items={community.items}
+            views={counts.items}
           />
         </div>
       </section>

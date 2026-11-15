@@ -69,6 +69,8 @@ test("visit counting: only well-formed views and AR presses are recorded", () =>
   assert.deepEqual(parseStatEvent({ event: "view", slug: "tharae" }), { event: "view", slug: "tharae", itemId: "" });
   assert.deepEqual(parseStatEvent({ event: "ar", slug: "tharae", itemId: "abc123" }), { event: "ar", slug: "tharae", itemId: "abc123" });
   assert.equal(parseStatEvent({ event: "ar", slug: "tharae" }), null);
+  assert.deepEqual(parseStatEvent({ event: "video", slug: "phuphan" }), { event: "video", slug: "phuphan", itemId: "" });
+  assert.equal(parseStatEvent({ event: "video", slug: "phuphan", itemId: "abc123" }), null);
   assert.equal(parseStatEvent({ event: "click", slug: "tharae" }), null);
   assert.equal(parseStatEvent({ event: "view", slug: "../x" }), null);
   assert.equal(parseStatEvent({ event: "view", slug: "tharae", itemId: "A B" }), null);

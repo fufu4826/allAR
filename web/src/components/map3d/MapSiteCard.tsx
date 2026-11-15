@@ -9,7 +9,7 @@ import SiteName from "@/components/SiteName";
  * The selected site's card: cover, name, one line about it, and a single main button into the site.
  * - "float": over the 3D map, growing out of the site's label (the scene positions its holder);
  * - "corner": over the 2D map, bottom-left;
- * - "sheet": inside the phone's bottom sheet, with a way back to the list.
+ * - "sheet": inside the phone's bottom sheet, as a compact strip (close returns to the list).
  */
 export default function MapSiteCard({
   site,
@@ -29,17 +29,60 @@ export default function MapSiteCard({
   position?: { at: number; of: number };
 }) {
   const sheet = variant === "sheet";
+  const nextButton = next && onNext && (
+    <button type="button" className="mw-site-next" onClick={onNext}>
+      <span className="mw-site-next-text">
+        <small>{position ? `ถัดไป · ${position.at === position.of ? 1 : position.at + 1} จาก ${position.of}` : "ถัดไป"}</small>
+        <strong>{next.mapLabel || next.shortName}</strong>
+      </span>
+      <i className="fa-solid fa-chevron-right" aria-hidden="true"></i>
+    </button>
+  );
+
+  // Phone sheet: one compact strip (thumbnail beside the name), so most of the screen stays map.
+  if (sheet) {
+    return (
+      <article className="mw-site-card mw-site-card--sheet" aria-label={site.shortName}>
+        <div className="mw-sheet-head">
+          <span className="mw-sheet-thumb">
+            {site.cover ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={site.cover} alt="" loading="lazy" />
+            ) : (
+              <SiteIcon slug={site.slug} />
+            )}
+          </span>
+          <span className="mw-sheet-titles">
+            <h3 className="mw-sheet-name">{site.mapLabel || site.shortName}</h3>
+            {site.mapLabel && <span className="mw-sheet-full">{site.shortName}</span>}
+            <span className="mw-sheet-meta">
+              <span>
+                <i className="fa-solid fa-cube" aria-hidden="true"></i>
+                {site.placeholder || !site.itemCount ? " กำลังเตรียมข้อมูล" : ` ${site.itemCount} ชิ้น`}
+              </span>
+              <a href={site.gmapsUrl} target="_blank" rel="noopener noreferrer">
+                <i className="fa-solid fa-location-dot" aria-hidden="true"></i> นำทาง
+              </a>
+            </span>
+          </span>
+          <button type="button" className="mw-sheet-close" onClick={onClose} aria-label="กลับไปที่รายการ 5 แหล่งเรียนรู้">
+            <i className="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+        {site.desc && <p className="mw-sheet-desc">{site.desc}</p>}
+        <Link href={`/c/${site.slug}`} className="mw-site-cta mw-sheet-cta">
+          เข้าชมแหล่งเรียนรู้ <i className="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </Link>
+        {nextButton}
+      </article>
+    );
+  }
+
   return (
     <article className={`mw-site-card mw-site-card--${variant}`} aria-label={site.shortName}>
-      {sheet ? (
-        <button type="button" className="mw-site-back" onClick={onClose}>
-          <i className="fa-solid fa-arrow-left" aria-hidden="true"></i> ดูทั้ง 5 แหล่งเรียนรู้
-        </button>
-      ) : (
-        <button type="button" className="mw-site-close" onClick={onClose} aria-label="ปิด">
-          <i className="fa-solid fa-xmark" aria-hidden="true"></i>
-        </button>
-      )}
+      <button type="button" className="mw-site-close" onClick={onClose} aria-label="ปิด">
+        <i className="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
 
       <div className="mw-site-cover">
         {site.cover ? (
@@ -76,15 +119,7 @@ export default function MapSiteCard({
         </a>
       </div>
 
-      {next && onNext && (
-        <button type="button" className="mw-site-next" onClick={onNext}>
-          <span className="mw-site-next-text">
-            <small>{position ? `ถัดไป · ${position.at === position.of ? 1 : position.at + 1} จาก ${position.of}` : "ถัดไป"}</small>
-            <strong>{next.mapLabel || next.shortName}</strong>
-          </span>
-          <i className="fa-solid fa-chevron-right" aria-hidden="true"></i>
-        </button>
-      )}
+      {nextButton}
     </article>
   );
 }

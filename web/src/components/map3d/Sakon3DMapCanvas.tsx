@@ -263,7 +263,7 @@ export default function Sakon3DMapCanvas({
       const half = distance * Math.tan(THREE.MathUtils.degToRad(38 / 2));
       // With the card in the phone's sheet over the lower map, aim below the model instead, so it
       // shows in the strip of map above the sheet.
-      const lift = cardBelowRef.current ? -half * 0.62 : half * (camera.aspect < 1 ? 0.66 : 0.6);
+      const lift = cardBelowRef.current ? -half * 0.3 : half * (camera.aspect < 1 ? 0.66 : 0.6);
       targetLookAt = new THREE.Vector3(x, elev.y + 0.6 + lift, z);
       targetPos = cameraAt(targetLookAt, distance, azimuth, SITE_POLAR);
     }

@@ -53,7 +53,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const shellRef = useRef<HTMLDivElement>(null);
   const cardAnchorRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
-  // "เริ่มสำรวจ": the pins light up in turn like a roulette wheel, then one site is picked.
+  // "เริ่มเรียนรู้": the pins light up in turn like a roulette wheel, then one site is picked.
   const [spinning, setSpinning] = useState(false);
   const spinTimers = useRef<number[]>([]);
   useEffect(() => () => spinTimers.current.forEach((t) => window.clearTimeout(t)), []);
@@ -138,15 +138,15 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
             disabled={spinning}
             aria-live="polite"
           >
-            <i className="fa-solid fa-dice" aria-hidden="true"></i>
-            {spinning ? "กำลังสุ่มแหล่งเรียนรู้…" : "เริ่มสำรวจ"}
+            <i className="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+            {spinning ? "กำลังสุ่มแหล่งเรียนรู้…" : "เริ่มเรียนรู้"}
           </button>
         )}
 
         {!hasPicked && (
           <p className="mw-hint" role="note">
             <i className="fa-solid fa-hand-pointer" aria-hidden="true"></i>
-            {isPhone ? "กดหมุด เลือกจากรายการ หรือกดเริ่มสำรวจ" : "กดหมุดบนแผนที่ เลือกจากรายการ หรือกดเริ่มสำรวจให้สุ่มให้"}
+            {isPhone ? "กดหมุด หรือกดเริ่มเรียนรู้" : "กดหมุดบนแผนที่ เลือกจากรายการ หรือกดเริ่มเรียนรู้ให้สุ่มให้"}
           </p>
         )}
 

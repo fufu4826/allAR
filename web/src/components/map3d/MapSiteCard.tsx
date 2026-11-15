@@ -20,7 +20,7 @@ export default function MapSiteCard({
   site: MapLandmark;
   variant: "float" | "corner" | "sheet";
   onClose: () => void;
-  /** Pick another site at random (the map's "เริ่มสำรวจ"). */
+  /** Pick another site at random (the map's "เริ่มเรียนรู้"). */
   onShuffle?: () => void;
 }) {
   const sheet = variant === "sheet";

@@ -14,6 +14,10 @@ export interface Landmark3DConfig {
   pinAnchor?: "center" | "left" | "right"; // 2D map only
   /** Short name on the map pin, so the five labels do not crowd each other. */
   mapLabel?: string;
+  /** Picture on the site's map card and list row: the same one as the site page's banner. Sites
+   *  whose banner is a fixed theme image (community.css) name it here; the others use the cover
+   *  photo set in the admin, which is also their banner. */
+  banner?: string;
 }
 
 /** A site on the map: database fields merged with its 3D config. */
@@ -30,7 +34,7 @@ export interface MapLandmark extends Landmark3DConfig {
   gmapsUrl: string;
   itemCount: number;
   placeholder: boolean;
-  /** Cover photo shown on the site's card (null: the card shows the site's icon instead). */
+  /** Picture on the site's card and list row: its page banner (null: the site's icon instead). */
   cover: string | null;
 }
 
@@ -47,18 +51,21 @@ export const LANDMARK_3D_CONFIG: Record<string, Landmark3DConfig> = {
     pinAnchor: "center",
   },
   watklang: {
+    banner: "/brand/watklang-banner.webp",
     mapLabel: "วัดกลางฯ",
     modelUrl: "/map3d/models/watklang.glb",
     modelConfig: { scale: 1.45, rotationY: Math.PI * 0.35, offset: { x: 0.35, y: 0.05, z: 0.45 } },
     pinAnchor: "left",
   },
   watnuea: {
+    banner: "/brand/watnuea-real-banner.webp",
     mapLabel: "วัดมหาพรหมฯ",
     modelUrl: "/map3d/models/watnuea.glb",
     modelConfig: { scale: 1.25, rotationY: Math.PI * 0.25, offset: { x: -0.22, y: 0.05, z: -0.45 } },
     pinAnchor: "right",
   },
   nonhom: {
+    banner: "/brand/nonhom-banner.webp",
     mapLabel: "บ้านโนนหอม",
     modelUrl: "/map3d/models/nonhom.glb",
     modelConfig: { scale: 1.25, rotationY: Math.PI * 0.15, offset: { x: 0, y: 0.05, z: 0 } },
@@ -106,7 +113,7 @@ export function toMapLandmarks(communities: MapCommunity[]): MapLandmark[] {
       gmapsUrl: `https://www.google.com/maps?q=${lat},${lon}`,
       itemCount: c.itemCount,
       placeholder: c.placeholder,
-      cover: c.cover ?? null,
+      cover: LANDMARK_3D_CONFIG[c.slug]?.banner ?? c.cover ?? null,
     };
   });
 }

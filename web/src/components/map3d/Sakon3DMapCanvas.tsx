@@ -147,6 +147,19 @@ interface CameraAnimState {
   targetLookAt: THREE.Vector3;
   /** Tilt (polar angle) to lock once the flight ends. */
   polar: number;
+  /** Screen shift (px) of the picture, eased along with the flight (see applyViewOffset). */
+  startOffset: { x: number; y: number };
+  targetOffset: { x: number; y: number };
+}
+
+/** Shift the picture on screen without moving the camera's pivot: the orbit still turns around
+ *  controls.target (the site), while the site is drawn clear of the card next to it. */
+function applyViewOffset(camera: THREE.PerspectiveCamera, width: number, height: number, x: number, y: number) {
+  if (Math.abs(x) < 0.5 && Math.abs(y) < 0.5) {
+    if (camera.view?.enabled) camera.clearViewOffset();
+    return;
+  }
+  camera.setViewOffset(width, height, x, y, width, height);
 }
 
 export interface Sakon3DMapCanvasProps {
@@ -174,6 +187,9 @@ export interface Sakon3DMapCanvasProps {
   /** The card covers the lower part of the map (phone sheet): frame the site high on screen
    *  instead of leaving room above it. */
   cardBelow?: boolean;
+  /** Width in px taken by the site card docked on the left of the map (wide screens): the site is
+   *  framed in the middle of the open area to its right, so the card never covers the model. */
+  cardLeftPx?: number;
 }
 
 export default function Sakon3DMapCanvas({
@@ -191,6 +207,7 @@ export default function Sakon3DMapCanvas({
   insetTop = 64,
   insetBottom = 16,
   cardBelow = false,
+  cardLeftPx = 0,
 }: Sakon3DMapCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const landmarksRef = useRef<MapLandmark[]>(landmarks);
@@ -214,6 +231,7 @@ export default function Sakon3DMapCanvas({
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const animStateRef = useRef<CameraAnimState | null>(null);
+  const viewOffsetRef = useRef({ x: 0, y: 0 });
   const roadGroupRef = useRef<THREE.Group | null>(null);
   const terrainMeshRef = useRef<THREE.Mesh | null>(null);
   const cartoonTextureRef = useRef<THREE.Texture | null>(null);
@@ -238,6 +256,10 @@ export default function Sakon3DMapCanvas({
   useEffect(() => {
     cardBelowRef.current = cardBelow;
   }, [cardBelow]);
+  const cardLeftRef = useRef(cardLeftPx);
+  useEffect(() => {
+    cardLeftRef.current = cardLeftPx;
+  }, [cardLeftPx]);
   useEffect(() => {
     insetsRef.current = { top: insetTop, bottom: insetBottom };
   }, [insetTop, insetBottom]);
@@ -267,14 +289,10 @@ export default function Sakon3DMapCanvas({
       const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
       const elev = getTerrainElev(x, z);
 
-      // Aim above the model so it sits low on the screen, leaving room for the site's card above it.
-      // Portrait screens (phones) need a bit more room, the card is taller there relative to the map.
       const distance = 13;
-      const half = distance * Math.tan(THREE.MathUtils.degToRad(38 / 2));
-      // With the card in the phone's sheet over the lower map, aim below the model instead, so it
-      // shows in the strip of map above the sheet.
-      const lift = cardBelowRef.current ? -half * 0.3 : half * (camera.aspect < 1 ? 0.66 : 0.6);
-      targetLookAt = new THREE.Vector3(x, elev.y + 0.6 + lift, z);
+      // The pivot is the model itself, so turning the map spins around the site. Room for the
+      // card comes from shifting the picture instead (targetOffset below).
+      targetLookAt = new THREE.Vector3(x, elev.y + 0.6, z);
       targetPos = cameraAt(targetLookAt, distance, azimuth, SITE_POLAR);
     }
 
@@ -282,7 +300,18 @@ export default function Sakon3DMapCanvas({
     // Free the tilt for the flight; it is locked again (to `polar`) when the flight ends.
     controls.minPolarAngle = Math.min(polar, controls.getPolarAngle());
     controls.maxPolarAngle = Math.max(polar, controls.getPolarAngle());
+    // Screen shift for the card: wide screens, the card docked on the left, so the site moves right
+    // by half the card's width; phones, the card in the sheet below, so the site moves up.
+    const viewWidth = mountRef.current?.clientWidth || 0;
+    const viewHeight = mountRef.current?.clientHeight || 0;
+    const targetOffset = { x: 0, y: 0 };
+    if (landmark) {
+      if (cardBelowRef.current) targetOffset.y = Math.round(viewHeight * 0.15);
+      else if (cardLeftRef.current > 0 && viewWidth > cardLeftRef.current * 1.6) targetOffset.x = -Math.round(cardLeftRef.current / 2);
+    }
     animStateRef.current = {
+      startOffset: { ...viewOffsetRef.current },
+      targetOffset,
       polar,
       startTime: performance.now(),
       duration: 650,
@@ -379,8 +408,13 @@ export default function Sakon3DMapCanvas({
       controls.maxPolarAngle = polar;
     };
     const cancelAnim = () => {
-      // Stopped mid-flight: keep the tilt the flight was heading for.
-      if (animStateRef.current) lockTilt(animStateRef.current.polar);
+      // Stopped mid-flight: keep the tilt and the screen shift the flight was heading for.
+      const anim = animStateRef.current;
+      if (anim) {
+        lockTilt(anim.polar);
+        viewOffsetRef.current = { ...anim.targetOffset };
+        applyViewOffset(camera, container.clientWidth, container.clientHeight, anim.targetOffset.x, anim.targetOffset.y);
+      }
       animStateRef.current = null;
     };
     controls.addEventListener("start", cancelAnim);
@@ -977,6 +1011,10 @@ export default function Sakon3DMapCanvas({
 
         camera.position.lerpVectors(anim.startPos, anim.targetPos, ease);
         controls.target.lerpVectors(anim.startTarget, anim.targetLookAt, ease);
+        const ox = anim.startOffset.x + (anim.targetOffset.x - anim.startOffset.x) * ease;
+        const oy = anim.startOffset.y + (anim.targetOffset.y - anim.startOffset.y) * ease;
+        viewOffsetRef.current = { x: ox, y: oy };
+        applyViewOffset(camera, container.clientWidth || 800, container.clientHeight || 580, ox, oy);
 
         if (progress >= 1.0) {
           lockTilt(anim.polar);
@@ -1194,6 +1232,7 @@ export default function Sakon3DMapCanvas({
       const nw = container.clientWidth;
       const nh = container.clientHeight;
       camera.aspect = nw / nh;
+      applyViewOffset(camera, nw, nh, viewOffsetRef.current.x, viewOffsetRef.current.y);
       camera.updateProjectionMatrix();
       renderer.setSize(nw, nh);
       // Label sizes depend on the screen width (smaller pills on phones): measure them again.

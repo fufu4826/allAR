@@ -10,6 +10,9 @@ import MapSiteCard from "@/components/map3d/MapSiteCard";
 import SiteIcon from "@/components/SiteIcon";
 import MapGestureHint from "@/components/map3d/MapGestureHint";
 
+// Width the docked card takes on the left of the map (card 320px + 16px margin each side).
+const CARD_DOCK_PX = 352;
+
 interface MapWorkstationProps {
   landmarks: MapLandmark[];
 }
@@ -58,7 +61,6 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   // The 3D map has loaded: time to show how to turn it.
   const [mapReady, setMapReady] = useState(false);
-  const cardAnchorRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
   // "เริ่มเรียนรู้": the pins light up in turn like a roulette wheel, then one site is picked.
   const [spinning, setSpinning] = useState(false);
@@ -191,7 +193,6 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
           <div className="relative w-full h-full">
             <Sakon3DMap
               landmarks={landmarks}
-              cardAnchorRef={cardAnchorRef}
               selectedId={selectedSlug}
               onSelectLandmark={selectFromMap}
               roadsVisible={roadsVisible}
@@ -201,6 +202,7 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
               insetTop={isPhone ? 60 : 68}
               insetBottom={isPhone ? 72 : 56}
               cardBelow={isPhone}
+              cardLeftPx={isPhone ? 0 : CARD_DOCK_PX}
               className="w-full h-full"
               onReady={() => setMapReady(true)}
               onWebglUnavailable={() => {
@@ -226,16 +228,12 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
           </div>
         )}
 
-        {/* Wide screens: the card grows out of the site's label in 3D (the scene moves its holder)
-            and sits in the corner in 2D. Phones show it in the sheet instead. */}
+        {/* Wide screens: the card is docked at the top-left of the map (3D and 2D alike) and the
+            camera frames the site to its right. Phones show it in the sheet instead. */}
         {mapMode === "3d" && !selected && !spinning && <MapGestureHint ready={mapReady} targetRef={viewportRef} />}
 
-        {mapMode === "3d" ? (
-          <div ref={cardAnchorRef} className="mw-card-anchor" style={{ display: "none" }}>
-            {selected && !isPhone && <MapSiteCard site={selected} variant="float" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />}
-          </div>
-        ) : (
-          selected && !isPhone && <MapSiteCard site={selected} variant="corner" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />
+        {selected && !isPhone && (
+          <MapSiteCard key={selected.id} site={selected} variant="dock" onClose={() => select("")} next={nextSite} onNext={goNext} position={tourPosition} />
         )}
       </div>
 

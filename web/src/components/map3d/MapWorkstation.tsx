@@ -1,138 +1,118 @@
 "use client";
 
 import "./map3d.css";
-import { useState, useRef, useMemo, useSyncExternalStore } from "react";
-import Link from "next/link";
+import { useRef, useState, useSyncExternalStore } from "react";
 import Sakon3DMap from "@/components/map3d/Sakon3DMap";
 import CommunityMap from "@/components/CommunityMap";
 import type { MapLandmark } from "@/components/map3d/data/landmarksData";
-import SiteName from "@/components/SiteName";
-import SiteSlideshow from "@/components/map3d/SiteSlideshow";
+import MapViewMenu, { type MapMode, type TextureMode } from "@/components/map3d/MapViewMenu";
+import MapSiteCard from "@/components/map3d/MapSiteCard";
 import SiteIcon from "@/components/SiteIcon";
 
 interface MapWorkstationProps {
   landmarks: MapLandmark[];
 }
 
-// iPhone Safari has no element fullscreen API, so the button is hidden there.
+// iPhone Safari has no element fullscreen API, so the command is left out there.
 const noop = () => () => {};
 const canFullscreen = () =>
   typeof document !== "undefined" &&
   !!document.fullscreenEnabled &&
   typeof document.documentElement.requestFullscreen === "function";
 
+// Phones: the site list is a sheet under the map and the card opens in it (see map3d.css).
+const PHONE_QUERY = "(max-width: 768px)";
+const subscribePhone = (cb: () => void) => {
+  const mq = window.matchMedia(PHONE_QUERY);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
+const isPhoneNow = () => window.matchMedia(PHONE_QUERY).matches;
+
+/**
+ * Map page. One way through: pick one of the five sites (a pin on the map or a row in the list),
+ * read its card, then press "เข้าชมแหล่งเรียนรู้". Every map setting sits in one menu.
+ */
 export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
   const fullscreenSupported = useSyncExternalStore(noop, canFullscreen, () => false);
-  const [mapMode, setMapMode] = useState<"3d" | "osm">("3d");
+  const isPhone = useSyncExternalStore(subscribePhone, isPhoneNow, () => false);
+
+  const [mapMode, setMapMode] = useState<MapMode>("3d");
+  const [textureMode, setTextureMode] = useState<TextureMode>("color");
+  const [roadsVisible, setRoadsVisible] = useState(true);
+  const [resetViewKey, setResetViewKey] = useState(0);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
-  // Set when the device cannot draw WebGL: the 2D map takes over and the 3D button is turned off.
+  const [hoverSlug, setHoverSlug] = useState<string | null>(null);
+  // The hint over the map goes away once the visitor has picked a site.
+  const [hasPicked, setHasPicked] = useState(false);
+  // Phone sheet: "peek" shows the heading and the first rows, "open" the whole list.
+  const [sheetOpen, setSheetOpen] = useState(false);
+  // Set when the device cannot draw WebGL: the 2D map takes over and the 3D choice is turned off.
   const [webglFailed, setWebglFailed] = useState(false);
-  const workstationRef = useRef<HTMLDivElement>(null);
-  const sidebarListRef = useRef<HTMLDivElement>(null);
+
+  const shellRef = useRef<HTMLDivElement>(null);
   const cardAnchorRef = useRef<HTMLDivElement>(null);
+  const touchStartY = useRef<number | null>(null);
 
-  const selectedItem: MapLandmark | undefined = useMemo(() => {
-    return landmarks.find((lm) => lm.id === selectedSlug);
-  }, [landmarks, selectedSlug]);
+  const selected = landmarks.find((lm) => lm.id === selectedSlug);
 
-  const handleSelectLandmark = (slug: string) => {
-    if (!slug || selectedSlug === slug) {
-      setSelectedSlug(null);
-    } else {
-      setSelectedSlug(slug);
-      const cardEl = document.getElementById(`workstation-card-${slug}`);
-      const list = sidebarListRef.current;
-      if (cardEl && list) {
-        // Scroll only the card list; scrollIntoView would also scroll the page and push the map under the header.
-        const top = cardEl.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
-        list.scrollTo({ top: top - 8, behavior: "smooth" });
-      }
-    }
+  const select = (slug: string) => {
+    setSelectedSlug(slug || null);
+    if (slug) setHasPicked(true);
+  };
+  // A pin pressed again closes its card.
+  const selectFromMap = (slug: string) => select(!slug || slug === selectedSlug ? "" : slug);
+
+  const resetView = () => {
+    setSelectedSlug(null);
+    setResetViewKey((k) => k + 1);
   };
 
   const toggleFullscreen = () => {
-    if (!workstationRef.current || !canFullscreen()) return;
-    if (!document.fullscreenElement) {
-      workstationRef.current.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
+    if (!shellRef.current || !canFullscreen()) return;
+    if (!document.fullscreenElement) shellRef.current.requestFullscreen().catch(() => {});
+    else document.exitFullscreen().catch(() => {});
+  };
+
+  // Swipe on the sheet's top edge: up opens the list, down closes the card or the list.
+  const onGripTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+  const onGripTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    touchStartY.current = null;
+    if (dy < -40 && !selected) setSheetOpen(true);
+    else if (dy > 40) {
+      if (selected) setSelectedSlug(null);
+      else setSheetOpen(false);
     }
   };
 
-  const renderCard = (site: MapLandmark, anchored: boolean) => (
-    <div
-      key={site.id}
-      className={`mw-hud-card ${site.slides.length ? "mw-hud-card--expanded" : "animate-fade-in"} ${anchored ? "mw-hud-card--anchored" : ""}`}
-    >
-      <SiteSlideshow slides={site.slides} siteName={site.shortName} />
-      <div className="mw-hud-header">
-        <div className="mw-card-top" style={{ minWidth: 0 }}>
-          <span className="mw-card-icon">
-            <SiteIcon slug={site.slug} />
-          </span>
-          <div style={{ minWidth: 0 }}>
-            <h3 className="mw-hud-title"><SiteName name={site.name} /></h3>
-          </div>
-        </div>
-        <button type="button" onClick={() => setSelectedSlug(null)} className="mw-hud-close" title="ปิดหน้าต่าง">
-          <i className="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <p className="mw-hud-desc">{site.desc}</p>
-
-      <div className="mw-hud-footer">
-        <a href={site.gmapsUrl} target="_blank" rel="noopener noreferrer" className="mw-gps-link">
-          <i className="fa-solid fa-location-dot text-rose-500"></i>
-          <span>เปิดใน Google Maps</span>
-          <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: "9px" }}></i>
-        </a>
-        <Link href={`/c/${site.slug}`} className="mw-hud-cta">
-          <span>ชมโมเดล 3D AR</span>
-          <i className="fa-solid fa-arrow-right" style={{ fontSize: "10px" }}></i>
-        </Link>
-      </div>
-    </div>
-  );
+  const sheetState = isPhone ? (selected ? "card" : sheetOpen ? "open" : "peek") : undefined;
 
   return (
-    <div ref={workstationRef} className="mw-shell">
-      {/* Left Column: Framed 3D / 2D Map Viewport */}
+    <div ref={shellRef} className="mw-shell" data-sheet={sheetState}>
       <div className="mw-viewport">
-        {/* Top-Right Unified Mode Switcher & Fullscreen (Always visible in both 3D and 2D modes) */}
-        <div className="mw-top-right">
-          <div className="mw-mode-group">
-            <button
-              type="button"
-              onClick={() => setMapMode("3d")}
-              className={`mw-mode-btn ${mapMode === "3d" ? "active" : ""}`}
-              disabled={webglFailed}
-              title={webglFailed ? "อุปกรณ์นี้ไม่รองรับแผนที่ 3 มิติ" : undefined}
-            >
-              <i className="fa-solid fa-cubes"></i>
-              <span>แผนที่ 3 มิติ</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMapMode("osm")}
-              className={`mw-mode-btn ${mapMode === "osm" ? "active" : ""}`}
-            >
-              <i className="fa-solid fa-map"></i>
-              <span>แผนที่ 2 มิติ</span>
-            </button>
-          </div>
+        {!hasPicked && (
+          <p className="mw-hint" role="note">
+            <i className="fa-solid fa-hand-pointer" aria-hidden="true"></i>
+            {isPhone ? "กดหมุด หรือเลือกจากรายการด้านล่าง" : "กดหมุดบนแผนที่ หรือเลือกจากรายการ เพื่อเข้าชม"}
+          </p>
+        )}
 
-          {fullscreenSupported && (
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="mw-icon-btn"
-              title="ขยายเต็มจอ"
-              aria-label="ขยายเต็มจอ"
-            >
-              <i className="fa-solid fa-expand"></i>
-            </button>
-          )}
+        <div className="mw-view-anchor">
+          <MapViewMenu
+            mapMode={mapMode}
+            onMapMode={setMapMode}
+            webglFailed={webglFailed}
+            textureMode={textureMode}
+            onTextureMode={setTextureMode}
+            roadsVisible={roadsVisible}
+            onRoadsVisible={setRoadsVisible}
+            onResetView={resetView}
+            onFullscreen={fullscreenSupported ? toggleFullscreen : undefined}
+          />
         </div>
 
         {mapMode === "3d" ? (
@@ -141,7 +121,14 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
               landmarks={landmarks}
               cardAnchorRef={cardAnchorRef}
               selectedId={selectedSlug}
-              onSelectLandmark={handleSelectLandmark}
+              onSelectLandmark={selectFromMap}
+              roadsVisible={roadsVisible}
+              textureMode={textureMode}
+              resetViewKey={resetViewKey}
+              hoverId={hoverSlug}
+              insetTop={isPhone ? 60 : 68}
+              insetBottom={56}
+              cardBelow={isPhone}
               className="w-full h-full"
               onWebglUnavailable={() => {
                 setWebglFailed(true);
@@ -154,7 +141,9 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
             <CommunityMap
               landmarks={landmarks}
               selectedId={selectedSlug}
-              onSelectLandmark={handleSelectLandmark}
+              onSelectLandmark={selectFromMap}
+              hoverId={hoverSlug}
+              resetViewKey={resetViewKey}
             />
             {webglFailed && (
               <p className="mw-fallback-note" role="status">
@@ -164,88 +153,72 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
           </div>
         )}
 
-        {/* Selected site's card. In 3D it grows out of the site's label and follows it (the scene
-            positions the holder); in 2D it sits in the corner. */}
+        {/* Wide screens: the card grows out of the site's label in 3D (the scene moves its holder)
+            and sits in the corner in 2D. Phones show it in the sheet instead. */}
         {mapMode === "3d" ? (
           <div ref={cardAnchorRef} className="mw-card-anchor" style={{ display: "none" }}>
-            {selectedItem && renderCard(selectedItem, true)}
+            {selected && !isPhone && <MapSiteCard site={selected} variant="float" onClose={() => select("")} />}
           </div>
         ) : (
-          selectedItem && renderCard(selectedItem, false)
+          selected && !isPhone && <MapSiteCard site={selected} variant="corner" onClose={() => select("")} />
         )}
       </div>
 
-      {/* Right Column: Clean White Rounded Panel ("5 แหล่งเรียนรู้สำคัญ") */}
-      <aside className="mw-sidebar">
-        {/* Clean Header */}
-        <div className="mw-sidebar-header">
-          <div className="mw-sidebar-badge">
-            <i className="fa-solid fa-map-location-dot"></i>
+      <aside className="mw-panel" aria-label="5 แหล่งเรียนรู้">
+        {isPhone && (
+          <div className="mw-sheet-grip" onTouchStart={onGripTouchStart} onTouchEnd={onGripTouchEnd}>
+            <button
+              type="button"
+              className="mw-sheet-handle"
+              aria-label={selected ? "กลับไปที่รายการ" : sheetOpen ? "ย่อรายการ" : "ขยายรายการ"}
+              aria-expanded={sheetState !== "peek"}
+              onClick={() => (selected ? select("") : setSheetOpen((v) => !v))}
+            >
+              <span aria-hidden="true"></span>
+            </button>
           </div>
-          <div style={{ minWidth: 0 }}>
-            <h2 className="mw-sidebar-title">5 แหล่งเรียนรู้สำคัญ</h2>
-            <span className="mw-sidebar-sub">5 LEARNING SITES OF SAKON NAKHON</span>
-          </div>
-        </div>
+        )}
 
-        {/* Scrollable 5 Cards List (No numbers, no water level badge, full description text) */}
-        <div ref={sidebarListRef} className="mw-card-list">
-          {landmarks.map((item) => {
-            const isSelected = selectedSlug === item.id;
-            return (
-              <div
-                key={item.id}
-                id={`workstation-card-${item.id}`}
-                onClick={() => handleSelectLandmark(item.id)}
-                className={`mw-card ${isSelected ? "active" : ""}`}
-              >
-                {/* Row 1: Icon, Name, English Name */}
-                <div className="mw-card-top">
-                  <span className="mw-card-icon">
-                    <SiteIcon slug={item.slug} />
-                  </span>
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h3 className="mw-card-title"><SiteName name={item.name} /></h3>
-                  </div>
-                </div>
-
-                {/* Row 2: Full Uncut Description */}
-                <p className="mw-card-desc">{item.desc}</p>
-
-                {/* Row 3: Clean Footer */}
-                <div className="mw-card-footer">
-                  <a
-                    href={item.gmapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="mw-gps-link truncate"
-                    title="เปิดใน Google Maps"
-                  >
-                    <i className="fa-solid fa-location-dot text-rose-500"></i>
-                    <span>เปิดใน Google Maps</span>
-                    <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: "9px" }}></i>
-                  </a>
-
-                  <Link
-                    href={`/c/${item.slug}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="mw-ar-btn"
-                  >
-                    <span>สำรวจ 3D AR</span>
-                    <i className="fa-solid fa-arrow-right" style={{ fontSize: "9px" }}></i>
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Clean Minimal Reference Footer */}
-        <div className="mw-sidebar-footer">
-          <span className="mw-ready-pill">WebAR Ready</span>
-        </div>
+        {isPhone && selected ? (
+          <MapSiteCard site={selected} variant="sheet" onClose={() => select("")} />
+        ) : (
+          <>
+            <div className="mw-panel-head">
+              <h2 className="mw-panel-title">เลือกแหล่งเรียนรู้ที่อยากเข้าชม</h2>
+              <p className="mw-panel-sub">
+                {isPhone ? "กดชื่อเพื่อดูบนแผนที่" : "กดหมุดบนแผนที่ หรือกดจากรายการนี้"}
+              </p>
+            </div>
+            <ul className="mw-rows">
+              {landmarks.map((site) => {
+                const active = site.id === selectedSlug;
+                return (
+                  <li key={site.id}>
+                    <button
+                      type="button"
+                      className={`mw-row ${active ? "active" : ""}`}
+                      aria-current={active ? "true" : undefined}
+                      onClick={() => select(site.id)}
+                      onMouseEnter={() => setHoverSlug(site.id)}
+                      onMouseLeave={() => setHoverSlug(null)}
+                      onFocus={() => setHoverSlug(site.id)}
+                      onBlur={() => setHoverSlug(null)}
+                    >
+                      <span className="mw-row-icon" aria-hidden="true">
+                        <SiteIcon slug={site.slug} />
+                      </span>
+                      <span className="mw-row-text">
+                        <strong>{site.shortName}</strong>
+                        <small>{site.desc || site.location}</small>
+                      </span>
+                      <i className="fa-solid fa-chevron-right mw-row-go" aria-hidden="true"></i>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
       </aside>
     </div>
   );

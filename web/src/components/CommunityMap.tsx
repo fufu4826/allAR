@@ -16,8 +16,10 @@ export interface CommunityMapProps {
   landmarks: MapLandmark[];
   selectedId?: string | null;
   onSelectLandmark?: (slug: string) => void;
+  hoverId?: string | null;
+  resetViewKey?: number;
 }
 
-export default function CommunityMap({ landmarks, selectedId, onSelectLandmark }: CommunityMapProps) {
-  return <LeafletMap landmarks={landmarks} selectedId={selectedId} onSelectLandmark={onSelectLandmark} />;
+export default function CommunityMap(props: CommunityMapProps) {
+  return <LeafletMap {...props} />;
 }

@@ -232,6 +232,8 @@ export default function Sakon3DMapCanvas({
   const controlsRef = useRef<OrbitControls | null>(null);
   const animStateRef = useRef<CameraAnimState | null>(null);
   const viewOffsetRef = useRef({ x: 0, y: 0 });
+  // Each loaded model's centre and size (scene units), so a site's close-up fits its model.
+  const modelFocusRef = useRef<Record<string, { center: THREE.Vector3; size: number }>>({});
   const roadGroupRef = useRef<THREE.Group | null>(null);
   const terrainMeshRef = useRef<THREE.Mesh | null>(null);
   const cartoonTextureRef = useRef<THREE.Texture | null>(null);
@@ -289,10 +291,14 @@ export default function Sakon3DMapCanvas({
       const z = -(landmark.lat - SAKON_CENTER_LAT) * SCALE_LAT + (landmark.modelConfig.offset?.z || 0);
       const elev = getTerrainElev(x, z);
 
-      const distance = 13;
+      // Close-up sized to the model: it fills about two thirds of the map's height (a little less
+      // on phones, where the sheet covers the lower map). Before the model has loaded, a fixed view.
+      const focus = modelFocusRef.current[landmark.id];
+      const fill = cardBelowRef.current ? 3.4 : 2.9;
+      const distance = focus ? THREE.MathUtils.clamp(focus.size * fill, 3, 13) : 13;
       // The pivot is the model itself, so turning the map spins around the site. Room for the
       // card comes from shifting the picture instead (targetOffset below).
-      targetLookAt = new THREE.Vector3(x, elev.y + 0.6, z);
+      targetLookAt = focus ? focus.center.clone() : new THREE.Vector3(x, elev.y + 0.6, z);
       targetPos = cameraAt(targetLookAt, distance, azimuth, SITE_POLAR);
     }
 
@@ -963,6 +969,11 @@ export default function Sakon3DMapCanvas({
           if (!bounds.isEmpty()) {
             const top = new THREE.Vector3((bounds.min.x + bounds.max.x) / 2, bounds.max.y + 0.15, (bounds.min.z + bounds.max.z) / 2);
             labelAnchors[landmark.id] = provinceGroup.worldToLocal(top);
+            const dims = bounds.getSize(new THREE.Vector3());
+            modelFocusRef.current[landmark.id] = {
+              center: provinceGroup.worldToLocal(bounds.getCenter(new THREE.Vector3())),
+              size: Math.max(dims.y, Math.max(dims.x, dims.z) * 0.75),
+            };
           }
           loadedCount++;
           if (loadedCount >= modelCount) {

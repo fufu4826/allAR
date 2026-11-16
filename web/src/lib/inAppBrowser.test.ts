@@ -40,10 +40,10 @@ test("in-app browser: real browsers are not flagged", () => {
 });
 
 test("in-app browser: escape links keep the page and its query", () => {
-  assert.equal(lineExternalUrl("https://liac.livecraft.fun/c/nonhom?x=1"), "https://liac.livecraft.fun/c/nonhom?x=1&openExternalBrowser=1");
+  assert.equal(lineExternalUrl("https://learn.example.ac.th/c/nonhom?x=1"), "https://learn.example.ac.th/c/nonhom?x=1&openExternalBrowser=1");
   assert.equal(
-    androidChromeIntentUrl("https://liac.livecraft.fun/c/phuphan/abc?x=1"),
-    "intent://liac.livecraft.fun/c/phuphan/abc?x=1#Intent;scheme=https;package=com.android.chrome;end",
+    androidChromeIntentUrl("https://learn.example.ac.th/c/phuphan/abc?x=1"),
+    "intent://learn.example.ac.th/c/phuphan/abc?x=1#Intent;scheme=https;package=com.android.chrome;end",
   );
 });
 
@@ -60,7 +60,7 @@ test("content routes: only community and item paths need a database check", () =
 
 test("site URL: SITE_URL wins, then the forwarded host and protocol", () => {
   assert.equal(resolveSiteUrl("https://lac.snru.ac.th/", {}), "https://lac.snru.ac.th");
-  assert.equal(resolveSiteUrl("", { host: "web:3000", forwardedHost: "liac.livecraft.fun", forwardedProto: "https" }), "https://liac.livecraft.fun");
+  assert.equal(resolveSiteUrl("", { host: "web:3000", forwardedHost: "learn.example.ac.th", forwardedProto: "https" }), "https://learn.example.ac.th");
   assert.equal(resolveSiteUrl(undefined, { host: "localhost:3000" }), "http://localhost:3000");
   assert.equal(resolveSiteUrl(undefined, { host: "evil.example/<script>" }), "http://localhost:3000");
 });

@@ -84,9 +84,12 @@
 
 ### 3.1 โคลนโปรเจกต์จาก GitHub
 ```bash
-git clone https://github.com/fufu4826/allAR.git
-cd allAR/deploy
+git clone https://github.com/fufu4826/sakon-learning-sites-3d.git
+cd sakon-learning-sites-3d
+git checkout v1.0.0
+cd deploy
 ```
+*(แต่ละรุ่นที่ส่งมอบมี tag กำกับ เช่น `v1.0.0` ดูรายการรุ่นทั้งหมดได้ด้วย `git tag --list` และใช้ tag นี้อ้างอิงเวลาอัปเดตหรือย้อนกลับเวอร์ชันในข้อ 8)*
 > [!IMPORTANT]
 > ต้องตรวจสอบให้แน่ใจว่ากำลังทำงานอยู่ในโฟลเดอร์ `deploy/` เสมอ
 
@@ -352,9 +355,10 @@ rsync -avz backups/ <เครื่องสำรอง>:/storage/allar-backup
    ```bash
    docker compose run --rm backup now
    ```
-2. ดึงซอร์สโค้ดล่าสุดจาก Git Repository:
+2. ดึงซอร์สโค้ดรุ่นใหม่จาก Git Repository แล้วสลับไปยัง tag ของรุ่นที่ต้องการ:
    ```bash
-   git pull origin main
+   git fetch --tags origin
+   git checkout <tag รุ่นใหม่ เช่น v1.1.0>
    ```
 3. Rebuild Image และรันคอนเทนเนอร์ใหม่:
    ```bash
@@ -371,9 +375,9 @@ rsync -avz backups/ <เครื่องสำรอง>:/storage/allar-backup
 
 ### 8.2 ขั้นตอนการย้อนกลับเวอร์ชัน (Rollback)
 หากพบปัญหาหลังจากการอัปเดต:
-1. สลับ Git ไปยัง Commit หรือ Tag เดิมที่เสถียร:
+1. สลับ Git กลับไปยัง tag ของรุ่นเดิมที่ใช้งานได้:
    ```bash
-   git checkout <tag หรือ commit เดิม>
+   git checkout <tag รุ่นเดิม เช่น v1.0.0>
    ```
 2. Rebuild และเริ่มคอนเทนเนอร์เวอร์ชันเดิม:
    ```bash

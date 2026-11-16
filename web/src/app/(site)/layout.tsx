@@ -19,8 +19,8 @@ import WelcomeCover from "@/components/WelcomeCover";
 import InAppBrowserBanner from "@/components/InAppBrowserBanner";
 import { resolveSiteUrl } from "@/lib/siteUrl";
 
-// Share previews (LINE, Facebook, Discord...) need absolute image URLs. The public domain differs
-// between the preview tunnel and the university server, so build it from the request.
+// Share previews (LINE, Facebook, ...) need absolute image URLs. The public domain can differ
+// between a test server and production, so build it from SITE_URL or the request.
 export async function generateMetadata(): Promise<Metadata> {
   const h = await headers();
   const base = resolveSiteUrl(process.env.SITE_URL, {

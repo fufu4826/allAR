@@ -11,16 +11,21 @@
 
 ## ติดตั้งบนเซิร์ฟเวอร์
 
-ใช้ Docker Compose เท่านั้น ดูขั้นตอนทั้งหมดใน **[deploy/README.md](deploy/README.md)**
+repository นี้ใช้พัฒนา ส่วนที่ส่งมอบให้ สวท. ติดตั้งอยู่ที่ repository แยก **[fufu4826/sakon-learning-sites-3d](https://github.com/fufu4826/sakon-learning-sites-3d)** ซึ่งมีเฉพาะ `deploy/` และ `web/` คู่มือติดตั้งอยู่ใน **[deploy/README.md](deploy/README.md)**
+
+ฐานข้อมูลตั้งต้น (`allar_db.sql.gz`) และไฟล์สื่อ (`uploads.zip`) ไม่อยู่ใน repository ใดเลย จะจัดส่งแยกพร้อม `SHA256SUMS.txt`
+
+### ออกรุ่นใหม่ให้ repository ส่งมอบ
 
 ```bash
-git clone https://github.com/fufu4826/allAR.git
-cd allAR/deploy
-cp .env.example .env    # แล้วกรอกรหัสผ่าน (openssl rand -hex 24)
-docker compose up -d --build
+git clone https://github.com/fufu4826/sakon-learning-sites-3d.git ../sakon-learning-sites-3d
+sh tools/release/export-delivery.sh ../sakon-learning-sites-3d     # ส่งออกจาก commit ปัจจุบัน
+cd ../sakon-learning-sites-3d
+git add -A && git commit -m "รุ่น 1.1.0: <สรุปสิ่งที่เปลี่ยน>"
+git tag -a v1.1.0 -m "รุ่น 1.1.0" && git push origin main --tags
 ```
 
-ฐานข้อมูลตั้งต้น (`allar_db.sql.gz`) และไฟล์สื่อ (`uploads.zip`) ไม่อยู่ใน repository นี้ จะจัดส่งแยกพร้อม `SHA256SUMS.txt`
+สคริปต์ส่งออกเฉพาะไฟล์ที่ commit แล้ว และจะหยุดถ้าพบร่องรอยของเครื่องมือพัฒนาหรือเซิร์ฟเวอร์ทดสอบในไฟล์ที่จะส่ง แก้ไฟล์ต้นทางใน repository นี้แล้วส่งออกใหม่ ห้ามแก้ใน repository ส่งมอบโดยตรง เพราะจะถูกเขียนทับในรุ่นถัดไป
 
 ## โครงสร้าง
 
@@ -33,6 +38,7 @@ docker compose up -d --build
 | `docs/team/` | คู่มือทีมสำหรับ AI ผู้ช่วยของสมาชิก |
 | `docs/plan/` | แผนงานและ prompt ที่ใช้สั่งงาน |
 | `tools/bundle/` | เครื่องมือสร้างชุดข้อมูลส่งมอบ |
+| `tools/release/` | สคริปต์และไฟล์ต้นแบบสำหรับส่งออกไป repository ส่งมอบ |
 
 ## พัฒนาบนเครื่อง
 
@@ -51,4 +57,4 @@ npm run dev
 npm test
 ```
 
-สร้าง `uploads.zip` สำหรับส่งมอบใหม่: `python tools/bundle/make_uploads_zip.py` (ตรวจว่าไฟล์ทุกไฟล์ที่ฐานข้อมูลอ้างถึงมีอยู่จริง)
+สร้างชุดข้อมูลส่งมอบใหม่จากเว็บจริง: `python tools/bundle/make_delivery.py <dump.sql> <โฟลเดอร์ uploads> data-bundle/delivery` (ใส่เฉพาะไฟล์ที่ฐานข้อมูลอ้างถึง และหยุดถ้าไฟล์ใดหาย)

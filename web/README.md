@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# เว็บแอปพลิเคชัน (web)
 
-## Getting Started
+ส่วนเว็บของระบบแหล่งเรียนรู้สกลนคร 3D เขียนด้วย Next.js (App Router) และใช้ฐานข้อมูล MariaDB ผ่าน Drizzle ORM
 
-First, run the development server:
+> การติดตั้งบนเซิร์ฟเวอร์จริงให้ใช้ Docker Compose ตามคู่มือ [`deploy/README.md`](../deploy/README.md) เอกสารนี้สำหรับนักพัฒนาที่ต้องการรันหรือแก้ไขโค้ดบนเครื่องตัวเอง
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## เทคโนโลยีหลัก
+
+| ส่วน | เครื่องมือ |
+|---|---|
+| เว็บ | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
+| ฐานข้อมูล | MariaDB 12, Drizzle ORM (migration ใน `drizzle/`) |
+| แผนที่ 3 มิติ | three.js |
+| แผนที่ 2 มิติ | Leaflet + OpenStreetMap |
+| โมเดล 3D และ AR | `@google/model-viewer` (WebXR / Scene Viewer / Quick Look) |
+| รหัสผ่านผู้ดูแลระบบ | Argon2id |
+
+## โครงสร้างโฟลเดอร์
+
+```
+web/
+├── drizzle/              ไฟล์ migration ของฐานข้อมูล (รันอัตโนมัติเมื่อคอนเทนเนอร์เริ่มทำงาน)
+├── public/               ไฟล์คงที่ (โลโก้ ภาพพื้นหลัง โมเดลบนแผนที่ 3 มิติ)
+├── scripts/              สคริปต์ดูแลระบบ: migrate, create-admin, seed, นำเข้าและบีบอัดสื่อ
+└── src/
+    ├── app/(site)/       หน้าเว็บสาธารณะ: หน้าแรก แผนที่ แหล่งเรียนรู้ ชิ้นงาน ค้นหา
+    ├── app/admin/        ระบบจัดการเนื้อหาสำหรับผู้ดูแล
+    ├── app/api/          API ภายใน (นับสถิติการเข้าชม)
+    ├── app/uploads/      ส่งไฟล์สื่อที่อัปโหลด รองรับ Range request
+    ├── components/       คอมโพเนนต์ที่ใช้ร่วมกัน (แผนที่ ตัวแสดงโมเดล วิดีทัศน์ ฯลฯ)
+    ├── content/          ข้อความคงที่ของเว็บและข้อมูล SEO
+    ├── db/               โครงสร้างตารางฐานข้อมูล (schema)
+    └── lib/              ฟังก์ชันส่วนกลาง: ยืนยันตัวตน อัปโหลด ดึงข้อมูล สถิติ
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## รันบนเครื่องสำหรับพัฒนา
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+ต้องมี Node.js 24 (รุ่นเดียวกับใน `Dockerfile`) และ MariaDB ที่เข้าถึงได้
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. สร้างไฟล์ `web/.env.local`
+   ```env
+   DATABASE_URL=mysql://<ผู้ใช้>:<รหัสผ่าน>@127.0.0.1:3306/<ชื่อฐานข้อมูล>
+   UPLOAD_DIR=<โฟลเดอร์เก็บไฟล์สื่อ>
+   ```
+2. ติดตั้งแพ็กเกจและสร้างตาราง
+   ```bash
+   npm ci
+   npm run db:migrate
+   ```
+3. สร้างบัญชีผู้ดูแลระบบและเริ่มเซิร์ฟเวอร์
+   ```bash
+   node --env-file=.env.local scripts/create-admin.mjs admin "ผู้ดูแลระบบ"
+   npm run dev
+   ```
+   เปิด http://localhost:3000 (หน้าจัดการอยู่ที่ `/admin`)
 
-## Learn More
+## คำสั่งที่ใช้บ่อย
 
-To learn more about Next.js, take a look at the following resources:
+| คำสั่ง | ใช้ทำอะไร |
+|---|---|
+| `npm run dev` | เซิร์ฟเวอร์สำหรับพัฒนา |
+| `npm run build` | build สำหรับใช้งานจริง |
+| `npm run lint` | ตรวจรูปแบบโค้ด |
+| `npm test` | ทดสอบหน่วย |
+| `npm run db:generate` | สร้างไฟล์ migration ใหม่หลังแก้ `src/db/schema.ts` |
+| `npm run db:migrate` | อัปเดตโครงสร้างฐานข้อมูล |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ข้อควรทราบ
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **การแก้โครงสร้างฐานข้อมูล:** แก้ที่ `src/db/schema.ts` แล้วรัน `npm run db:generate` ไฟล์ migration ใหม่จะถูกรันเองเมื่อคอนเทนเนอร์เว็บเริ่มทำงานครั้งถัดไป
+- **ไฟล์สื่อ:** อัปโหลดผ่านหน้าจัดการได้ (โมเดล .glb/.usdz สูงสุด 100 MB, รูปภาพ 15 MB, เสียง 30 MB, วิดีทัศน์ 200 MB) ควรบีบอัดโมเดลก่อนอัปโหลดด้วย `scripts/optimize-media.mjs`
+- **การแคช:** เนื้อหาถูกแคชในหน่วยความจำของเว็บ การแก้ผ่านหน้าจัดการจะล้างแคชให้เอง แต่ถ้าแก้ฐานข้อมูลโดยตรงต้องรีสตาร์ตคอนเทนเนอร์เว็บ
+- **นโยบายความปลอดภัยเนื้อหา (CSP):** ถ้าเพิ่มบริการภายนอกใหม่ (สคริปต์ รูปภาพ iframe) ต้องเพิ่มโดเมนนั้นใน `next.config.ts` ก่อน มิฉะนั้นเบราว์เซอร์จะบล็อก

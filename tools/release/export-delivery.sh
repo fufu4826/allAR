@@ -41,4 +41,13 @@ fi
 # Replace the working tree (keep .git), then copy the export in.
 find "$target" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 cp -R "$stage"/. "$target"/
+
+# Every exported file must be committable: a too-broad .gitignore rule would silently drop
+# source files (migrations, the uploads route) from the delivery repository.
+ignored=$(cd "$stage" && find . -type f | sed 's|^\./||' | git -C "$target" check-ignore --no-index --stdin || true)
+if [ -n "$ignored" ]; then
+  echo "export stopped: the delivery .gitignore hides exported files:" >&2
+  echo "$ignored" >&2
+  exit 1
+fi
 echo "exported $(git -C "$root" rev-parse --short "$ref") to $target ($(find "$stage" -type f | wc -l | tr -d ' ') files)"

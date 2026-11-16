@@ -1,23 +1,22 @@
 # Dependencies and build output
 node_modules/
-web/.next/
-web/out/
-web/next-env.d.ts
-web/tsconfig.tsbuildinfo
-web/public/decoders/
+/web/.next/
+/web/out/
+/web/next-env.d.ts
+/web/tsconfig.tsbuildinfo
+/web/public/decoders/
 
 # Environment files (contain passwords)
 .env
 .env.*
 !.env.example
 
-# Data and backups (delivered separately, never committed)
-deploy/backups/
-data-bundle/
-uploads/
-*.sql
-*.sql.gz
-*.zip
+# Data bundle and backups (delivered separately, never committed)
+/deploy/backups/
+/data-bundle/
+/allar_db.sql.gz
+/uploads.zip
+/SHA256SUMS.txt
 
 # OS and editor files
 .DS_Store

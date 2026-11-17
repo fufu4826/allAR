@@ -4,7 +4,7 @@ import { and, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { admins, sessions } from "@/db/schema";
-import { hashPassword, requireAdmin, sessionToken, tokenHash, verifyPassword } from "@/lib/auth";
+import { getClientIp, hashPassword, passwordGuessLocked, recordPasswordAttempt, requireAdmin, sessionToken, tokenHash, verifyPassword } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 
 export type AccountState = { error?: string; fieldErrors?: Record<string, string>; success?: string } | null;
@@ -40,8 +40,14 @@ export async function changePasswordAction(_prev: AccountState, formData: FormDa
   if (confirm !== next) fieldErrors.confirmPassword = "รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน";
   if (Object.keys(fieldErrors).length) return { fieldErrors };
 
+  // Same lockout as the sign-in form: an open session must not be a way to guess the password.
+  const ip = await getClientIp();
+  if (await passwordGuessLocked(admin.username, ip)) {
+    return { error: "ใส่รหัสผ่านปัจจุบันผิดหลายครั้ง กรุณาลองใหม่อีกครั้งใน 15 นาที" };
+  }
   const [row] = await db.select({ passwordHash: admins.passwordHash }).from(admins).where(eq(admins.id, admin.id)).limit(1);
-  if (!row || !(await verifyPassword(row.passwordHash, current))) {
+  if (!row || !(await verifyPassword(row.passwordHash, current.slice(0, 1024)))) {
+    await recordPasswordAttempt(admin.username, ip, false);
     return { fieldErrors: { currentPassword: "รหัสผ่านปัจจุบันไม่ถูกต้อง" } };
   }
 

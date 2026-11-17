@@ -1,7 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { hash, verify } from "@node-rs/argon2";
-import { and, count, eq, gte, or } from "drizzle-orm";
+import { and, count, eq, gte, lt, or } from "drizzle-orm";
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import { connection } from "next/server";
@@ -68,19 +68,36 @@ export async function destroySession() {
   if (token) await db.delete(sessions).where(eq(sessions.id, tokenHash(token)));
   store.set("allar_session", "", { ...(await cookieOptions()), maxAge: 0 });
 }
-export async function login(username: string, password: string, ip: string, userAgent: string): Promise<{ ok: true } | { ok: false; reason: "invalid" | "locked" }> {
-  username = username.slice(0, 64); ip = ip.slice(0, 45); void userAgent;
+/** Is this username or address locked out by the failed password attempts of the last 15 minutes? */
+export async function passwordGuessLocked(username: string, ip: string) {
   const since = new Date(Date.now() - 15 * 60 * 1000);
   const attempts = await db.select({ username: loginAttempts.username, ip: loginAttempts.ip, total: count() }).from(loginAttempts).where(and(eq(loginAttempts.success, false), gte(loginAttempts.createdAt, since), or(eq(loginAttempts.username, username), eq(loginAttempts.ip, ip)))).groupBy(loginAttempts.username, loginAttempts.ip);
-  const locked = isLockedOut(attempts, username, ip);
+  return isLockedOut(attempts, username, ip);
+}
+/** Record one password check (sign-in, or the current password on the change-password form). */
+export async function recordPasswordAttempt(username: string, ip: string, success: boolean) {
+  await db.insert(loginAttempts).values({ username: username.slice(0, 64), ip: ip.slice(0, 45), success });
+}
+/** Housekeeping after a sign-in: drop expired sessions and attempts too old to matter. Best effort. */
+async function pruneAuthRows() {
+  try {
+    await db.delete(sessions).where(lt(sessions.expiresAt, new Date()));
+    await db.delete(loginAttempts).where(lt(loginAttempts.createdAt, new Date(Date.now() - 30 * 86_400_000)));
+  } catch { console.error("Auth housekeeping failed"); }
+}
+export async function login(username: string, password: string, ip: string, userAgent: string): Promise<{ ok: true } | { ok: false; reason: "invalid" | "locked" }> {
+  username = username.slice(0, 64); ip = ip.slice(0, 45); void userAgent;
+  // Locked out: answer before the (deliberately slow) password hash, so a flood of sign-in
+  // requests cannot keep the server's CPU and memory busy. The attempt is still recorded.
+  if (await passwordGuessLocked(username, ip)) { await recordPasswordAttempt(username, ip, false); return { ok: false, reason: "locked" }; }
   const [admin] = await db.select().from(admins).where(eq(admins.username, username)).limit(1);
-  const valid = await verifyPassword(admin?.passwordHash ?? await dummyHash, password);
-  const success = !locked && !!admin?.isActive && valid;
-  await db.insert(loginAttempts).values({ username, ip, success });
-  if (locked) return { ok: false, reason: "locked" };
+  const valid = await verifyPassword(admin?.passwordHash ?? await dummyHash, password.slice(0, 1024));
+  const success = !!admin?.isActive && valid;
+  await recordPasswordAttempt(username, ip, success);
   if (!success || !admin) return { ok: false, reason: "invalid" };
   await db.update(admins).set({ lastLoginAt: new Date() }).where(eq(admins.id, admin.id));
   await createSession(admin.id); await audit(admin.id, "login", "admin", admin.id);
+  await pruneAuthRows();
   return { ok: true };
 }
 

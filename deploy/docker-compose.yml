@@ -37,6 +37,10 @@ services:
       - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-3000}:3000"
     restart: unless-stopped
     mem_limit: 1536m
+    # The web process runs as an unprivileged user and needs no Linux capabilities.
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 512
     networks: [internal]
   backup:
     build: ./backup

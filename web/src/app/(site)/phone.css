@@ -310,3 +310,85 @@
     height: 44px;
   }
 }
+
+/* =====================================================================================
+   Screen sizes for the learning-site pages and the model page (checked 2026-11-17 at
+   360x640 up to 2560x1440, including 4:3, 3:4, 21:9 and phones held sideways).
+   ===================================================================================== */
+
+/* Big screens (1920, 2560): text and the content column grow with the window, so the pages do
+   not sit in a narrow strip. rem-based sizes scale with the root size; the map page keeps its
+   own pixel layout and the admin is outside these pages. */
+@media (min-width: 1600px) {
+  html:has(.site-main):not(:has(.mw-shell)) { font-size: 106.25%; }
+  /* The cover heroes' text column was fixed in px; in rem it grows with the text. */
+  [data-theme="tharae"] .community-hero[data-has-cover] .hero-layout { grid-template-columns: minmax(0, 42rem) 1fr; }
+  [data-theme="phuphan"] .community-hero[data-has-cover] .hero-layout { grid-template-columns: minmax(0, 50rem) 1fr; }
+  .community-container { width: min(1440px, calc(100% - 96px)); }
+  .community-hero .hero-layout { min-height: clamp(490px, 50vh, 680px); }
+}
+@media (min-width: 2200px) {
+  html:has(.site-main):not(:has(.mw-shell)) { font-size: 118.75%; }
+  .community-container { width: min(1640px, calc(100% - 140px)); }
+}
+
+/* Wide enough for the heading column: each phrase of a site's name stays whole
+   (no "มีคา|แอล" split); the name still breaks between its phrases (see SiteName.tsx). */
+@media (min-width: 900px) {
+  .community-hero h1 .name-part { white-space: nowrap; }
+}
+
+/* Model page on screens wide enough for two columns: the model gets the wider column and is as
+   tall as the window allows, so the whole model is on the first screen (1280x600 included). */
+@media (min-width: 900px) {
+  .site-main .item-page > div[style*="grid"] {
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr) !important;
+  }
+}
+@media (min-width: 769px) {
+  .site-main .item-viewer-card .aspect-square {
+    max-height: max(300px, calc(100svh - 280px));
+  }
+}
+
+/* Short screens (phones held sideways, about 390px tall): the announcement strip goes, the
+   headings are capped by the height and the model fits the screen under the menu bar. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .top-announcement { display: none; }
+  .site-main .community-hero { min-height: 0 !important; }
+  .site-main .community-hero .hero-layout { min-height: 0 !important; grid-template-columns: 1fr !important; }
+  .site-main .community-hero .hero-copy { padding: 22px 0 26px !important; max-width: 62%; }
+  .site-main .community-hero h1 { font-size: min(2.1rem, 8.5vh) !important; margin-bottom: 10px; }
+  .site-main .community-hero .hero-copy .breadcrumb + h1 { margin-top: 14px; }
+  .site-main .community-hero .hero-art { display: none; }
+  /* Phu Phan's name is four phrases long: a smaller heading without the side photo's width limit. */
+  .site-main [data-theme="phuphan"] .community-hero h1 { font-size: min(1.75rem, 7.2vh) !important; }
+  .site-main [data-theme="phuphan"] .community-hero .hero-copy { max-width: none; padding-top: 14px !important; }
+  /* Tha Rae's photo goes back to the right-hand side (as on a computer) instead of on top. */
+  [data-theme="tharae"] .community-hero[data-has-cover]::before {
+    inset: 0 0 0 auto; width: 62%; height: auto;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 40%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 40%);
+  }
+  [data-theme="tharae"] .community-hero[data-has-cover] .hero-layout {
+    background: linear-gradient(90deg, #ffffff 0%, #fffffff0 38%, #ffffffa6 52%, #ffffff00 70%);
+  }
+  .site-main .item-page { padding-top: 12px !important; }
+  .site-main .item-crumb { display: none; }
+  .site-main .item-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 40px;
+    margin-bottom: 6px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .site-main .item-viewer-card { padding: 10px !important; }
+  .site-main .item-viewer-card .aspect-square {
+    aspect-ratio: auto;
+    height: calc(100svh - 160px);
+    max-height: none;
+  }
+  .site-main .item-title { font-size: 1.5rem !important; line-height: 1.4; }
+}

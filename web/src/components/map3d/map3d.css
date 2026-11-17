@@ -145,9 +145,10 @@
      the site's sticky top bar, even when the page is scrolled. */
   isolation: isolate;
   width: 100%;
-  height: calc(100vh - 109px);
-  min-height: 600px;
-  max-height: calc(100vh - 109px);
+  /* Fills the window under the site's announcement strip (38px) and menu bar (75px). */
+  height: calc(100vh - 113px);
+  height: calc(100dvh - 113px);
+  min-height: 420px;
   background: #f5efe8;
   padding: 16px 20px;
   display: flex;
@@ -554,7 +555,7 @@
   to { opacity: 1; transform: none; }
 }
 /* Short screens: a lower cover keeps the whole card in view. */
-@media (max-height: 760px) and (min-width: 769px) {
+@media (max-height: 760px) and (min-width: 769px) and (min-height: 501px) {
   .mw-site-card--dock .mw-site-cover {
     aspect-ratio: 16 / 7;
   }
@@ -716,16 +717,18 @@
 }
 
 /* ---------- Tablets: map above, list below ---------- */
-@media (max-width: 1024px) and (min-width: 769px) {
+/* Portrait tablets (3:4 and similar): map on top taking all the spare height, the five sites
+   in two columns under it. */
+@media (max-width: 1024px) and (min-width: 769px) and (min-height: 501px) and (orientation: portrait) {
   .mw-shell {
     flex-direction: column;
     height: auto;
-    max-height: none;
+    min-height: calc(100vh - 113px);
+    min-height: calc(100dvh - 113px);
   }
   .mw-viewport {
-    flex: none;
-    height: min(70vh, 600px);
-    min-height: 440px;
+    flex: 1 0 380px;
+    height: auto;
   }
   .mw-panel {
     width: 100%;
@@ -737,18 +740,38 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+/* Landscape tablets and small laptops (4:3 and similar): side by side, a narrower list. */
+@media (max-width: 1024px) and (min-width: 769px) and (min-height: 501px) and (orientation: landscape) {
+  .mw-shell {
+    padding: 12px 14px;
+    gap: 12px;
+  }
+  .mw-panel {
+    width: 300px;
+  }
+  /* Too narrow for the two-line description beside the picture: name lines only. */
+  .mw-panel .mw-row-text .mw-row-desc {
+    display: none;
+  }
+}
+/* Big screens: the list grows with the window (360px at 1920 wide is small on 2560). */
+@media (min-width: 1600px) {
+  .mw-panel {
+    width: clamp(360px, 19vw, 480px);
+  }
+}
 
 /* ---------- Phones: the map fills the screen under the menu bar, the five sites are a sheet
    along the bottom. Peek: heading and the first rows; open: the whole list; card: the selected
    site. The page itself does not scroll here, only the sheet's content does. ---------- */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) {
   .mw-shell {
     position: relative;
     display: block;
     height: calc(100vh - 75px);
     height: calc(100dvh - 75px);
     max-height: none;
-    min-height: 480px;
+    min-height: 320px;
     padding: 0;
   }
   .mw-viewport {
@@ -1128,7 +1151,7 @@
 .mw-row:disabled {
   cursor: progress;
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) {
   .mw-start {
     bottom: 40px;
     min-height: 52px;
@@ -1214,7 +1237,7 @@
 .mw-bar-toggle {
   display: none;
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) {
   body:has(.mw-shell[data-bar="folded"]) .top-announcement,
   body:has(.mw-shell[data-bar="folded"]) .navbar {
     display: none;
@@ -1381,7 +1404,7 @@
   color: rgba(255, 255, 255, 0.78);
   font-size: 13px;
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) {
   .mw-gesture {
     top: 42%;
     width: min(300px, calc(100% - 32px));
@@ -1453,7 +1476,7 @@
   from { opacity: 0; transform: scale(0.6); }
   to { opacity: 1; transform: none; }
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) {
   /* Phones: icon only, level with the compass, clear of the "เริ่มเรียนรู้" button. */
   .mw-gesture-mini {
     right: 12px;
@@ -1490,7 +1513,7 @@
     display: flex;
   }
 }
-@media (min-width: 769px) {
+@media (min-width: 769px) and (min-height: 501px) {
   .mw-row {
     height: 100%;
     padding: 10px 14px 10px 10px;
@@ -1581,17 +1604,71 @@
   }
 }
 /* Tablets: a smaller thumbnail in the two-column list. */
-@media (max-width: 1024px) and (min-width: 769px) {
+@media (max-width: 1024px) and (min-width: 769px) and (min-height: 501px) {
   .mw-row-thumb {
     width: 84px;
     min-height: 72px;
   }
 }
 /* Phones never show the wide-screen row parts (they can flash before the layout settles). */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) {
   .mw-row-thumb,
   .mw-row-full,
   .mw-row-desc {
     display: none;
+  }
+}
+
+/* ---------- Phones held sideways: the sheet becomes a column on the right ----------
+   A bottom sheet would leave the map only a strip of the short screen, so the list (or the
+   selected site's card) sits beside the map instead, full height, and scrolls on its own. */
+@media (max-height: 500px) and (orientation: landscape) and (min-width: 560px) {
+  .mw-shell {
+    --mw-side: min(340px, 44%);
+  }
+  .mw-viewport {
+    inset: 0 auto 0 0;
+    width: calc(100% - var(--mw-side));
+    height: 100%;
+  }
+  .mw-panel,
+  .mw-shell[data-sheet="open"] .mw-panel,
+  .mw-shell[data-sheet="card"] .mw-panel {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: var(--mw-side);
+    height: auto;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.14);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transition: none;
+  }
+  .mw-sheet-grip {
+    display: none;
+  }
+  /* The heading keeps to one line (no Thai word split); the "ดูทั้งหมด" button wraps under it. */
+  .mw-panel-head {
+    padding-top: 12px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .mw-panel-title {
+    white-space: nowrap;
+    font-size: 15px !important;
+  }
+  /* The five chips wrap into the column instead of scrolling sideways. */
+  .mw-chips {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .mw-shell[data-sheet] .mw-rows {
+    overflow: visible;
+  }
+  .mw-site-card--sheet {
+    padding-top: 14px;
   }
 }

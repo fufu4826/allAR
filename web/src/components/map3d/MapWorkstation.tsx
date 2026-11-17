@@ -25,7 +25,8 @@ const canFullscreen = () =>
   typeof document.documentElement.requestFullscreen === "function";
 
 // Phones: the site list is a sheet under the map and the card opens in it (see map3d.css).
-const PHONE_QUERY = "(max-width: 768px)";
+// Phones in either orientation: narrow, or short (a phone held sideways). Must match map3d.css.
+const PHONE_QUERY = "(max-width: 768px), (max-height: 500px)";
 const subscribePhone = (cb: () => void) => {
   const mq = window.matchMedia(PHONE_QUERY);
   mq.addEventListener("change", cb);
@@ -68,7 +69,11 @@ export default function MapWorkstation({ landmarks }: MapWorkstationProps) {
     const view = viewportRef.current;
     if (!panel || !view) return;
     const measure = () => {
-      const cover = Math.max(0, Math.round(view.getBoundingClientRect().bottom - panel.getBoundingClientRect().top));
+      const v = view.getBoundingClientRect();
+      const p = panel.getBoundingClientRect();
+      // Held sideways the sheet is a column beside the map (map3d.css) and covers none of it.
+      const beside = p.left >= v.right - 1;
+      const cover = beside ? 0 : Math.max(0, Math.round(v.bottom - p.top));
       setCoverPx((prev) => (Math.abs(prev - cover) < 4 ? prev : cover));
     };
     const ro = new ResizeObserver(measure);

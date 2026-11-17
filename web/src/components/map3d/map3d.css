@@ -1482,8 +1482,10 @@
   .mw-rows {
     gap: 10px;
   }
+  /* Rows share the spare height but never shrink below their text: on a short window the
+     list scrolls instead of cutting the description off mid-line. */
   .mw-rows > li {
-    flex: 1 1 0;
+    flex: 1 0 auto;
     min-height: 92px;
     display: flex;
   }

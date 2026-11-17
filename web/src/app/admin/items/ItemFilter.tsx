@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { STATUS_OPTIONS } from "../labels";
 
 interface Option {
   id: string;
@@ -9,13 +10,8 @@ interface Option {
   communityId?: string;
 }
 
-interface ItemFilterProps {
-  communities: Option[];
-  collections: Option[];
-  initialCommunity?: string;
-  initialCollection?: string;
-  initialQuery?: string;
-}
+
+const selectClass = "w-full rounded-xl border border-line bg-paper px-3 py-2 text-sm outline-none transition focus:border-brand";
 
 export default function ItemFilter({
   communities,
@@ -23,107 +19,81 @@ export default function ItemFilter({
   initialCommunity = "",
   initialCollection = "",
   initialQuery = "",
-}: ItemFilterProps) {
+  initialStatus = "",
+}: {
+  communities: Option[];
+  collections: Option[];
+  initialCommunity?: string;
+  initialCollection?: string;
+  initialQuery?: string;
+  initialStatus?: string;
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const [community, setCommunity] = useState(initialCommunity);
+  const [collection, setCollection] = useState(initialCollection);
+  const [query, setQuery] = useState(initialQuery);
+  const [status, setStatus] = useState(initialStatus);
+  const shownCollections = community ? collections.filter((c) => c.communityId === community) : collections;
 
-  const [selectedCommunity, setSelectedCommunity] = useState(initialCommunity);
-  const [selectedCollection, setSelectedCollection] = useState(initialCollection);
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
-
-  const filteredCollections = selectedCommunity
-    ? collections.filter((c) => c.communityId === selectedCommunity)
-    : collections;
-
-  const handleApply = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (selectedCommunity) params.set("community", selectedCommunity);
-    else params.delete("community");
-
-    if (selectedCollection) params.set("collection", selectedCollection);
-    else params.delete("collection");
-
-    if (searchQuery.trim()) params.set("q", searchQuery.trim());
-    else params.delete("q");
-
-    router.push(`/admin/items?${params.toString()}`);
-  };
-
-  const handleReset = () => {
-    setSelectedCommunity("");
-    setSelectedCollection("");
-    setSearchQuery("");
-    router.push("/admin/items");
+  const go = (next: { community?: string; collection?: string; q?: string; status?: string }) => {
+    const v = { community, collection, q: query, status, ...next };
+    const params = new URLSearchParams();
+    if (v.community) params.set("community", v.community);
+    if (v.collection) params.set("collection", v.collection);
+    if (v.q.trim()) params.set("q", v.q.trim());
+    if (v.status) params.set("status", v.status);
+    router.push(`/admin/items${params.size ? `?${params}` : ""}`);
   };
 
   return (
     <form
-      onSubmit={handleApply}
-      className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-white p-4 shadow-sm"
+      onSubmit={(e) => { e.preventDefault(); go({}); }}
+      className="grid gap-3 rounded-2xl border border-line bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_auto]"
     >
-      {/* Search Input */}
-      <div className="min-w-[200px] flex-1">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="ค้นหาชื่อชิ้นงาน…"
-          className="w-full rounded-xl border border-line bg-paper px-3 py-2 text-sm outline-none transition focus:border-brand"
-        />
-      </div>
-
-      {/* Community Select */}
-      <div className="w-full sm:w-auto">
-        <select
-          value={selectedCommunity}
-          onChange={(e) => {
-            setSelectedCommunity(e.target.value);
-            setSelectedCollection("");
-          }}
-          className="w-full rounded-xl border border-line bg-paper px-3 py-2 text-sm outline-none transition focus:border-brand"
-        >
-          <option value="">ทุกชุมชน</option>
-          {communities.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Collection Select */}
-      <div className="w-full sm:w-auto">
-        <select
-          value={selectedCollection}
-          onChange={(e) => setSelectedCollection(e.target.value)}
-          className="w-full rounded-xl border border-line bg-paper px-3 py-2 text-sm outline-none transition focus:border-brand"
-        >
-          <option value="">ทุกแหล่งเรียนรู้</option>
-          {filteredCollections.map((col) => (
-            <option key={col.id} value={col.id}>
-              {col.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Buttons */}
-      <div className="flex items-center gap-2">
-        <button
-          type="submit"
-          className="rounded-full bg-brand px-4 py-2 text-xs font-medium text-white hover:bg-brand-dark"
-        >
-          ค้นหา / กรอง
-        </button>
-        {(selectedCommunity || selectedCollection || searchQuery) && (
+      <input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="ค้นหาชื่อชิ้นงาน…"
+        aria-label="ค้นหาชื่อชิ้นงาน"
+        className={selectClass}
+      />
+      {/* Dropdowns apply at once; the search box applies on Enter or the button. */}
+      <select
+        value={community}
+        aria-label="แหล่งเรียนรู้"
+        onChange={(e) => { setCommunity(e.target.value); setCollection(""); go({ community: e.target.value, collection: "" }); }}
+        className={selectClass}
+      >
+        <option value="">ทุกแหล่งเรียนรู้</option>
+        {communities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+      </select>
+      <select
+        value={collection}
+        aria-label="หมวดหมู่"
+        onChange={(e) => { setCollection(e.target.value); go({ collection: e.target.value }); }}
+        className={selectClass}
+      >
+        <option value="">ทุกหมวดหมู่</option>
+        {shownCollections.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+      </select>
+      <select
+        value={status}
+        aria-label="สถานะ"
+        onChange={(e) => { setStatus(e.target.value); go({ status: e.target.value }); }}
+        className={selectClass}
+      >
+        {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+      <div className="flex gap-2">
+        <button type="submit" className="rounded-full bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark">ค้นหา</button>
+        {(community || collection || query || status) && (
           <button
             type="button"
-            onClick={handleReset}
-            className="rounded-full border border-line px-3 py-2 text-xs font-medium text-muted hover:text-ink"
+            onClick={() => { setCommunity(""); setCollection(""); setQuery(""); setStatus(""); router.push("/admin/items"); }}
+            className="rounded-full border border-line px-3 py-2 text-sm text-muted hover:text-ink"
           >
-            ล้างตัวกรอง
+            ล้าง
           </button>
         )}
       </div>

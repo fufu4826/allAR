@@ -40,11 +40,20 @@ export async function createSession(adminId: string) {
   await db.insert(sessions).values({ id: tokenHash(token), adminId, expiresAt: new Date(Date.now() + duration * 1000), ip: await getClientIp(), userAgent: (h.get("user-agent") || "").slice(0, 255) });
   (await cookies()).set("allar_session", token, await cookieOptions());
 }
+/**
+ * The session token sent with this request, or null. Read from the Cookie header rather than
+ * cookies(): after a server action posted by a plain HTML form (before the page's scripts have
+ * loaded), cookies() in the re-render throws a Next.js invariant error and shows the error page.
+ */
+export async function sessionToken() {
+  const header = (await headers()).get("cookie") ?? "";
+  return header.match(/(?:^|;\s*)allar_session=([A-Za-z0-9_-]{43})(?:;|$)/)?.[1] ?? null;
+}
 export const getCurrentAdmin = cache(async () => {
   // Admin data is per-request: stop prerendering here so no DB call runs at build/PPR time.
   await connection();
-  const token = (await cookies()).get("allar_session")?.value;
-  if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) return null;
+  const token = await sessionToken();
+  if (!token) return null;
   const id = tokenHash(token);
   const [row] = await db.select({ admin: admins, expiresAt: sessions.expiresAt }).from(sessions).innerJoin(admins, eq(sessions.adminId, admins.id)).where(and(eq(sessions.id, id), eq(admins.isActive, true))).limit(1);
   if (!row) return null;

@@ -7,6 +7,8 @@ import { db } from "@/db";
 import { collections, communities, items } from "@/db/schema";
 import CollectionManager from "./CollectionManager";
 
+export const metadata = { title: "หมวดหมู่" };
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
@@ -50,27 +52,27 @@ async function CollectionsContent({ params }: PageProps) {
       <div>
         <div className="flex items-center gap-2 text-xs text-muted">
           <Link href="/admin/communities" className="hover:text-ink">
-            จัดการชุมชน
+            แหล่งเรียนรู้
           </Link>
           <span>/</span>
           <Link href={`/admin/communities/${community.id}`} className="hover:text-ink">
-            {community.name}
+            {community.shortName}
           </Link>
           <span>/</span>
-          <span className="text-ink">แหล่งเรียนรู้</span>
+          <span className="text-ink">หมวดหมู่</span>
         </div>
         <h1 className="mt-2 text-2xl font-bold text-ink sm:text-3xl">
-          จัดการแหล่งเรียนรู้ ({community.name})
+          หมวดหมู่ของ{community.shortName}
         </h1>
         <p className="text-sm text-muted">
-          จัดการกลุ่มเนื้อหาและแหล่งเรียนรู้ประจำชุมชน
+          หมวดหมู่คือกลุ่มของชิ้นงาน 3D แสดงเป็นแถบเลือกในส่วน &quot;โมเดล 3D&quot; ของหน้าแหล่งเรียนรู้
         </p>
       </div>
 
       <div className="rounded-2xl border border-line bg-white p-6 shadow-sm">
         <CollectionManager
           communityId={community.id}
-          communityName={community.name}
+          communityName={community.shortName}
           collections={collectionsWithCounts}
         />
       </div>
@@ -81,7 +83,7 @@ async function CollectionsContent({ params }: PageProps) {
 export default function CollectionsPage({ params }: PageProps) {
   return (
     <Suspense
-      fallback={<div className="py-12 text-center text-muted">กำลังโหลดรายการแหล่งเรียนรู้…</div>}
+      fallback={<div className="py-12 text-center text-muted">กำลังโหลด…</div>}
     >
       <CollectionsContent params={params} />
     </Suspense>

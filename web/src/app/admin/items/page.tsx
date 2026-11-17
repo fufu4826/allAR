@@ -1,214 +1,152 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { and, asc, eq, like } from "drizzle-orm";
+import { and, asc, eq, isNull, like, ne, sql, type SQL } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/db";
-import { collections, communities, items } from "@/db/schema";
+import { collections, communities, items, pageStats } from "@/db/schema";
 import ItemFilter from "./ItemFilter";
+import { STATUS_OPTIONS } from "../labels";
 import DeleteItemButton from "./DeleteItemButton";
 
+export const metadata = { title: "ชิ้นงาน 3D" };
+
 interface PageProps {
-  searchParams: Promise<{
-    community?: string;
-    collection?: string;
-    q?: string;
-  }>;
+  searchParams: Promise<{ community?: string; collection?: string; q?: string; status?: string }>;
+}
+
+const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+const n = (v: number) => v.toLocaleString("th-TH");
+
+function Badges({ item }: { item: { modelPath: string | null; usdzPath: string | null; audioPath: string | null; thumbnailPath: string | null } }) {
+  return (
+    <div className="flex flex-wrap gap-1">
+      {item.modelPath && <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">3D</span>}
+      {item.usdzPath && <span className="rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">iPhone AR</span>}
+      {item.audioPath && <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">เสียง</span>}
+      {!item.thumbnailPath && <span className="rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700">ไม่มีภาพ</span>}
+    </div>
+  );
+}
+
+function Status({ isPublished, isFeatured }: { isPublished: boolean; isFeatured: boolean }) {
+  return (
+    <span className="flex flex-wrap gap-x-2 text-xs">
+      {isPublished ? <span className="text-emerald-700">● เผยแพร่</span> : <span className="text-gray-500">○ ฉบับร่าง</span>}
+      {isFeatured && <span className="font-medium text-amber-600">⭐ แนะนำ</span>}
+    </span>
+  );
 }
 
 async function ItemsListContent({ searchParams }: PageProps) {
   await requireAdmin();
   const sp = await searchParams;
+  const community = str(sp.community);
+  const collection = str(sp.collection);
+  const q = str(sp.q).slice(0, 100);
+  const status = STATUS_OPTIONS.some((o) => o.value === sp.status) ? str(sp.status) : "";
 
-  const communityFilter = typeof sp.community === "string" ? sp.community : "";
-  const collectionFilter = typeof sp.collection === "string" ? sp.collection : "";
-  const queryFilter = typeof sp.q === "string" ? sp.q.trim() : "";
-
-  // Fetch filter options
-  const [commList, colList] = await Promise.all([
-    db
-      .select({ id: communities.id, name: communities.name })
-      .from(communities)
-      .orderBy(asc(communities.sortOrder), asc(communities.name)),
-    db
-      .select({ id: collections.id, name: collections.name, communityId: collections.communityId })
-      .from(collections)
-      .orderBy(asc(collections.sortOrder), asc(collections.name)),
+  const [siteRows, colRows] = await Promise.all([
+    db.select({ id: communities.id, name: communities.shortName }).from(communities).orderBy(asc(communities.sortOrder)),
+    db.select({ id: collections.id, name: collections.name, communityId: collections.communityId }).from(collections).orderBy(asc(collections.sortOrder), asc(collections.name)),
   ]);
 
-  // Build filter conditions
-  const conditions = [];
-  if (communityFilter) {
-    conditions.push(eq(collections.communityId, communityFilter));
-  }
-  if (collectionFilter) {
-    conditions.push(eq(items.collectionId, collectionFilter));
-  }
-  if (queryFilter) {
-    conditions.push(like(items.name, `%${queryFilter}%`));
-  }
+  const where: SQL[] = [];
+  if (community) where.push(eq(collections.communityId, community));
+  if (collection) where.push(eq(items.collectionId, collection));
+  if (q) where.push(like(items.name, `%${q.replace(/[%_\\]/g, "\\$&")}%`));
+  if (status === "published") where.push(eq(items.isPublished, true));
+  if (status === "draft") where.push(eq(items.isPublished, false));
+  if (status === "featured") where.push(eq(items.isFeatured, true));
+  if (status === "nothumb") where.push(isNull(items.thumbnailPath));
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+  const views = db
+    .select({ itemId: pageStats.itemId, total: sql<number>`CAST(SUM(${pageStats.count}) AS SIGNED)`.as("total") })
+    .from(pageStats)
+    .where(and(eq(pageStats.event, "view"), ne(pageStats.itemId, "")))
+    .groupBy(pageStats.itemId)
+    .as("views");
 
-  const itemRows = await db
+  const rows = await db
     .select({
-      id: items.id,
-      name: items.name,
-      description: items.description,
-      modelPath: items.modelPath,
-      usdzPath: items.usdzPath,
-      thumbnailPath: items.thumbnailPath,
-      audioPath: items.audioPath,
-      isFeatured: items.isFeatured,
-      isPublished: items.isPublished,
-      sortOrder: items.sortOrder,
-      collectionName: collections.name,
-      communityName: communities.name,
-      communitySlug: communities.slug,
+      id: items.id, name: items.name, description: items.description, modelPath: items.modelPath, usdzPath: items.usdzPath,
+      thumbnailPath: items.thumbnailPath, audioPath: items.audioPath, isFeatured: items.isFeatured, isPublished: items.isPublished,
+      sortOrder: items.sortOrder, collectionId: items.collectionId, collectionName: collections.name, communityName: communities.shortName,
+      communitySlug: communities.slug, views: sql<number>`COALESCE(${views.total}, 0)`,
     })
     .from(items)
     .innerJoin(collections, eq(items.collectionId, collections.id))
     .innerJoin(communities, eq(collections.communityId, communities.id))
-    .where(whereClause)
-    .orderBy(
-      asc(communities.sortOrder),
-      asc(collections.sortOrder),
-      asc(items.sortOrder),
-      asc(items.name)
-    );
+    .leftJoin(views, eq(views.itemId, items.id))
+    .where(where.length ? and(...where) : undefined)
+    .orderBy(asc(communities.sortOrder), asc(collections.sortOrder), asc(items.sortOrder), asc(items.name));
+
+  const filtered = !!(community || collection || q || status);
+  const newHref = collection ? `/admin/items/new?collection=${collection}` : "/admin/items/new";
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-ink sm:text-3xl">จัดการชิ้นงาน 3D / AR</h1>
-          <p className="text-sm text-muted">
-            พบทั้งหมด {itemRows.length} ชิ้นงาน{" "}
-            {queryFilter || communityFilter || collectionFilter ? "(ตรงตามตัวกรอง)" : "ในระบบ"}
-          </p>
+          <h1 className="text-2xl font-bold text-ink sm:text-3xl">ชิ้นงาน 3D</h1>
+          <p className="text-sm text-muted">{filtered ? `พบ ${n(rows.length)} ชิ้นตามตัวกรอง` : `ทั้งหมด ${n(rows.length)} ชิ้น`}</p>
         </div>
-        <Link
-          href="/admin/items/new"
-          className="inline-flex items-center justify-center rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-dark"
-        >
-          + เพิ่มชิ้นงาน 3D ใหม่
+        <Link href={newHref} className="inline-flex items-center justify-center rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-brand-dark">
+          + เพิ่มชิ้นงาน 3D
         </Link>
       </div>
 
-      <ItemFilter
-        communities={commList}
-        collections={colList}
-        initialCommunity={communityFilter}
-        initialCollection={collectionFilter}
-        initialQuery={queryFilter}
-      />
+      <ItemFilter communities={siteRows} collections={colRows} initialCommunity={community} initialCollection={collection} initialQuery={q} initialStatus={status} />
 
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-sm">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-line bg-paper text-xs uppercase text-muted">
-            <tr>
-              <th className="px-4 py-3">ชิ้นงาน</th>
-              <th className="px-4 py-3">ชุมชน / แหล่งเรียนรู้</th>
-              <th className="px-4 py-3">ไฟล์มีเดีย</th>
-              <th className="px-4 py-3">สถานะ</th>
-              <th className="px-4 py-3 text-center">ลำดับ</th>
-              <th className="px-4 py-3 text-right">การจัดการ</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {itemRows.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="py-8 text-center text-muted">
-                  ไม่พบชิ้นงานตามเงื่อนไขที่ค้นหา
-                </td>
-              </tr>
-            ) : (
-              itemRows.map((item) => (
-                <tr key={item.id} className="hover:bg-brand-soft/20">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {item.thumbnailPath ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={item.thumbnailPath}
-                          alt=""
-                          className="size-12 rounded-xl border border-line object-cover"
-                        />
-                      ) : (
-                        <div className="grid size-12 place-items-center rounded-xl bg-brand-soft text-brand-dark text-xs font-bold">
-                          3D
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-semibold text-ink">{item.name}</div>
-                        <div className="line-clamp-1 max-w-xs text-xs text-muted">
-                          {item.description}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-xs">
-                    <div className="font-medium text-ink">{item.communityName}</div>
-                    <div className="text-muted">{item.collectionName}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1">
-                      {item.modelPath && (
-                        <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
-                          GLB
-                        </span>
-                      )}
-                      {item.usdzPath && (
-                        <span className="rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700">
-                          USDZ
-                        </span>
-                      )}
-                      {item.audioPath && (
-                        <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                          🔊 เสียง
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-xs">
-                    <div className="flex flex-col gap-1">
-                      {item.isPublished ? (
-                        <span className="text-emerald-700">● เผยแพร่แล้ว</span>
-                      ) : (
-                        <span className="text-gray-500">○ ฉบับร่าง</span>
-                      )}
-                      {item.isFeatured && (
-                        <span className="font-medium text-amber-600">⭐ แนะนำ</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-center font-mono text-xs text-muted">
-                    {item.sortOrder}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/c/${item.communitySlug}/${item.id}`}
-                        target="_blank"
-                        className="rounded-full border border-line px-2.5 py-1 text-xs text-muted hover:text-brand"
-                        title="ดูหน้าแสดงผลจริง"
-                      >
-                        ดูผล ↗
-                      </Link>
-                      <Link
-                        href={`/admin/items/${item.id}`}
-                        className="rounded-full border border-line px-3 py-1 text-xs font-medium text-ink hover:border-brand"
-                      >
-                        แก้ไข
-                      </Link>
-                      <DeleteItemButton id={item.id} name={item.name} />
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {rows.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-line bg-white py-10 text-center text-sm text-muted">ไม่พบชิ้นงานตามเงื่อนไขนี้</p>
+      ) : (
+        <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
+          <li className="hidden grid-cols-[minmax(0,2.2fr)_minmax(0,1.3fr)_8rem_7rem_4.5rem_auto] gap-4 bg-paper px-4 py-2.5 text-xs text-muted md:grid">
+            <span>ชิ้นงาน</span>
+            <span>แหล่งเรียนรู้ / หมวดหมู่</span>
+            <span>ไฟล์</span>
+            <span>สถานะ</span>
+            <span className="text-right">เข้าชม</span>
+            <span className="w-[10.5rem] text-right">จัดการ</span>
+          </li>
+          {rows.map((item) => (
+            <li key={item.id} className="grid gap-3 px-4 py-3 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1.3fr)_8rem_7rem_4.5rem_auto] md:items-center md:gap-4">
+              <div className="flex min-w-0 items-center gap-3">
+                {item.thumbnailPath ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.thumbnailPath} alt="" loading="lazy" className="size-14 shrink-0 rounded-xl border border-line object-cover" />
+                ) : (
+                  <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-brand-soft text-xs font-bold text-brand-dark">3D</div>
+                )}
+                <div className="min-w-0">
+                  <Link href={`/admin/items/${item.id}`} className="font-semibold text-ink hover:text-brand">{item.name}</Link>
+                  <div className="line-clamp-1 text-xs text-muted">{item.description}</div>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 md:hidden">
+                    <Status isPublished={item.isPublished} isFeatured={item.isFeatured} />
+                    <span className="text-xs text-muted">· {n(Number(item.views))} ครั้ง</span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs">
+                <span className="font-medium text-ink">{item.communityName}</span>
+                <span className="text-muted"> · {item.collectionName}</span>
+              </div>
+              <Badges item={item} />
+              <div className="hidden md:block"><Status isPublished={item.isPublished} isFeatured={item.isFeatured} /></div>
+              <div className="hidden text-right font-mono text-xs text-muted md:block">{n(Number(item.views))}</div>
+              <div className="flex items-start justify-end gap-2">
+                <a href={`/c/${item.communitySlug}/${item.id}`} target="_blank" rel="noopener" className="rounded-full border border-line px-2.5 py-1 text-xs text-muted hover:text-brand" title="เปิดหน้าชิ้นงานบนเว็บ">
+                  ดู ↗
+                </a>
+                <Link href={`/admin/items/${item.id}`} className="rounded-full border border-line px-3 py-1 text-xs font-medium text-ink hover:border-brand">
+                  แก้ไข
+                </Link>
+                <DeleteItemButton id={item.id} name={item.name} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

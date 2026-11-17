@@ -8,6 +8,12 @@ import { collections, items } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { deleteUpload, saveUpload, UploadError } from "@/lib/uploads";
+import { changedFields } from "../labels";
+
+const ITEM_FIELDS: Record<string, string> = {
+  name: "ชื่อ", description: "คำอธิบาย", collectionId: "หมวดหมู่", modelPath: "โมเดล 3D", thumbnailPath: "ภาพตัวอย่าง",
+  audioPath: "เสียงบรรยาย", usdzPath: "ไฟล์ AR iPhone", sortOrder: "ลำดับ", isPublished: "การเผยแพร่", isFeatured: "ชิ้นงานแนะนำ",
+};
 
 export type ItemActionState = {
   error?: string;
@@ -25,7 +31,7 @@ function validateItemFields(formData: FormData) {
   const fieldErrors: Record<string, string> = {};
 
   if (!collectionId) {
-    fieldErrors.collectionId = "กรุณาเลือกแหล่งเรียนรู้";
+    fieldErrors.collectionId = "กรุณาเลือกหมวดหมู่";
   }
   if (!name || name.length > 255) {
     fieldErrors.name = "กรุณาระบุชื่อชิ้นงาน (ไม่เกิน 255 ตัวอักษร)";
@@ -75,8 +81,8 @@ export async function createItemAction(
 
   if (!col) {
     return {
-      fieldErrors: { collectionId: "ไม่พบแหล่งเรียนรู้ที่เลือก" },
-      error: "แหล่งเรียนรู้ไม่ถูกต้อง",
+      fieldErrors: { collectionId: "ไม่พบหมวดหมู่ที่เลือก" },
+      error: "หมวดหมู่ไม่ถูกต้อง",
     };
   }
 
@@ -180,8 +186,8 @@ export async function updateItemAction(
 
   if (!col) {
     return {
-      fieldErrors: { collectionId: "ไม่พบแหล่งเรียนรู้ที่เลือก" },
-      error: "แหล่งเรียนรู้ไม่ถูกต้อง",
+      fieldErrors: { collectionId: "ไม่พบหมวดหมู่ที่เลือก" },
+      error: "หมวดหมู่ไม่ถูกต้อง",
     };
   }
 
@@ -257,7 +263,10 @@ export async function updateItemAction(
       await deleteUpload(f).catch(() => {});
     }
 
-    await audit(admin.id, "update", "item", id, { name: data.name });
+    await audit(admin.id, "update", "item", id, {
+      name: data.name,
+      changed: changedFields(existing, { ...data, modelPath, usdzPath, thumbnailPath, audioPath }, ITEM_FIELDS),
+    });
     revalidateTag("content", { expire: 0 });
     updateTag("content");
   } catch (error) {

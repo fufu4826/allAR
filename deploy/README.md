@@ -86,7 +86,7 @@
 ```bash
 git clone https://github.com/fufu4826/sakon-learning-sites-3d.git
 cd sakon-learning-sites-3d
-git checkout v1.0.1
+git checkout v1.0.2
 cd deploy
 ```
 *(แต่ละรุ่นที่ส่งมอบมี tag กำกับ เช่น `v1.0.0` ดูรายการรุ่นทั้งหมดได้ด้วย `git tag --list` และใช้ tag นี้อ้างอิงเวลาอัปเดตหรือย้อนกลับเวอร์ชันในข้อ 8)*

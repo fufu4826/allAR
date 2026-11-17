@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   createAdminAction,
@@ -27,16 +28,14 @@ const inputClass =
   "mt-1 w-full rounded-xl border border-line bg-white px-4 py-2 text-sm outline-none transition focus:border-brand";
 const labelClass = "block text-sm font-medium text-ink";
 
-function AddAdminForm({ onSuccess }: { onSuccess: () => void }) {
+function AddAdminForm({ onSuccess }: { onSuccess: (message: string) => void }) {
   const [state, formAction, pending] = useActionState<AdminActionState, FormData>(
     createAdminAction,
     null
   );
 
   useEffect(() => {
-    if (state?.success) {
-      onSuccess();
-    }
+    if (state?.success) onSuccess("สร้างบัญชีผู้ดูแลแล้ว แจ้งชื่อผู้ใช้และรหัสชั่วคราวให้เจ้าของบัญชี และให้เปลี่ยนรหัสเองหลังเข้าสู่ระบบครั้งแรก");
   }, [state, onSuccess]);
 
   return (
@@ -124,16 +123,13 @@ function ResetPasswordModal({
 }: {
   admin: AdminRecord;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (message: string) => void;
 }) {
   const boundAction = resetAdminPasswordAction.bind(null, admin.id);
   const [state, formAction, pending] = useActionState<AdminActionState, FormData>(boundAction, null);
 
   useEffect(() => {
-    if (state?.success) {
-      alert(`รีเซ็ตรหัสผ่านของ @${admin.username} เรียบร้อยแล้ว`);
-      onSuccess();
-    }
+    if (state?.success) onSuccess(`รีเซ็ตรหัสผ่านของ @${admin.username} แล้ว แจ้งรหัสชั่วคราวให้เจ้าของบัญชี และให้เปลี่ยนเองที่หน้า "บัญชีของฉัน"`);
   }, [state, admin.username, onSuccess]);
 
   return (
@@ -205,13 +201,9 @@ export default function AdminManager({ currentAdminId, admins }: AdminManagerPro
   const [showAddForm, setShowAddForm] = useState(false);
   const [resettingAdmin, setResettingAdmin] = useState<AdminRecord | null>(null);
   const [isToggling, startToggleTransition] = useTransition();
+  const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null);
 
   const handleToggleStatus = (admin: AdminRecord) => {
-    if (admin.id === currentAdminId) {
-      alert("ไม่สามารถระงับการใช้งานบัญชีของตนเองได้");
-      return;
-    }
-
     const actionText = admin.isActive ? "ระงับการใช้งาน" : "เปิดใช้งาน";
     const confirmed = window.confirm(
       `คุณแน่ใจหรือไม่ว่าต้องการ${actionText} บัญชี @${admin.username}?`
@@ -221,16 +213,18 @@ export default function AdminManager({ currentAdminId, admins }: AdminManagerPro
     startToggleTransition(async () => {
       const result = await toggleAdminStatusAction(admin.id, !admin.isActive);
       if (result?.error) {
-        alert(result.error);
+        setNotice({ ok: false, text: result.error });
       } else {
+        setNotice({ ok: true, text: `${actionText}บัญชี @${admin.username} แล้ว` });
         router.refresh();
       }
     });
   };
 
-  const handleSuccess = () => {
+  const handleSuccess = (message: string) => {
     setShowAddForm(false);
     setResettingAdmin(null);
+    setNotice({ ok: true, text: message });
     router.refresh();
   };
 
@@ -240,7 +234,7 @@ export default function AdminManager({ currentAdminId, admins }: AdminManagerPro
         <div>
           <h2 className="text-lg font-bold text-ink">รายชื่อผู้ดูแลระบบทั้งหมด ({admins.length})</h2>
           <p className="text-xs text-muted">
-            จัดการสิทธิ์การเข้าถึง เพิ่มผู้ดูแลคนใหม่ และรีเซ็ตรหัสผ่าน
+            ผู้ดูแลทุกคนมีสิทธิ์เท่ากัน บัญชีที่ไม่ใช้แล้วให้ระงับไว้แทนการลบ เพื่อให้บันทึกการแก้ไขยังบอกได้ว่าใครทำ
           </p>
         </div>
         <button
@@ -251,6 +245,12 @@ export default function AdminManager({ currentAdminId, admins }: AdminManagerPro
           {showAddForm ? "ปิดแบบฟอร์ม" : "+ เพิ่มผู้ดูแลคนใหม่"}
         </button>
       </div>
+
+      {notice && (
+        <div role="status" className={`rounded-xl border p-3 text-sm ${notice.ok ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-700"}`}>
+          {notice.text}
+        </div>
+      )}
 
       {showAddForm && <AddAdminForm onSuccess={handleSuccess} />}
 
@@ -303,21 +303,27 @@ export default function AdminManager({ currentAdminId, admins }: AdminManagerPro
                   </td>
                   <td className="px-4 py-3 text-xs text-muted">
                     {adm.lastLoginAt
-                      ? new Date(adm.lastLoginAt).toLocaleString("th-TH")
+                      ? new Date(adm.lastLoginAt).toLocaleString("th-TH", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Bangkok" })
                       : "ยังไม่เคยเข้าสู่ระบบ"}
                   </td>
                   <td className="px-4 py-3 text-xs text-muted">
-                    {new Date(adm.createdAt).toLocaleString("th-TH")}
+                    {new Date(adm.createdAt).toLocaleDateString("th-TH", { dateStyle: "medium", timeZone: "Asia/Bangkok" })}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setResettingAdmin(adm)}
-                        className="rounded-full border border-line px-3 py-1 text-xs font-medium text-ink hover:border-brand"
-                      >
-                        รีเซ็ตรหัสผ่าน
-                      </button>
+                      {isSelf ? (
+                        <Link href="/admin/account" className="rounded-full border border-line px-3 py-1 text-xs font-medium text-ink hover:border-brand">
+                          เปลี่ยนรหัสผ่าน
+                        </Link>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => { setNotice(null); setResettingAdmin(adm); }}
+                          className="rounded-full border border-line px-3 py-1 text-xs font-medium text-ink hover:border-brand"
+                        >
+                          รีเซ็ตรหัสผ่าน
+                        </button>
+                      )}
 
                       {isSelf ? (
                         <span

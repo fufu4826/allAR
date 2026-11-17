@@ -6,8 +6,15 @@ import { db } from "@/db";
 import { collections, communities } from "@/db/schema";
 import ItemForm from "../ItemForm";
 
-async function NewItemContent() {
+export const metadata = { title: "เพิ่มชิ้นงาน 3D" };
+
+interface PageProps {
+  searchParams: Promise<{ collection?: string }>;
+}
+
+async function NewItemContent({ searchParams }: PageProps) {
   await requireAdmin();
+  const { collection } = await searchParams;
 
   const [commList, colList] = await Promise.all([
     db.select().from(communities).orderBy(asc(communities.sortOrder), asc(communities.name)),
@@ -15,7 +22,7 @@ async function NewItemContent() {
   ]);
 
   const collectionGroups = commList.map((comm) => ({
-    communityName: comm.name,
+    communityName: comm.shortName,
     collections: colList
       .filter((c) => c.communityId === comm.id)
       .map((c) => ({ id: c.id, name: c.name })),
@@ -25,25 +32,25 @@ async function NewItemContent() {
     <div className="space-y-6">
       <div>
         <Link href="/admin/items" className="text-xs text-muted hover:text-ink">
-          ← กลับไปหน้ารายการชิ้นงาน
+          ← ชิ้นงานทั้งหมด
         </Link>
         <h1 className="mt-2 text-2xl font-bold text-ink sm:text-3xl">เพิ่มชิ้นงาน 3D ใหม่</h1>
         <p className="text-sm text-muted">
-          อัปโหลดโมเดล 3D (.glb), ไฟล์ AR (.usdz), รูปภาพตัวอย่าง และไฟล์เสียงบรรยาย
+          ต้องมีอย่างน้อย: หมวดหมู่ ชื่อ คำอธิบาย และไฟล์โมเดล .glb
         </p>
       </div>
 
       <div className="rounded-2xl border border-line bg-white p-6 shadow-sm">
-        <ItemForm collectionGroups={collectionGroups} />
+        <ItemForm collectionGroups={collectionGroups} defaultCollectionId={typeof collection === "string" ? collection : undefined} />
       </div>
     </div>
   );
 }
 
-export default function NewItemPage() {
+export default function NewItemPage(props: PageProps) {
   return (
     <Suspense fallback={<div className="py-12 text-center text-muted">กำลังโหลดแบบฟอร์ม…</div>}>
-      <NewItemContent />
+      <NewItemContent {...props} />
     </Suspense>
   );
 }

@@ -7,6 +7,8 @@ import { db } from "@/db";
 import { communities } from "@/db/schema";
 import CommunityForm from "../CommunityForm";
 
+export const metadata = { title: "แก้ข้อมูลแหล่งเรียนรู้" };
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
@@ -30,20 +32,28 @@ async function EditCommunityContent({ params }: PageProps) {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link href="/admin/communities" className="text-xs text-muted hover:text-ink">
-            ← กลับไปหน้ารายการชุมชน
+            ← แหล่งเรียนรู้ทั้งหมด
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-ink sm:text-3xl">แก้ไขข้อมูลชุมชน</h1>
+          <h1 className="mt-2 text-2xl font-bold text-ink sm:text-3xl">แก้ข้อมูลแหล่งเรียนรู้</h1>
           <p className="text-sm text-muted">
-            แก้ไขรายละเอียดของ &quot;{community.name}&quot;
+            {community.shortName}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/admin/communities/${community.id}/collections`}
             className="rounded-full border border-line bg-white px-4 py-2 text-xs font-medium text-ink shadow-sm hover:border-brand hover:text-brand"
           >
-            จัดการแหล่งเรียนรู้ →
+            หมวดหมู่ →
           </Link>
+          <a
+            href={`/c/${community.slug}`}
+            target="_blank"
+            rel="noopener"
+            className="rounded-full border border-line bg-white px-4 py-2 text-xs font-medium text-muted shadow-sm hover:border-brand hover:text-brand"
+          >
+            ดูหน้าเว็บ ↗
+          </a>
         </div>
       </div>
 
@@ -56,7 +66,7 @@ async function EditCommunityContent({ params }: PageProps) {
 
 export default function EditCommunityPage({ params }: PageProps) {
   return (
-    <Suspense fallback={<div className="py-12 text-center text-muted">กำลังโหลดข้อมูลชุมชน…</div>}>
+    <Suspense fallback={<div className="py-12 text-center text-muted">กำลังโหลด…</div>}>
       <EditCommunityContent params={params} />
     </Suspense>
   );

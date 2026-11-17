@@ -1,12 +1,13 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { revalidateTag, updateTag } from "next/cache";
 import { db } from "@/db";
 import { collections, communities, items } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { deleteUpload, saveUpload, UploadError } from "@/lib/uploads";
+import { changedFields } from "../../../labels";
 
 export type CollectionActionState = {
   error?: string;
@@ -22,10 +23,7 @@ function validateCollection(formData: FormData) {
   const fieldErrors: Record<string, string> = {};
 
   if (!name || name.length > 255) {
-    fieldErrors.name = "กรุณาระบุชื่อแหล่งเรียนรู้ (ไม่เกิน 255 ตัวอักษร)";
-  }
-  if (!description) {
-    fieldErrors.description = "กรุณาระบุรายละเอียดแหล่งเรียนรู้";
+    fieldErrors.name = "กรุณาระบุชื่อหมวดหมู่ (ไม่เกิน 255 ตัวอักษร)";
   }
 
   const sortOrder = parseInt(sortOrderStr, 10);
@@ -58,7 +56,7 @@ export async function createCollectionAction(
     .limit(1);
 
   if (!community) {
-    return { error: "ไม่พบข้อมูลชุมชน" };
+    return { error: "ไม่พบแหล่งเรียนรู้" };
   }
 
   const validation = validateCollection(formData);
@@ -98,7 +96,7 @@ export async function createCollectionAction(
       return { error: error.message };
     }
     console.error("Create collection error:", error);
-    return { error: "เกิดข้อผิดพลาดในการสร้างแหล่งเรียนรู้" };
+    return { error: "เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่" };
   }
 }
 
@@ -116,7 +114,7 @@ export async function updateCollectionAction(
     .limit(1);
 
   if (!existing) {
-    return { error: "ไม่พบข้อมูลแหล่งเรียนรู้ที่ต้องการแก้ไข" };
+    return { error: "ไม่พบหมวดหมู่ที่ต้องการแก้ไข" };
   }
 
   const validation = validateCollection(formData);
@@ -149,7 +147,10 @@ export async function updateCollectionAction(
       await deleteUpload(existing.imagePath).catch(() => {});
     }
 
-    await audit(admin.id, "update", "collection", id, { name: data.name });
+    await audit(admin.id, "update", "collection", id, {
+      name: data.name,
+      changed: changedFields(existing, { ...data, imagePath }, { name: "ชื่อ", description: "คำอธิบาย", imagePath: "ภาพ", sortOrder: "ลำดับ" }),
+    });
     revalidateTag("content", { expire: 0 });
     updateTag("content");
     return { success: true };
@@ -175,37 +176,19 @@ export async function deleteCollectionAction(id: string): Promise<{ error?: stri
     .limit(1);
 
   if (!existing) {
-    return { error: "ไม่พบข้อมูลแหล่งเรียนรู้ที่ต้องการลบ" };
+    return { error: "ไม่พบหมวดหมู่ที่ต้องการลบ" };
+  }
+
+  // A category is deleted only once it is empty: deleting it used to delete every model in it
+  // too, files and all, which one wrong click could not undo.
+  const [inside] = await db.select({ total: count() }).from(items).where(eq(items.collectionId, id));
+  if (inside.total > 0) {
+    return { error: `หมวดหมู่ "${existing.name}" ยังมีชิ้นงาน ${inside.total} ชิ้น ย้ายชิ้นงานไปหมวดอื่นหรือลบชิ้นงานก่อน แล้วจึงลบหมวดหมู่` };
   }
 
   try {
-    // Find all items of this collection
-    const itemRows = await db
-      .select({
-        modelPath: items.modelPath,
-        usdzPath: items.usdzPath,
-        thumbnailPath: items.thumbnailPath,
-        audioPath: items.audioPath,
-      })
-      .from(items)
-      .where(eq(items.collectionId, id));
-
-    const filesToDelete: string[] = [];
-    if (existing.imagePath) filesToDelete.push(existing.imagePath);
-    for (const it of itemRows) {
-      if (it.modelPath) filesToDelete.push(it.modelPath);
-      if (it.usdzPath) filesToDelete.push(it.usdzPath);
-      if (it.thumbnailPath) filesToDelete.push(it.thumbnailPath);
-      if (it.audioPath) filesToDelete.push(it.audioPath);
-    }
-
-    // Delete collection from DB (cascades to items)
     await db.delete(collections).where(eq(collections.id, id));
-
-    // Delete files after DB delete succeeds
-    for (const filePath of filesToDelete) {
-      await deleteUpload(filePath).catch(() => {});
-    }
+    if (existing.imagePath) await deleteUpload(existing.imagePath).catch(() => {});
 
     await audit(admin.id, "delete", "collection", id, { name: existing.name });
     revalidateTag("content", { expire: 0 });
@@ -213,6 +196,6 @@ export async function deleteCollectionAction(id: string): Promise<{ error?: stri
     return { success: true };
   } catch (error) {
     console.error("Delete collection error:", error);
-    return { error: "เกิดข้อผิดพลาดในการลบแหล่งเรียนรู้" };
+    return { error: "เกิดข้อผิดพลาดในการลบหมวดหมู่" };
   }
 }

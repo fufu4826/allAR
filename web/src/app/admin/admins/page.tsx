@@ -5,6 +5,8 @@ import { db } from "@/db";
 import { admins } from "@/db/schema";
 import AdminManager from "./AdminManager";
 
+export const metadata = { title: "ผู้ดูแล" };
+
 async function AdminsListContent() {
   const currentAdmin = await requireAdmin();
 
@@ -23,9 +25,9 @@ async function AdminsListContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-ink sm:text-3xl">จัดการผู้ดูแลระบบ</h1>
+        <h1 className="text-2xl font-bold text-ink sm:text-3xl">ผู้ดูแล</h1>
         <p className="text-sm text-muted">
-          กำหนดสิทธิ์การเข้าใช้งานระบบ เพิ่มบัญชีผู้ดูแล และรีเซ็ตรหัสผ่าน
+          เพิ่มบัญชีให้คนในทีม รีเซ็ตรหัสผ่านให้คนที่ลืม และระงับบัญชีที่ไม่ใช้แล้ว
         </p>
       </div>
 

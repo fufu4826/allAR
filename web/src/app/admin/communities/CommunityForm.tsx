@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
+import FileField from "../FileField";
 import { updateCommunityAction, CommunityActionState } from "./actions";
 
 interface CommunityFormProps {
@@ -28,318 +29,184 @@ interface CommunityFormProps {
 
 const inputClass =
   "mt-1 w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm outline-none transition focus:border-brand";
-const textareaClass =
-  "mt-1 w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm outline-none transition focus:border-brand min-h-[110px]";
 const labelClass = "block text-sm font-medium text-ink";
+const hintClass = "mt-1 text-xs text-muted";
 const errorClass = "mt-1 text-xs text-red-600";
+
+function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="space-y-4 rounded-2xl border border-line bg-paper/60 p-5">
+      <legend className="px-1 text-base font-semibold text-ink">{title}</legend>
+      {note && <p className="-mt-2 text-xs text-muted">{note}</p>}
+      {children}
+    </fieldset>
+  );
+}
 
 export default function CommunityForm({ initialData }: CommunityFormProps) {
   const boundAction = updateCommunityAction.bind(null, initialData.id);
-
-  const [state, formAction, pending] = useActionState<CommunityActionState, FormData>(
-    boundAction,
-    null
-  );
-
-  const [lat, setLat] = useState(initialData?.lat ?? "17.156843");
-  const [lng, setLng] = useState(initialData?.lng ?? "104.145892");
-  const [color, setColor] = useState(initialData?.color ?? "#e9773e");
-
-  const googleMapsUrl =
-    lat && lng && !isNaN(Number(lat)) && !isNaN(Number(lng))
-      ? `https://www.google.com/maps?q=${lat},${lng}`
-      : "https://www.google.com/maps";
+  const [state, formAction, pending] = useActionState<CommunityActionState, FormData>(boundAction, null);
+  const [lat, setLat] = useState(initialData.lat);
+  const [lng, setLng] = useState(initialData.lng);
+  const [color, setColor] = useState(initialData.color);
+  const err = (key: string) => state?.fieldErrors?.[key] && <p className={errorClass}>{state.fieldErrors[key]}</p>;
+  const mapsUrl =
+    lat && lng && !isNaN(Number(lat)) && !isNaN(Number(lng)) ? `https://www.google.com/maps?q=${lat},${lng}` : "https://www.google.com/maps";
 
   return (
     <form action={formAction} className="space-y-6">
       {state?.error && (
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-800"
-        >
+        <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-800">
           {state.error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <label className={labelClass}>English name
-          <input name="englishName" maxLength={120} defaultValue={initialData?.englishName ?? ""} className={inputClass} />
-        </label>
-        <label className={labelClass}>คำโปรย
-          <input name="tagline" maxLength={255} defaultValue={initialData?.tagline ?? ""} className={inputClass} />
-        </label>
-        <label className={labelClass}>แท็ก
-          <input name="tags" maxLength={255} defaultValue={initialData?.tags ?? ""} className={inputClass} />
-        </label>
-        <label className={labelClass}>ธีม
-          <select name="theme" defaultValue={initialData?.theme ?? "default"} className={inputClass}>
-            {["default", "phuphan", "nonhom", "tharae", "watklang", "watnuea"].map((theme) => <option key={theme} value={theme}>{theme}</option>)}
-          </select>
-        </label>
-        {/* Name */}
-        <div>
-          <label className={labelClass}>
-            ชื่อชุมชน <span className="text-red-500">*</span>
-            <input
-              name="name"
-              defaultValue={initialData?.name ?? ""}
-              required
-              maxLength={255}
-              placeholder="เช่น ชุมชนบ้านเชียง"
-              className={inputClass}
-            />
-          </label>
-          {state?.fieldErrors?.name && <p className={errorClass}>{state.fieldErrors.name}</p>}
-        </div>
-
-        {/* Short Name */}
-        <div>
-          <label className={labelClass}>
-            ชื่อย่อชุมชน <span className="text-red-500">*</span>
-            <input
-              name="shortName"
-              defaultValue={initialData?.shortName ?? ""}
-              required
-              maxLength={120}
-              placeholder="เช่น บ้านเชียง"
-              className={inputClass}
-            />
-          </label>
-          {state?.fieldErrors?.shortName && (
-            <p className={errorClass}>{state.fieldErrors.shortName}</p>
-          )}
-        </div>
-
-        {/* Slug */}
-        <div>
-          <label className={labelClass}>
-            สลัก URL (Slug)
-            <input
-              name="slug"
-              defaultValue={initialData.slug}
-              readOnly
-              aria-readonly="true"
-              className={`${inputClass} cursor-not-allowed bg-paper text-muted`}
-            />
-          </label>
-          <p className="mt-1 text-xs text-muted">
-            ที่อยู่ของหน้าเว็บ /c/{initialData.slug} แก้ไขไม่ได้ เพราะลิงก์ ธีม และหมุดบนแผนที่ผูกกับค่านี้
-          </p>
-          {state?.fieldErrors?.slug && <p className={errorClass}>{state.fieldErrors.slug}</p>}
-        </div>
-
-        {/* Location */}
-        <div>
-          <label className={labelClass}>
-            สถานที่ตั้ง / จังหวัด <span className="text-red-500">*</span>
-            <input
-              name="location"
-              defaultValue={initialData?.location ?? ""}
-              required
-              maxLength={255}
-              placeholder="เช่น อ.หนองหาน จ.อุดรธานี"
-              className={inputClass}
-            />
-          </label>
-          {state?.fieldErrors?.location && (
-            <p className={errorClass}>{state.fieldErrors.location}</p>
-          )}
-        </div>
-
-        {/* Latitude */}
-        <div>
-          <div className="flex items-center justify-between">
+      <Section title="ชื่อและข้อความ" note="ข้อความเหล่านี้แสดงที่ส่วนหัวของหน้าแหล่งเรียนรู้ บนแผนที่ และในผลการค้นหา">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="md:col-span-2">
             <label className={labelClass}>
-              ละติจูด (Latitude) <span className="text-red-500">*</span>
+              ชื่อเต็ม <span className="text-red-500">*</span>
+              <input name="name" defaultValue={initialData.name} required maxLength={255} className={inputClass} />
             </label>
-            <a
-              href={googleMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-brand hover:underline"
-            >
-              เปิด Google Maps ↗
-            </a>
+            <p className={hintClass}>หัวเรื่องใหญ่ของหน้าแหล่งเรียนรู้ และชื่อแท็บเบราว์เซอร์ ถ้ามีคำว่า &quot;ชุมชน…&quot; จะขึ้นบรรทัดใหม่ก่อนคำนั้นเอง</p>
+            {err("name")}
           </div>
-          <input
-            name="lat"
-            type="number"
-            step="any"
-            value={lat}
-            onChange={(e) => setLat(e.target.value)}
-            required
-            placeholder="เช่น 17.156843"
-            className={inputClass}
-          />
-          {state?.fieldErrors?.lat && <p className={errorClass}>{state.fieldErrors.lat}</p>}
+          <div>
+            <label className={labelClass}>
+              ชื่อสั้น <span className="text-red-500">*</span>
+              <input name="shortName" defaultValue={initialData.shortName} required maxLength={120} className={inputClass} />
+            </label>
+            <p className={hintClass}>ใช้ในการ์ดบนแผนที่ รายการแหล่งเรียนรู้ และสถิติ</p>
+            {err("shortName")}
+          </div>
+          <div>
+            <label className={labelClass}>
+              ชื่อภาษาอังกฤษ
+              <input name="englishName" defaultValue={initialData.englishName ?? ""} maxLength={120} className={inputClass} />
+            </label>
+            <p className={hintClass}>แสดงตัวเล็กบนการ์ดแผนที่</p>
+            {err("englishName")}
+          </div>
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              คำโปรย
+              <input name="tagline" defaultValue={initialData.tagline ?? ""} maxLength={255} className={inputClass} />
+            </label>
+            <p className={hintClass}>ประโยคสั้นใต้ชื่อในส่วนหัว และคำอธิบายเวลาแชร์ลิงก์</p>
+            {err("tagline")}
+          </div>
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              แท็ก
+              <input name="tags" defaultValue={initialData.tags ?? ""} maxLength={255} placeholder="เช่น ศาสนา · ประวัติศาสตร์ · สถาปัตยกรรม" className={inputClass} />
+            </label>
+            <p className={hintClass}>คำสั้น ๆ ใต้คำโปรย คั่นด้วย ·</p>
+            {err("tags")}
+          </div>
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              คำอธิบาย <span className="text-red-500">*</span>
+              <textarea name="description" defaultValue={initialData.description} required className={`${inputClass} min-h-[160px]`} />
+            </label>
+            <p className={hintClass}>แสดงในส่วน &quot;เรื่องราว&quot; ของหน้าแหล่งเรียนรู้ เว้นบรรทัดว่างเพื่อขึ้นย่อหน้าใหม่</p>
+            {err("description")}
+          </div>
         </div>
+      </Section>
 
-        {/* Longitude */}
-        <div>
-          <label className={labelClass}>
-            ลองจิจูด (Longitude) <span className="text-red-500">*</span>
-            <input
-              name="lng"
-              type="number"
-              step="any"
-              value={lng}
-              onChange={(e) => setLng(e.target.value)}
-              required
-              placeholder="เช่น 104.145892"
-              className={inputClass}
-            />
-          </label>
-          {state?.fieldErrors?.lng && <p className={errorClass}>{state.fieldErrors.lng}</p>}
+      <Section title="ที่ตั้ง" note="พิกัดใช้วางหมุดบนแผนที่และลิงก์นำทางของ Google Maps">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <label className={labelClass}>
+              ที่อยู่ <span className="text-red-500">*</span>
+              <input name="location" defaultValue={initialData.location} required maxLength={255} className={inputClass} />
+            </label>
+            {err("location")}
+          </div>
+          <div>
+            <label className={labelClass}>
+              ละติจูด <span className="text-red-500">*</span>
+              <input name="lat" type="number" step="any" value={lat} onChange={(e) => setLat(e.target.value)} required className={inputClass} />
+            </label>
+            {err("lat")}
+          </div>
+          <div>
+            <label className={labelClass}>
+              ลองจิจูด <span className="text-red-500">*</span>
+              <input name="lng" type="number" step="any" value={lng} onChange={(e) => setLng(e.target.value)} required className={inputClass} />
+            </label>
+            {err("lng")}
+          </div>
         </div>
+        <p className="text-xs text-muted">
+          หาพิกัด: เปิด Google Maps คลิกขวาที่จุดที่ต้องการ แล้วคลิกตัวเลขบรรทัดแรกเพื่อคัดลอก ·{" "}
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="font-medium text-brand hover:underline">
+            ตรวจพิกัดนี้ใน Google Maps ↗
+          </a>
+        </p>
+      </Section>
 
-        {/* Color */}
-        <div>
-          <label className={labelClass}>
-            สีประจำชุมชน (Hex Color) <span className="text-red-500">*</span>
+      <Section title="ภาพและวีดิทัศน์">
+        <FileField
+          name="coverImage"
+          kind="image"
+          label="ภาพปก"
+          hint="ภาพแนวนอน กว้างอย่างน้อย 1600 px แสดงเป็นแบนเนอร์ของหน้าแหล่งเรียนรู้ การ์ดบนแผนที่ และภาพตอนแชร์ลิงก์"
+          current={initialData.coverPath}
+        />
+        <FileField
+          name="videoFile"
+          kind="video"
+          label="วีดิทัศน์แนะนำ"
+          hint="แสดงใต้ส่วนหัวของหน้าแหล่งเรียนรู้ ถ้าไม่มีวีดิทัศน์ ช่องนี้จะไม่แสดงบนเว็บ"
+          current={initialData.videoPath}
+          removeName="removeVideo"
+          removeLabel="ลบวีดิทัศน์นี้ออกจากหน้าแหล่งเรียนรู้"
+        />
+      </Section>
+
+      <Section title="การแสดงผล">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div>
+            <label className={labelClass}>
+              ลำดับ
+              <input name="sortOrder" type="number" min="0" defaultValue={initialData.sortOrder} className={inputClass} />
+            </label>
+            <p className={hintClass}>เลขน้อยแสดงก่อน ในรายการบนแผนที่และปุ่ม &quot;แหล่งเรียนรู้ถัดไป&quot;</p>
+            {err("sortOrder")}
+          </div>
+          <div>
+            <span className={labelClass}>สีสัญลักษณ์</span>
             <div className="mt-1 flex items-center gap-3">
-              <input
-                type="color"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="size-10 cursor-pointer rounded-lg border border-line p-0.5"
-              />
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} aria-label="เลือกสี" className="size-10 cursor-pointer rounded-lg border border-line p-0.5" />
               <input
                 name="color"
-                type="text"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 required
                 maxLength={7}
                 pattern="^#[0-9a-fA-F]{6}$"
-                placeholder="#e9773e"
-                className="flex-1 rounded-xl border border-line bg-white px-4 py-2.5 text-sm uppercase outline-none focus:border-brand"
+                aria-label="รหัสสี"
+                className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm uppercase outline-none focus:border-brand"
               />
             </div>
-          </label>
-          {state?.fieldErrors?.color && <p className={errorClass}>{state.fieldErrors.color}</p>}
-        </div>
-
-        {/* Sort Order */}
-        <div>
-          <label className={labelClass}>
-            ลำดับการจัดเรียง
-            <input
-              name="sortOrder"
-              type="number"
-              min="0"
-              defaultValue={initialData?.sortOrder ?? 0}
-              className={inputClass}
-            />
-          </label>
-          <p className="mt-1 text-xs text-muted">ตัวเลขน้อยกว่าจะแสดงขึ้นก่อน (ค่าเริ่มต้น 0)</p>
-          {state?.fieldErrors?.sortOrder && (
-            <p className={errorClass}>{state.fieldErrors.sortOrder}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Description */}
-      <div>
-        <label className={labelClass}>
-          รายละเอียดเกี่ยวกับชุมชน <span className="text-red-500">*</span>
-          <textarea
-            name="description"
-            defaultValue={initialData?.description ?? ""}
-            required
-            placeholder="บรรยายความเป็นมา ประวัติ และจุดเด่นของชุมชน..."
-            className={textareaClass}
-          />
-        </label>
-        {state?.fieldErrors?.description && (
-          <p className={errorClass}>{state.fieldErrors.description}</p>
-        )}
-      </div>
-
-      {/* Cover Image Upload */}
-      <div className="rounded-2xl border border-line bg-paper p-5">
-        <label className={labelClass}>
-          รูปภาพหน้าปกชุมชน
-          <input
-            name="coverImage"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="mt-2 block w-full text-sm text-ink file:mr-4 file:rounded-full file:border-0 file:bg-brand-soft file:px-4 file:py-2 file:text-xs file:font-semibold file:text-brand-dark hover:file:bg-brand/20"
-          />
-        </label>
-        <p className="mt-2 text-xs text-muted">
-          ไฟล์ภาพ (.jpg, .png, .webp) — ขนาดสูงสุด 15 MB
-        </p>
-
-        {initialData?.coverPath && (
-          <div className="mt-4">
-            <span className="text-xs font-medium text-muted">รูปภาพหน้าปกปัจจุบัน:</span>
-            <div className="mt-2 flex items-center gap-4">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={initialData.coverPath}
-                alt="หน้าปกชุมชน"
-                className="h-24 w-36 rounded-xl border border-line object-cover shadow-sm"
-              />
-              <span className="text-xs text-muted">
-                เลือกไฟล์ใหม่ด้านบนหากต้องการเปลี่ยนรูปหน้าปก
-              </span>
-            </div>
+            <p className={hintClass}>สีป้ายของแหล่งนี้ในหน้าผู้ดูแล</p>
+            {err("color")}
           </div>
-        )}
-      </div>
-
-      {/* Site video */}
-      <div className="rounded-2xl border border-line bg-paper p-5">
-        <label className={labelClass}>
-          วีดิทัศน์แนะนำแหล่งเรียนรู้
-          <input
-            name="videoFile"
-            type="file"
-            accept="video/mp4,video/webm"
-            className="mt-2 block w-full text-sm text-ink file:mr-4 file:rounded-full file:border-0 file:bg-brand-soft file:px-4 file:py-2 file:text-xs file:font-semibold file:text-brand-dark hover:file:bg-brand/20"
-          />
-        </label>
-        <p className="mt-2 text-xs text-muted">
-          ไฟล์วิดีโอ (.mp4, .webm) — ขนาดสูงสุด 200 MB แสดงใต้ส่วนหัวของหน้าแหล่งเรียนรู้ ถ้าไม่มีวิดีโอ ช่องนี้จะไม่แสดงบนเว็บ
-        </p>
-
-        {initialData?.videoPath && (
-          <div className="mt-4 space-y-3">
-            <span className="text-xs font-medium text-muted">วีดิทัศน์ปัจจุบัน:</span>
-            <video
-              src={initialData.videoPath}
-              controls
-              preload="metadata"
-              className="aspect-video w-full max-w-md rounded-xl border border-line bg-black"
-            />
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
-              <input name="removeVideo" type="checkbox" className="size-4 rounded border-line accent-brand" />
-              ลบวีดิทัศน์นี้ออกจากหน้าแหล่งเรียนรู้
-            </label>
+          <div>
+            <span className={labelClass}>ที่อยู่หน้าเว็บและธีม</span>
+            <p className="mt-1 rounded-xl border border-line bg-white px-4 py-2.5 font-mono text-sm text-muted">/c/{initialData.slug} · {initialData.theme}</p>
+            <p className={hintClass}>แก้ไม่ได้ เพราะลิงก์ QR code หมุดบนแผนที่ และสีธีมของหน้าผูกกับค่านี้</p>
           </div>
-        )}
-      </div>
-
-      {/* Published Toggle */}
-      <div className="flex items-center gap-3">
-        <input
-          id="isPublished"
-          name="isPublished"
-          type="checkbox"
-          defaultChecked={initialData?.isPublished ?? false}
-          className="size-5 rounded border-line text-brand accent-brand focus:ring-brand"
-        />
-        <label htmlFor="isPublished" className="cursor-pointer text-sm font-medium text-ink">
-          เผยแพร่บนเว็บไซต์ (เปิดให้บุคคลทั่วไปเข้าชมได้)
+        </div>
+        <label className="flex w-fit cursor-pointer items-center gap-3 rounded-xl border border-line bg-white px-4 py-3">
+          <input name="isPublished" type="checkbox" defaultChecked={initialData.isPublished} className="size-5 accent-brand" />
+          <span className="text-sm font-medium text-ink">เผยแพร่ (ถ้าไม่เลือก ชิ้นงานทั้งหมดของแหล่งนี้จะถูกซ่อนจากผู้เข้าชม)</span>
         </label>
-      </div>
+      </Section>
 
-      {/* Buttons */}
-      <div className="flex items-center justify-end gap-3 border-t border-line pt-5">
-        <Link
-          href="/admin/communities"
-          className="rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink hover:bg-paper"
-        >
+      <div className="sticky bottom-0 -mx-6 flex items-center justify-end gap-3 border-t border-line bg-white/95 px-6 py-4 backdrop-blur">
+        <Link href="/admin/communities" className="rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink hover:bg-paper">
           ยกเลิก
         </Link>
         <button
@@ -347,7 +214,7 @@ export default function CommunityForm({ initialData }: CommunityFormProps) {
           disabled={pending}
           className="rounded-full bg-brand px-6 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-brand-dark disabled:opacity-60"
         >
-          {pending ? "กำลังบันทึกข้อมูล…" : "บันทึกการแก้ไข"}
+          {pending ? "กำลังบันทึก… (ถ้ามีวีดิทัศน์อาจใช้เวลาหลายนาที)" : "บันทึก"}
         </button>
       </div>
     </form>

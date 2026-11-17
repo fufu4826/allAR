@@ -8,6 +8,13 @@ import { communities } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { deleteUpload, saveUpload, UploadError } from "@/lib/uploads";
+import { changedFields } from "../labels";
+
+const COMMUNITY_FIELDS: Record<string, string> = {
+  name: "ชื่อเต็ม", shortName: "ชื่อสั้น", englishName: "ชื่อภาษาอังกฤษ", tagline: "คำโปรย", tags: "แท็ก",
+  location: "ที่ตั้ง", description: "คำอธิบาย", lat: "ละติจูด", lng: "ลองจิจูด", color: "สีประจำแหล่ง",
+  coverPath: "ภาพปก", videoPath: "วีดิทัศน์", sortOrder: "ลำดับ", isPublished: "การเผยแพร่",
+};
 
 export type CommunityActionState = {
   error?: string;
@@ -32,13 +39,12 @@ function validateCommunityData(formData: FormData) {
 
   const fieldErrors: Record<string, string> = {};
 
-  if (englishName.length > 120) fieldErrors.englishName = "English name is too long";
-  if (tagline.length > 255) fieldErrors.tagline = "Tagline is too long";
-  if (tags.length > 255) fieldErrors.tags = "Tags are too long";
-  if (!["default", "phuphan", "nonhom", "tharae", "watklang", "watnuea"].includes(theme)) fieldErrors.theme = "Invalid theme";
+  if (englishName.length > 120) fieldErrors.englishName = "ชื่อภาษาอังกฤษยาวเกิน 120 ตัวอักษร";
+  if (tagline.length > 255) fieldErrors.tagline = "คำโปรยยาวเกิน 255 ตัวอักษร";
+  if (tags.length > 255) fieldErrors.tags = "แท็กยาวเกิน 255 ตัวอักษร";
 
   if (!name || name.length > 255) {
-    fieldErrors.name = "กรุณาระบุชื่อชุมชน (ไม่เกิน 255 ตัวอักษร)";
+    fieldErrors.name = "กรุณาระบุชื่อแหล่งเรียนรู้ (ไม่เกิน 255 ตัวอักษร)";
   }
   if (!shortName || shortName.length > 120) {
     fieldErrors.shortName = "กรุณาระบุชื่อย่อ (ไม่เกิน 120 ตัวอักษร)";
@@ -50,7 +56,7 @@ function validateCommunityData(formData: FormData) {
     fieldErrors.location = "กรุณาระบุสถานที่ตั้ง (ไม่เกิน 255 ตัวอักษร)";
   }
   if (!description) {
-    fieldErrors.description = "กรุณาระบุรายละเอียดชุมชน";
+    fieldErrors.description = "กรุณาระบุคำอธิบายแหล่งเรียนรู้";
   }
 
   const lat = parseFloat(latStr);
@@ -110,11 +116,12 @@ export async function updateCommunityAction(
     .limit(1);
 
   if (!existing) {
-    return { error: "ไม่พบข้อมูลชุมชนที่ต้องการแก้ไข" };
+    return { error: "ไม่พบแหล่งเรียนรู้ที่ต้องการแก้ไข" };
   }
 
-  // The slug is fixed: whatever the form sends, keep the stored one.
+  // The slug and theme are fixed: whatever the form sends, keep the stored ones.
   formData.set("slug", existing.slug);
+  formData.set("theme", existing.theme);
   const validation = validateCommunityData(formData);
 
   if (!validation.isValid) {
@@ -127,7 +134,7 @@ export async function updateCommunityAction(
   let coverPath = existing.coverPath;
   let newUploadedPath: string | null = null;
   const videoFile = formData.get("videoFile");
-  let videoPath = formData.get("removeVideo") === "on" ? null : existing.videoPath;
+  let videoPath = ["on", "true"].includes(String(formData.get("removeVideo"))) ? null : existing.videoPath;
   let newVideoPath: string | null = null;
 
   try {
@@ -171,7 +178,8 @@ export async function updateCommunityAction(
       await deleteUpload(existing.videoPath).catch(() => {});
     }
 
-    await audit(admin.id, "update", "community", id, { name: data.name, slug: data.slug });
+    const after = { ...data, coverPath, videoPath };
+    await audit(admin.id, "update", "community", id, { name: data.shortName, changed: changedFields(existing, after, COMMUNITY_FIELDS) });
     revalidateTag("content", { expire: 0 });
     updateTag("content");
   } catch (error) {

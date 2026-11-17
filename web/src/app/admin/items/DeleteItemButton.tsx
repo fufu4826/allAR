@@ -1,38 +1,32 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { deleteItemAction } from "./actions";
 
-interface DeleteItemButtonProps {
-  id: string;
-  name: string;
-}
-
-export default function DeleteItemButton({ id, name }: DeleteItemButtonProps) {
+export default function DeleteItemButton({ id, name }: { id: string; name: string }) {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState("");
 
   const handleDelete = () => {
-    const confirmed = window.confirm(
-      `คุณแน่ใจหรือไม่ว่าต้องการลบชิ้นงาน "${name}"?\n\nการลบนี้จะลบไฟล์โมเดล 3D ภาพตัวอย่าง และไฟล์เสียงที่เกี่ยวข้องทั้งหมดอย่างถาวร!`
-    );
-    if (!confirmed) return;
-
+    if (!window.confirm(`ลบชิ้นงาน "${name}" ใช่ไหม?\n\nไฟล์โมเดล ภาพ และเสียงของชิ้นงานนี้จะถูกลบถาวร กู้คืนได้จากไฟล์สำรองรายวันเท่านั้น`)) return;
+    setError("");
     startTransition(async () => {
       const result = await deleteItemAction(id);
-      if (result?.error) {
-        alert(result.error);
-      }
+      if (result?.error) setError(result.error);
     });
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleDelete}
-      disabled={isPending}
-      className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-700 transition hover:bg-red-100 disabled:opacity-50"
-    >
-      {isPending ? "กำลังลบ…" : "ลบ"}
-    </button>
+    <span className="inline-flex flex-col items-end">
+      <button
+        type="button"
+        onClick={handleDelete}
+        disabled={isPending}
+        className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+      >
+        {isPending ? "กำลังลบ…" : "ลบ"}
+      </button>
+      {error && <span role="alert" className="mt-1 text-xs text-red-600">{error}</span>}
+    </span>
   );
 }

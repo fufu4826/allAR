@@ -3,9 +3,8 @@ import { randomBytes } from "node:crypto";
 import { mkdir, rename, unlink, writeFile, realpath } from "node:fs/promises";
 import path from "node:path";
 import { fileTypeFromBuffer } from "file-type";
+import { UPLOAD_LIMIT_MB as limits, type UploadKind as Kind } from "./uploadLimits";
 export class UploadError extends Error {}
-type Kind = "model" | "usdz" | "image" | "audio" | "video";
-const limits: Record<Kind, number> = { model: 100, usdz: 100, image: 15, audio: 30, video: 200 };
 export async function detectUpload(bytes: Uint8Array, kind: Kind, name: string) {
   if (kind === "model" && Buffer.from(bytes.subarray(0, 4)).equals(Buffer.from("glTF"))) return "glb";
   if (kind === "usdz" && /\.usdz$/i.test(name) && Buffer.from(bytes.subarray(0, 4)).equals(Buffer.from([0x50, 0x4b, 0x03, 0x04]))) return "usdz";
@@ -14,11 +13,13 @@ export async function detectUpload(bytes: Uint8Array, kind: Kind, name: string) 
   if (kind === "audio" && type && ["mp3", "wav", "m4a"].includes(type.ext)) return type.ext;
   // Only the two formats every current phone and desktop browser plays.
   if (kind === "video" && type && ["mp4", "webm"].includes(type.ext)) return type.ext;
-  throw new UploadError("ชนิดหรือขนาดไฟล์ไม่ถูกต้อง");
+  throw new UploadError(`ชนิดไฟล์ไม่ถูกต้อง: "${name.slice(0, 80)}" ไม่ใช่ไฟล์${KIND_NAME[kind]}`);
 }
+const KIND_NAME: Record<Kind, string> = { model: "โมเดล .glb", usdz: " .usdz", image: "ภาพ .jpg .png หรือ .webp", audio: "เสียง .mp3 .wav หรือ .m4a", video: "วิดีโอ .mp4 หรือ .webm" };
 function root() { if (!process.env.UPLOAD_DIR) throw new UploadError("ไม่ได้ตั้งค่าที่เก็บไฟล์"); return path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR); }
 export async function saveUpload(file: File, kind: Kind): Promise<string> {
-  if (file.size > limits[kind] * 1024 * 1024 || !file.size) throw new UploadError("ชนิดหรือขนาดไฟล์ไม่ถูกต้อง");
+  if (!file.size) throw new UploadError("ไฟล์ว่างเปล่า");
+  if (file.size > limits[kind] * 1024 * 1024) throw new UploadError(`ไฟล์ใหญ่เกินขนาดสูงสุด ${limits[kind]} MB`);
   const bytes = new Uint8Array(await file.arrayBuffer());
   const ext = await detectUpload(bytes, kind, file.name);
   const date = new Date(); const dir = path.join(/*turbopackIgnore: true*/ `${kind}s`, String(date.getFullYear()), String(date.getMonth() + 1).padStart(2, "0"));

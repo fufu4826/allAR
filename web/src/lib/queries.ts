@@ -24,7 +24,10 @@ export async function getCommunities(): Promise<Community[]> {
       location: community.location, description: community.description,
       position: [Number(community.lat), Number(community.lng)], color: community.color,
       cover: community.coverPath, video: community.videoPath, placeholder: !community.isPublished,
-      collections: cols.map((col) => ({ id: col.id, name: col.name, description: col.description, image: col.imagePath })),
+      // A category without published items would be an empty tab on the site page: leave it out.
+      collections: cols
+        .filter((col) => content.some((item) => item.collectionId === col.id))
+        .map((col) => ({ id: col.id, name: col.name, description: col.description, image: col.imagePath })),
       items: content.map((item) => ({ id: item.id, collectionId: item.collectionId, name: item.name, description: item.description, model: item.modelPath, usdz: item.usdzPath, thumbnail: item.thumbnailPath, audio: item.audioPath })),
       recommended: content.filter((item) => item.isFeatured).map((item) => item.id),
     };

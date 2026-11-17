@@ -6,6 +6,8 @@ import { db } from "@/db";
 import { communities, items, pageStats } from "@/db/schema";
 import { thaiDay } from "@/lib/stats";
 
+export const metadata = { title: "สถิติ" };
+
 interface PageProps {
   searchParams: Promise<{ days?: string }>;
 }
@@ -18,6 +20,7 @@ const RANGES = [
 
 const views = sql<number>`CAST(SUM(CASE WHEN ${pageStats.event} = 'view' THEN ${pageStats.count} ELSE 0 END) AS SIGNED)`;
 const ars = sql<number>`CAST(SUM(CASE WHEN ${pageStats.event} = 'ar' THEN ${pageStats.count} ELSE 0 END) AS SIGNED)`;
+const videos = sql<number>`CAST(SUM(CASE WHEN ${pageStats.event} = 'video' THEN ${pageStats.count} ELSE 0 END) AS SIGNED)`;
 /** First day of a window of `count` days ending today (Thai time). */
 const daysAgo = (count: number) => thaiDay(Date.now() - (count - 1) * 86_400_000);
 const n = (v: unknown) => Number(v ?? 0).toLocaleString("th-TH");
@@ -31,9 +34,9 @@ async function StatsContent({ searchParams }: PageProps) {
   const inRange = gte(pageStats.day, since);
 
   const [totals, perSite, siteViews, topItems, daily, siteRows, itemRows] = await Promise.all([
-    db.select({ views, ars }).from(pageStats).where(inRange),
+    db.select({ views, ars, videos }).from(pageStats).where(inRange),
     // Everything opened at a site: its own page plus its item pages.
-    db.select({ slug: pageStats.slug, views, ars }).from(pageStats).where(inRange).groupBy(pageStats.slug),
+    db.select({ slug: pageStats.slug, views, ars, videos }).from(pageStats).where(inRange).groupBy(pageStats.slug),
     db.select({ slug: pageStats.slug, views }).from(pageStats).where(and(inRange, sql`${pageStats.itemId} = ''`)).groupBy(pageStats.slug),
     db
       .select({ slug: pageStats.slug, itemId: pageStats.itemId, views, ars })
@@ -43,7 +46,7 @@ async function StatsContent({ searchParams }: PageProps) {
       .orderBy(desc(views), desc(ars))
       .limit(20),
     db
-      .select({ day: pageStats.day, views, ars })
+      .select({ day: pageStats.day, views, ars, videos })
       .from(pageStats)
       .where(gte(pageStats.day, daysAgo(30)))
       .groupBy(pageStats.day)
@@ -59,10 +62,10 @@ async function StatsContent({ searchParams }: PageProps) {
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((s) => {
       const row = perSite.find((p) => p.slug === s.slug);
-      return { ...s, views: Number(row?.views ?? 0), ars: Number(row?.ars ?? 0), pageViews: siteOwnViews.get(s.slug) ?? 0 };
+      return { ...s, views: Number(row?.views ?? 0), ars: Number(row?.ars ?? 0), videos: Number(row?.videos ?? 0), pageViews: siteOwnViews.get(s.slug) ?? 0 };
     });
   const maxDaily = Math.max(1, ...daily.map((d) => Number(d.views)));
-  const total = totals[0] ?? { views: 0, ars: 0 };
+  const total = totals[0] ?? { views: 0, ars: 0, videos: 0 };
 
   return (
     <div className="space-y-8">
@@ -70,7 +73,7 @@ async function StatsContent({ searchParams }: PageProps) {
         <div>
           <h1 className="text-2xl font-bold text-ink sm:text-3xl">สถิติการเข้าชม</h1>
           <p className="text-sm text-muted">
-            นับเมื่อมีผู้เปิดหน้าแหล่งเรียนรู้หรือหน้าชิ้นงาน และเมื่อกดปุ่ม &quot;ดูใน AR&quot; ไม่เก็บข้อมูลส่วนตัวของผู้เข้าชม
+            นับเมื่อมีผู้เปิดหน้าแหล่งเรียนรู้หรือหน้าชิ้นงาน กดปุ่ม &quot;ดูใน AR&quot; หรือกดเล่นวีดิทัศน์ ไม่เก็บข้อมูลส่วนตัวของผู้เข้าชม นับตามเวลาประเทศไทย
           </p>
         </div>
         <nav className="flex flex-wrap gap-2" aria-label="ช่วงเวลา">
@@ -88,7 +91,7 @@ async function StatsContent({ searchParams }: PageProps) {
         </nav>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
           <span className="text-sm font-medium text-muted">จำนวนครั้งที่เปิดหน้า</span>
           <p className="mt-2 text-3xl font-bold text-ink">{n(total.views)}</p>
@@ -96,6 +99,10 @@ async function StatsContent({ searchParams }: PageProps) {
         <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
           <span className="text-sm font-medium text-muted">จำนวนครั้งที่กด &quot;ดูใน AR&quot;</span>
           <p className="mt-2 text-3xl font-bold text-ink">{n(total.ars)}</p>
+        </div>
+        <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
+          <span className="text-sm font-medium text-muted">จำนวนครั้งที่กดเล่นวีดิทัศน์</span>
+          <p className="mt-2 text-3xl font-bold text-ink">{n(total.videos)}</p>
         </div>
       </div>
 
@@ -109,6 +116,7 @@ async function StatsContent({ searchParams }: PageProps) {
                 <th className="px-4 py-3 text-right">เปิดหน้าแหล่งเรียนรู้</th>
                 <th className="px-4 py-3 text-right">เปิดทุกหน้ารวมชิ้นงาน</th>
                 <th className="px-4 py-3 text-right">กดดูใน AR</th>
+                <th className="px-4 py-3 text-right">เล่นวีดิทัศน์</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -118,6 +126,7 @@ async function StatsContent({ searchParams }: PageProps) {
                   <td className="px-4 py-3 text-right font-mono">{n(s.pageViews)}</td>
                   <td className="px-4 py-3 text-right font-mono">{n(s.views)}</td>
                   <td className="px-4 py-3 text-right font-mono">{n(s.ars)}</td>
+                  <td className="px-4 py-3 text-right font-mono">{n(s.videos)}</td>
                 </tr>
               ))}
             </tbody>
@@ -174,12 +183,13 @@ async function StatsContent({ searchParams }: PageProps) {
                 <th className="px-4 py-3">วันที่</th>
                 <th className="px-4 py-3">เปิดหน้า</th>
                 <th className="px-4 py-3 text-right">กดดูใน AR</th>
+                <th className="px-4 py-3 text-right">เล่นวีดิทัศน์</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {daily.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="py-8 text-center text-muted">
+                  <td colSpan={4} className="py-8 text-center text-muted">
                     ยังไม่มีข้อมูล
                   </td>
                 </tr>
@@ -196,6 +206,7 @@ async function StatsContent({ searchParams }: PageProps) {
                       </div>
                     </td>
                     <td className="px-4 py-2 text-right font-mono text-xs">{n(d.ars)}</td>
+                    <td className="px-4 py-2 text-right font-mono text-xs">{n(d.videos)}</td>
                   </tr>
                 ))
               )}

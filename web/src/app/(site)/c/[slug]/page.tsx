@@ -98,9 +98,9 @@ async function CommunityPageContent({ params }: { params: PageProps<"/c/[slug]">
         </div>
       </section>
 
-      {/* The site's own video, between the hero and the story. Nothing is shown until a file is added. */}
-      {community.video && (
-        <SiteVideo src={community.video} poster={community.cover} siteName={community.shortName} slug={community.slug} plays={counts.video} />
+      {/* The site's own video, between the hero and the story. Nothing is shown until a file or a YouTube link is added. */}
+      {(community.video || community.youtubeId) && (
+        <SiteVideo src={community.video} youtubeId={community.youtubeId} poster={community.cover} siteName={community.shortName} slug={community.slug} plays={counts.video} />
       )}
 
       {isPhuphan ? (

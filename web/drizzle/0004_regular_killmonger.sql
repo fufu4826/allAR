@@ -1,0 +1,1 @@
+ALTER TABLE `communities` ADD `youtube_id` varchar(16);

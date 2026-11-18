@@ -23,7 +23,7 @@ export async function getCommunities(): Promise<Community[]> {
       slug: community.slug, name: community.name, shortName: community.shortName,
       location: community.location, description: community.description,
       position: [Number(community.lat), Number(community.lng)], color: community.color,
-      cover: community.coverPath, video: community.videoPath, placeholder: !community.isPublished,
+      cover: community.coverPath, video: community.videoPath, youtubeId: community.youtubeId, placeholder: !community.isPublished,
       // A category without published items would be an empty tab on the site page: leave it out.
       collections: cols
         .filter((col) => content.some((item) => item.collectionId === col.id))

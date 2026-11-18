@@ -9,11 +9,12 @@ import { requireAdmin } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { deleteUpload, saveUpload, UploadError } from "@/lib/uploads";
 import { changedFields } from "../labels";
+import { parseYouTubeId } from "@/lib/youtube";
 
 const COMMUNITY_FIELDS: Record<string, string> = {
   name: "ชื่อเต็ม", shortName: "ชื่อสั้น", englishName: "ชื่อภาษาอังกฤษ", tagline: "คำโปรย", tags: "แท็ก",
   location: "ที่ตั้ง", description: "คำอธิบาย", lat: "ละติจูด", lng: "ลองจิจูด", color: "สีประจำแหล่ง",
-  coverPath: "ภาพปก", videoPath: "วีดิทัศน์", sortOrder: "ลำดับ", isPublished: "การเผยแพร่",
+  coverPath: "ภาพปก", videoPath: "วีดิทัศน์", youtubeId: "ลิงก์ YouTube", sortOrder: "ลำดับ", isPublished: "การเผยแพร่",
 };
 
 export type CommunityActionState = {
@@ -34,6 +35,8 @@ function validateCommunityData(formData: FormData) {
   const latStr = String(formData.get("lat") || "").trim();
   const lngStr = String(formData.get("lng") || "").trim();
   const color = String(formData.get("color") || "").trim();
+  const youtubeInput = String(formData.get("youtubeUrl") || "").trim();
+  const youtubeId = youtubeInput ? parseYouTubeId(youtubeInput) : null;
   const sortOrderStr = String(formData.get("sortOrder") || "0").trim();
   const isPublished = formData.get("isPublished") === "on" || formData.get("isPublished") === "true";
 
@@ -42,6 +45,7 @@ function validateCommunityData(formData: FormData) {
   if (englishName.length > 120) fieldErrors.englishName = "ชื่อภาษาอังกฤษยาวเกิน 120 ตัวอักษร";
   if (tagline.length > 255) fieldErrors.tagline = "คำโปรยยาวเกิน 255 ตัวอักษร";
   if (tags.length > 255) fieldErrors.tags = "แท็กยาวเกิน 255 ตัวอักษร";
+  if (youtubeInput && !youtubeId) fieldErrors.youtubeUrl = "ลิงก์ YouTube ไม่ถูกต้อง ให้วางลิงก์ของคลิป เช่น https://youtu.be/xxxxxxxxxxx";
 
   if (!name || name.length > 255) {
     fieldErrors.name = "กรุณาระบุชื่อแหล่งเรียนรู้ (ไม่เกิน 255 ตัวอักษร)";
@@ -94,6 +98,7 @@ function validateCommunityData(formData: FormData) {
       lat: lat.toFixed(6),
       lng: lng.toFixed(6),
       color,
+      youtubeId,
       sortOrder: isNaN(sortOrder) ? 0 : sortOrder,
       isPublished,
     },
@@ -162,6 +167,7 @@ export async function updateCommunityAction(
         lat: data.lat,
         lng: data.lng,
         color: data.color,
+        youtubeId: data.youtubeId,
         coverPath,
         videoPath,
         sortOrder: data.sortOrder,

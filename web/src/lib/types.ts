@@ -34,6 +34,8 @@ export type Community = {
   cover: string | null;
   /** วีดิทัศน์แนะนำแหล่งเรียนรู้ (ไฟล์ .mp4 / .webm) */
   video?: string | null;
+  /** วีดิทัศน์เดียวกันบน YouTube (รหัสวิดีโอ 11 ตัว) แสดงเป็นปุ่ม "ดูบน YouTube" */
+  youtubeId?: string | null;
   collections: Collection[];
   items: Item[];
   recommended: string[];

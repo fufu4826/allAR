@@ -25,24 +25,27 @@ export default function SiteName({ name }: { name: string }) {
   );
 }
 
-/** Keeps a village name ("บ้านโนนหอม") on one line: Thai line breaking would otherwise split it (โนน|หอม).
+/** Words that Thai line breaking does not know and would split mid-word: kept whole.
+ *  (A village name "บ้าน…" is kept whole as well: โนน|หอม.) */
+const KEEP_WHOLE = /(มีคาแอล|อัครเทวดา|อาสนวิหาร|บ้าน\S+)/;
+
+/** Keeps village names and the words above on one line.
  *  Each space-separated phrase is also a `.name-part`, which the Phu Phan hero keeps whole
  *  ("จังหวัดสกลนคร" never splits into จังหวัด|สกลนคร); see phuphan-theme.css. */
 function KeepVillage({ line }: { line: string }) {
   const parts = line.split(/\s+/);
   return (
     <>
-      {parts.map((part, i) => {
-        const at = part.indexOf("บ้าน");
-        return (
-          <Fragment key={i}>
-            {i > 0 && " "}
-            <span className="name-part">
-              {at <= 0 ? part : <>{part.slice(0, at)}<span style={{ whiteSpace: "nowrap" }}>{part.slice(at)}</span></>}
-            </span>
-          </Fragment>
-        );
-      })}
+      {parts.map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && " "}
+          <span className="name-part">
+            {part.split(KEEP_WHOLE).map((piece, j) =>
+              j % 2 ? <span key={j} style={{ whiteSpace: "nowrap" }}>{piece}</span> : piece,
+            )}
+          </span>
+        </Fragment>
+      ))}
     </>
   );
 }

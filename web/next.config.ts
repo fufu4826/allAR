@@ -15,8 +15,9 @@ const csp = [
   "media-src 'self' blob:",
   `connect-src 'self' data: blob: https://cloudflareinsights.com${dev ? " ws: wss:" : ""}`,
   "worker-src 'self' blob:",
-  // The Phu Phan page embeds a Google Maps frame of the centre's location.
-  "frame-src https://www.google.com",
+  // The Phu Phan page embeds a Google Maps frame of the centre's location; the site videos can
+  // switch to YouTube's privacy-enhanced player (components/SiteVideo.tsx).
+  "frame-src https://www.google.com https://www.youtube-nocookie.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

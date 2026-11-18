@@ -22,6 +22,7 @@ interface CommunityFormProps {
     color: string;
     coverPath: string | null;
     videoPath: string | null;
+    youtubeId: string | null;
     sortOrder: number;
     isPublished: boolean;
   };
@@ -163,6 +164,22 @@ export default function CommunityForm({ initialData }: CommunityFormProps) {
           removeName="removeVideo"
           removeLabel="ลบวีดิทัศน์นี้ออกจากหน้าแหล่งเรียนรู้"
         />
+        <div>
+          <label className={labelClass}>
+            ลิงก์ YouTube ของวีดิทัศน์ (ไม่บังคับ)
+            <input
+              name="youtubeUrl"
+              type="url"
+              inputMode="url"
+              maxLength={200}
+              defaultValue={initialData.youtubeId ? `https://youtu.be/${initialData.youtubeId}` : ""}
+              placeholder="https://youtu.be/xxxxxxxxxxx"
+              className={inputClass}
+            />
+          </label>
+          <p className={hintClass}>วางลิงก์จากปุ่ม &quot;แชร์&quot; ของ YouTube ได้เลย หน้าเว็บจะมีปุ่ม &quot;ดูบน YouTube&quot; ใต้วีดิทัศน์ เว้นว่างถ้าไม่ต้องการปุ่มนี้</p>
+          {err("youtubeUrl")}
+        </div>
       </Section>
 
       <Section title="การแสดงผล">

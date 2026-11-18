@@ -29,6 +29,13 @@
       "when": 1794533331681,
       "tag": "0003_volatile_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1794990875925,
+      "tag": "0004_regular_killmonger",
+      "breakpoints": true
     }
   ]
 }

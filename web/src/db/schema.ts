@@ -21,6 +21,8 @@ export const communities = mysqlTable("communities", {
   color: varchar("color", { length: 7 }).notNull(),
   coverPath: varchar("cover_path", { length: 500 }),
   videoPath: varchar("video_path", { length: 500 }),
+  /** The same video on YouTube (11-character video ID), shown as a "watch on YouTube" button. */
+  youtubeId: varchar("youtube_id", { length: 16 }),
   sortOrder: int("sort_order").notNull().default(0),
   isPublished: boolean("is_published").notNull().default(false),
   ...timestamps(),

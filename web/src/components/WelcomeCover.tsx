@@ -32,9 +32,10 @@ export default function WelcomeCover() {
           <h2 id="welcome-title">
             เปิดประตูสู่
             <br />
-            <em>5 แหล่งเรียนรู้</em>
+            <em className="welcome-phrase">5 แหล่งเรียนรู้</em><wbr />
+            <span className="welcome-phrase">และพิพิธภัณฑ์ท้องถิ่น</span>
             <br />
-            เมืองสกลนคร
+            <span className="welcome-phrase">จังหวัดสกลนคร</span>
           </h2>
           <p>ร่วมค้นพบเรื่องราว วัฒนธรรม และภูมิปัญญาท้องถิ่น ผ่านโมเดลสามมิติและเทคโนโลยีความเป็นจริงเสริม</p>
           <Link className="welcome-enter" href="/map">
